@@ -5,6 +5,9 @@ build:
   stage: build
   image: python:3.7-alpine
   before_script:
+    - apk add --no-cache --virtual .build-deps gcc musl-dev
+    - pip3 install -U cython
+    - apk del .build-deps gcc musl-dev
     - pip3 install -U setuptools
     - pip3 install -U pylint
   script:
