@@ -11,3 +11,4 @@ build:
     - pip3 install -U pylint
     - pylint -E $(find ./ -name \*.py)
     - apk del .build-deps gcc musl-dev
+    - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' api_config.cfg
