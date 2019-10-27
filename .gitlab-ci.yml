@@ -6,9 +6,7 @@ build:
   image: python:3.7-alpine
   script:
     - apk add --no-cache --virtual .build-deps gcc musl-dev
-    - pip3 install -U cython
-    - pip3 install -U setuptools
-    - pip3 install -U pylint
+    - pip3 install -r requirements.txt
     - pylint -E $(find ./ -name \*.py)
     - apk del .build-deps gcc musl-dev
     - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' api_config.cfg
