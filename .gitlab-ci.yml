@@ -1,0 +1,11 @@
+stages:
+  - build
+
+build:
+  stage: build
+  image: python:3.7-alpine
+  before_script:
+    - pip3 install -U setuptools
+    - pip3 install -U pylint
+  script:
+    - pylint -E $(find ./ -name \*.py)
