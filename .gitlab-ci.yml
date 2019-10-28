@@ -6,6 +6,5 @@ build:
   image: hackfeed/iu7games
   script:
     - pip3 install -r requirements.txt
-    - gem install gollum github-markdown
     - pylint -E $(find ./ -name \*.py)
     - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' api_config.cfg
