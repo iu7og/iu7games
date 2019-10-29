@@ -91,8 +91,8 @@ def get_artifacts(project, success_jobs):
             job.artifacts(streamed=True, action=f.write)
 
 
-def worker():
-    """ API Worker to collect students' repos' artifacts. """
+def update_wiki():
+    """ Update Wiki pages with new games results. """
 
     games = {
         "XOgame Leaderboard": "XOgame-Leaderboard",
@@ -101,6 +101,10 @@ def worker():
     }
     games_keys = games.keys()
     games_content = "Game Leaderboard"
+
+
+def start_competition():
+    """ Start competition with collected strategies. """
 
     gl = gitlab.Gitlab.from_config("gitiu7", ["./api_config.cfg"])
     gl.auth()
@@ -112,4 +116,4 @@ def worker():
 
 
 if __name__ == "__main__":
-    worker()
+    start_competition()
