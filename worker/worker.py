@@ -36,15 +36,59 @@ def delete_page(instance, project_id, page_slug):
     page.delete()
 
 
-def collect_artifacts(instance, project_id, job_id):
-    """ Collect job's artifacts. """
+def get_group(instance, name):
+    """ Get group by it's name. """
 
-    project = instance.projects.get(project_id)
-    job = project.jobs.get(job_id)
+    groups = instance.groups.list()
+    for group in groups:
+        if group.name == name:
+            return group
 
-    ziparts = str(project_id) + str(job_id) + "artifacts.zip"
-    with open(ziparts, "wb") as f:
-        job.artifacts(streamed=True, action=f.write)
+    return None
+
+
+def get_group_projects(instance, group):
+    """ Get group's projects. """
+
+    group = instance.groups.get(group.id)
+    projects = group.projects.list()
+
+    return projects
+
+
+def get_project(instance, group, name):
+    """ Get project by it' name. """
+
+    projects = get_group_projects(instance, group)
+    for project in projects:
+        if project.name == name:
+            return instance.projects.get(project.id)
+
+    return None
+
+
+def get_success_jobs(project):
+    """ Get project's successful jobs. """
+
+    success_jobs = []
+
+    jobs = project.jobs.list()
+    for job in jobs:
+        if job.status == "success":
+            success_jobs.append(job)
+
+    return success_jobs
+
+
+def get_artifacts(project, success_jobs):
+    """ Get success job's artifacts. """
+
+    for success_job in success_jobs:
+        job = project.jobs.get(success_job.id)
+
+        ziparts = str(job.id) + "artifacts.zip"
+        with open(ziparts, "wb") as f:
+            job.artifacts(streamed=True, action=f.write)
 
 
 def worker():
@@ -58,17 +102,13 @@ def worker():
     games_keys = games.keys()
     games_content = "Game Leaderboard"
 
-    iu7games_id = 2546
-    iu7cprogsems_id = 2303
-
     gl = gitlab.Gitlab.from_config("gitiu7", ["./api_config.cfg"])
     gl.auth()
 
-    """
-    for key in games_keys:
-        create_page(gl, iu7games_id, key, games_content)
-    collect_artifacts(gl, iu7cprogsems_id, 70250)
-    """
+    group = get_group(gl, "iu7-cprog-labs-2019")
+    project = get_project(gl, group, "iu7-cprog-labs-2019-kononenkosergey")
+    jobs = get_success_jobs(project)
+    get_artifacts(project, jobs)
 
 
 if __name__ == "__main__":
