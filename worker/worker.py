@@ -39,7 +39,7 @@ def delete_page(instance, project_id, page_slug):
 def get_group(instance, name):
     """ Get group by it's name. """
 
-    groups = instance.groups.list()
+    groups = instance.groups.list(all=True)
     for group in groups:
         if group.name == name:
             return group
@@ -51,7 +51,7 @@ def get_group_projects(instance, group):
     """ Get group's projects. """
 
     group = instance.groups.get(group.id)
-    projects = group.projects.list()
+    projects = group.projects.list(all=True)
 
     return projects
 
@@ -67,14 +67,14 @@ def get_project(instance, group, name):
     return None
 
 
-def get_success_jobs(project):
-    """ Get project's successful jobs. """
+def get_success_jobs(project, ref):
+    """ Get project's successful jobs by ref name. """
 
     success_jobs = []
 
-    jobs = project.jobs.list()
+    jobs = project.jobs.list(all=True)
     for job in jobs:
-        if job.status == "success":
+        if job.status == "success" and job.ref == ref:
             success_jobs.append(job)
 
     return success_jobs
@@ -107,7 +107,7 @@ def worker():
 
     group = get_group(gl, "iu7-cprog-labs-2019")
     project = get_project(gl, group, "iu7-cprog-labs-2019-kononenkosergey")
-    jobs = get_success_jobs(project)
+    jobs = get_success_jobs(project, "lab_10")
     get_artifacts(project, jobs)
 
 
