@@ -116,7 +116,7 @@ def update_wiki(instance, project, game, results):
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    res += "\n**Обновлено:** {0}".format(date)
+    res += "\n**Обновлено:** {0} МСК".format(date)
 
     for key in games_keys:
         if game in key.lower():
