@@ -18,5 +18,7 @@ int split_test(const char *string, char **matrix, const char symbol)
     {
         puts(matrix[i]);
     }
+
     return ++count;
 }
+
