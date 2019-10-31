@@ -1,13 +1,11 @@
 stages:
   - build
 
+before_script:
+  - pip3 install -r requirements.txt
+
 build:
   stage: build
-  image: python:3.7-alpine
+  image: hackfeed/iu7games
   script:
-    - apk add --no-cache --virtual .build-deps gcc musl-dev
-    - pip3 install -U cython
-    - pip3 install -U setuptools
-    - pip3 install -U pylint
     - pylint -E $(find ./ -name \*.py)
-    - apk del .build-deps gcc musl-dev
