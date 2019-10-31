@@ -89,6 +89,8 @@ def get_artifacts(project, success_jobs):
         ziparts = str(job.id) + "artifacts.zip"
         with open(ziparts, "wb") as f:
             job.artifacts(streamed=True, action=f.write)
+        subprocess.run(["unzip", "-bo", ziparts])
+        os.unlink(ziparts)
 
 
 def update_wiki():
