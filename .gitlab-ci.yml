@@ -1,0 +1,11 @@
+stages:
+  - build
+
+before_script:
+  - pip3 install -r cfg/requirements.txt
+
+build:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - pylint -E $(find ./ -name \*.py)
