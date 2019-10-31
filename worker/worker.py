@@ -4,6 +4,7 @@
 import gitlab
 import os
 import subprocess
+import argparse
 
 
 def create_page(instance, project_id, title, content):
@@ -105,17 +106,29 @@ def update_wiki():
     games_content = "Game Leaderboard"
 
 
-def start_competition():
+def start_competition(game, group_name):
     """ Start competition with collected strategies. """
 
-    gl = gitlab.Gitlab.from_config("gitiu7", ["./api_config.cfg"])
+    gl = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
     gl.auth()
 
-    group = get_group(gl, "iu7-cprog-labs-2019")
-    project = get_project(gl, group, "iu7-cprog-labs-2019-kononenkosergey")
-    jobs = get_success_jobs(project, "lab_10")
-    get_artifacts(project, jobs)
+    group = get_group(gl, group_name)
+    for proj in get_group_projects(gl, group):
+        try:
+            project = get_project(gl, group, proj.name)
+            jobs = get_success_jobs(project, game)
+            get_artifacts(project, jobs)
+        except (
+            gitlab.exceptions.GitlabListError,
+            gitlab.exceptions.GitlabHttpError
+        ):
+            pass
 
 
 if __name__ == "__main__":
-    start_competition()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("game", help="Select a game to be played")
+    parser.add_argument(
+        "group_name", help="Select a GitLab group name to be searched")
+    args = parser.parse_args()
+    start_competition(args.game, args.group_name)
