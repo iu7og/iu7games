@@ -175,6 +175,7 @@ RUN apk add --no-cache \
     gcc \
     musl-dev \
     perl \
+    unzip \
     \
     && git clone https://github.com/linux-test-project/lcov \
     && cd lcov/ \
