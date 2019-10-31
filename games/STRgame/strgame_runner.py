@@ -1,58 +1,68 @@
 import timeit, functools, ctypes
-test_X = ctypes.CDLL("./test_strgame.so")
+split_lib = ctypes.CDLL("./split_lib.so")
+
+OK = 0
+INCORRECT_LEN = 1
+INCORRECT_TEST = 2
+
+NUMBER_OF_TESTS = 1
+TEST_REPEAT = 1
+ENCODING = "utf-8"
+ARRAY_SIZE = 32000
+
+COMPARATORS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
+    '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
+
+
+def concat_strings(f):
+    return functools.reduce(lambda x, y: x + y[:-1], f)
+
+
+def create_c_objects(bytes_string, comparator):
+    c_string = ctypes.create_string_buffer(bytes_string)
+    c_array_strings = [ctypes.create_string_buffer(ARRAY_SIZE) for i in range(ARRAY_SIZE)]
+    c_array_pointer = (ctypes.c_char_p * ARRAY_SIZE)(*map(ctypes.addressof, c_array_strings))
+    c_comparator = ctypes.c_wchar(comparator)
+
+    return c_string, c_array_strings, c_array_pointer, c_comparator
+
+
+def check_split_correctness(player_size, player_strings_array, correct_strings_array):
+    if (player_size != len(correct_strings_array)):
+        return INCORRECT_LEN
+
+    for i in range(len(correct_strings_array)):
+        if (player_strings_array[i].value).decode(ENCODING) != correct_strings_array[i]:
+            return INCORRECT_TEST
+
+    return OK
+
+
+def run_split(test_data, comparator):
+    size_buffer = []
+    correct_strings_array = test_data.split(comparator)
+    bytes_string = test_data.encode(ENCODING)
+
+    c_string, c_array_strings, c_array_pointer, c_comparator = create_c_objects(bytes_string, comparator)
+
+    def timeit_wrapper(string, matrix, comparator):
+        size_buffer.append(split_lib.split_test(string, matrix, comparator))
+
+
+    run_time = timeit.Timer(functools.partial(timeit_wrapper, c_string, c_array_pointer, c_comparator))
+    time = run_time.timeit(TEST_REPEAT)
+
+    error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
+    return time, error_code
 
 
 def run_tests():
-    for i in range(1):
-        f = open("test_" + str(i - i + 1) + ".txt",  "r+")
-        k = 0
-        buff = ""
-        for line in f:
-            buff += line[:-1]
-        time = run_split(str.encode(buff))
+    for i in range(NUMBER_OF_TESTS):
+        f = open("test_" + str(i - i + 1) + ".txt",  "r")
+        test_data = concat_strings(f)
+        time, error_code = run_split(test_data, COMPARATORS[i])
+        print(error_code, time)
         f.close()
-
-
-def run_split(string):
-    test = string.decode('utf-8')
-    #print(test)
-    #print(test.split())
-    #return
-    n = 32000
-    str = ctypes.create_string_buffer(string)
-    string_buffers = [ctypes.create_string_buffer(n) for i in range(n)]
-    pointers = (ctypes.c_char_p*n)(*map(ctypes.addressof, string_buffers))
-    symb = ctypes.c_char(32)
-    arr = []
-
-    def timeit_wrapper(str, pointers, symb):
-        size = test_X.split_test(str, pointers, symb)
-        arr.append(size)
-
-    run_time = timeit.Timer(functools.partial(timeit_wrapper, str, pointers,symb))
-    time = run_time.timeit(1)
-    string = string.decode('utf-8')
-    string_arr = string.split(' ')
-
-    print(arr[0])
-    print(len(string_arr))
-    if (arr[0] != len(string_arr)):
-        print("INVALID LEN")
-    k = 0
-
-    for i in range(len(string_arr)):
-        string_buffers[i] = string_buffers[i].value.decode('utf-8')
-        #print(string_buffers[i], string_arr[i])
-        if string_buffers[i] == string_arr[i]:
-            k += 1
-        else:
-            print("C: ", string_buffers[i], "PYTHON: ", string_arr[i])
-            print("INVALID ", i)
-            break
-    if (k == len(string_arr)):
-        print("TEST CORRECT")
-
-    return time
 
 
 if __name__ == "__main__":
