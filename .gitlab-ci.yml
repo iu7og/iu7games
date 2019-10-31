@@ -1,10 +1,19 @@
 stages:
   - build
+  - test
+  - deploy
+
+before_script:
+  - pip3 install -r cfg/requirements.txt
 
 build:
   stage: build
   image: hackfeed/iu7games
   script:
-    - pip3 install -r requirements.txt
     - pylint -E $(find ./ -name \*.py)
-    - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' api_config.cfg
+# deploy:
+#   stage: deploy
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' cfg/api_config.cfg
+#     - python worker/worker.py
