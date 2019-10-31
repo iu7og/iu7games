@@ -6,12 +6,13 @@ import os
 import subprocess
 import argparse
 
+from datetime import datetime
 
-def create_page(instance, project_id, title, content):
+
+def create_page(instance, project, title, content):
     """ Create Wiki page. """
 
-    project = instance.projects.get(project_id)
-    page = project.wikis.create(
+    project.wikis.create(
         {
             "title": title,
             "content": content
@@ -19,20 +20,18 @@ def create_page(instance, project_id, title, content):
     )
 
 
-def update_page(instance, project_id, page_slug, title, content):
+def update_page(instance, project, page_slug, title, content):
     """ Update Wiki page. """
 
-    project = instance.projects.get(project_id)
     page = project.wikis.get(page_slug)
     page.title = title
     page.content = content
     page.save()
 
 
-def delete_page(instance, project_id, page_slug):
+def delete_page(instance, project, page_slug):
     """ Delete Wiki page. """
 
-    project = instance.projects.get(project_id)
     page = project.wikis.get(page_slug)
     page.delete()
 
@@ -40,12 +39,14 @@ def delete_page(instance, project_id, page_slug):
 def get_group(instance, name):
     """ Get group by it's name. """
 
-    groups = instance.groups.list(all=True)
-    for group in groups:
-        if group.name == name:
-            return group
+    group = None
 
-    return None
+    groups = instance.groups.list(all=True)
+    for grp in groups:
+        if grp.name == name:
+            group = grp
+
+    return group
 
 
 def get_group_projects(instance, group):
@@ -60,23 +61,27 @@ def get_group_projects(instance, group):
 def get_project(instance, group, name):
     """ Get project by it' name. """
 
-    projects = get_group_projects(instance, group)
-    for project in projects:
-        if project.name == name:
-            return instance.projects.get(project.id)
+    project = None
 
-    return None
+    projects = get_group_projects(instance, group)
+    for prj in projects:
+        if prj.name == name:
+            project = instance.projects.get(prj.id)
+
+    return project
 
 
 def get_last_success_job(project, ref):
     """ Get project's last success job by ref name. """
 
-    jobs = project.jobs.list(all=True)
-    for job in jobs:
-        if job.status == "success" and job.ref == ref:
-            return job
+    job = None
 
-    return None
+    jobs = project.jobs.list(all=True)
+    for jb in jobs:
+        if jb.status == "success" and jb.ref == ref:
+            job = jb
+
+    return job
 
 
 def get_artifacts(project, success_job):
@@ -84,14 +89,15 @@ def get_artifacts(project, success_job):
 
     job = project.jobs.get(success_job.id)
 
-    ziparts = str(project.name) + ".zip"
+    ziparts = job.user.get("username") + ".zip"
+
     with open(ziparts, "wb") as f:
         job.artifacts(streamed=True, action=f.write)
     subprocess.run(["unzip", "-bo", ziparts])
     os.unlink(ziparts)
 
 
-def update_wiki():
+def update_wiki(instance, project, game, results):
     """ Update Wiki pages with new games results. """
 
     games = {
@@ -100,7 +106,21 @@ def update_wiki():
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard"
     }
     games_keys = games.keys()
-    games_content = "Game Leaderboard"
+
+    res = "| **ФИ Студента** | **GitLab ID** |\n" \
+        "|---|---|\n"
+
+    for student in range(len(results)):
+        res += "|{0}|{1}|\n".format(results[student][0], results[student][1])
+
+    now = datetime.now()
+    date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+    res += "\n**Обновлено:** {0}".format(date)
+
+    for key in games_keys:
+        if game in key.lower():
+            update_page(instance, project, games.get(key), key, res)
 
 
 def start_competition(game, group_name):
@@ -110,13 +130,30 @@ def start_competition(game, group_name):
     gl.auth()
 
     group = get_group(gl, group_name)
-    for proj in get_group_projects(gl, group):
-        try:
-            project = get_project(gl, group, proj.name)
-            jobs = get_last_success_job(project, game)
-            get_artifacts(project, jobs)
-        except (gitlab.exceptions.GitlabListError, gitlab.exceptions.GitlabHttpError):
-            pass
+    projects = get_group_projects(gl, group)
+
+    iu7games_id = 2546
+    iu7games = gl.projects.get(iu7games_id)
+
+    results = []
+
+    for prj in projects:
+        project = get_project(gl, group, prj.name)
+        job = get_last_success_job(project, game)
+        user_result = [job.user.get("name"), "@" + job.user.get("username")]
+        results.append(user_result)
+        get_artifacts(project, job)
+
+    update_wiki(gl, iu7games, "xogame", results)
+
+    if game == "strgame":
+        pass
+    elif game == "xogame":
+        pass
+    elif game == "teen48game":
+        pass
+    else:
+        pass
 
 
 if __name__ == "__main__":
@@ -125,4 +162,5 @@ if __name__ == "__main__":
     parser.add_argument(
         "group_name", help="Select a GitLab group name to be searched")
     args = parser.parse_args()
+
     start_competition(args.game, args.group_name)
