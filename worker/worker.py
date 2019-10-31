@@ -68,30 +68,27 @@ def get_project(instance, group, name):
     return None
 
 
-def get_success_jobs(project, ref):
-    """ Get project's successful jobs by ref name. """
-
-    success_jobs = []
+def get_last_success_job(project, ref):
+    """ Get project's last success job by ref name. """
 
     jobs = project.jobs.list(all=True)
     for job in jobs:
         if job.status == "success" and job.ref == ref:
-            success_jobs.append(job)
+            return job
 
-    return success_jobs
+    return None
 
 
-def get_artifacts(project, success_jobs):
+def get_artifacts(project, success_job):
     """ Get success job's artifacts. """
 
-    for success_job in success_jobs:
-        job = project.jobs.get(success_job.id)
+    job = project.jobs.get(success_job.id)
 
-        ziparts = str(job.id) + "artifacts.zip"
-        with open(ziparts, "wb") as f:
-            job.artifacts(streamed=True, action=f.write)
-        subprocess.run(["unzip", "-bo", ziparts])
-        os.unlink(ziparts)
+    ziparts = str(project.name) + ".zip"
+    with open(ziparts, "wb") as f:
+        job.artifacts(streamed=True, action=f.write)
+    subprocess.run(["unzip", "-bo", ziparts])
+    os.unlink(ziparts)
 
 
 def update_wiki():
@@ -116,12 +113,9 @@ def start_competition(game, group_name):
     for proj in get_group_projects(gl, group):
         try:
             project = get_project(gl, group, proj.name)
-            jobs = get_success_jobs(project, game)
+            jobs = get_last_success_job(project, game)
             get_artifacts(project, jobs)
-        except (
-            gitlab.exceptions.GitlabListError,
-            gitlab.exceptions.GitlabHttpError
-        ):
+        except (gitlab.exceptions.GitlabListError, gitlab.exceptions.GitlabHttpError):
             pass
 
 
