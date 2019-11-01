@@ -6,6 +6,9 @@ stages:
 before_script:
   - pip3 install -r cfg/requirements.txt
 
+before_script:
+  - pip3 install -r cfg/requirements.txt
+
 build:
   stage: build
   image: hackfeed/iu7games
