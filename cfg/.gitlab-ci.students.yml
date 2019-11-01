@@ -12,12 +12,12 @@ strgame:
   script:
     - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c
     - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c
-    - gcc -shared -o split_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.o
-    - gcc -shared -o strtok_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.o
+    - gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.o
+    - gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.o
   after_script:
     - rm *.o
   artifacts:
-    paths: 
+    paths:
       - ./*.so
   only:
     refs:
