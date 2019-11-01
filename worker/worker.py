@@ -5,8 +5,10 @@ import gitlab
 import os
 import subprocess
 import argparse
+import sys
 
 from datetime import datetime
+from games.strgame import split_runner, strtok_runner
 
 
 def create_page(instance, project, title, content):
@@ -45,6 +47,7 @@ def get_group(instance, name):
     for grp in groups:
         if grp.name == name:
             group = grp
+            break
 
     return group
 
@@ -67,6 +70,7 @@ def get_project(instance, group, name):
     for prj in projects:
         if prj.name == name:
             project = instance.projects.get(prj.id)
+            break
 
     return project
 
@@ -76,10 +80,11 @@ def get_last_success_job(project, ref):
 
     job = None
 
-    jobs = project.jobs.list(all=True)
+    jobs = project.jobs.list(all=True, ref=ref)
     for jb in jobs:
         if jb.status == "success" and jb.ref == ref:
             job = jb
+            break
 
     return job
 
@@ -115,8 +120,9 @@ def update_wiki(instance, project, game, results):
             "|---|---|---|---|---|---|\n"
 
         for student in range(len(results)):
-            res += "|{0}|{1}|||||\n".format(
-                results[student][0], results[student][1])
+            res += "|{0}|{1}|{2}|{3}|{4}|{5}|\n".format(
+                results[student][0], results[student][1], results[student][2],
+                results[student][3], results[student][4], results[student][5])
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -150,7 +156,20 @@ def start_competition(game, group_name):
         get_artifacts(project, job)
 
     if game == "STRgame":
-        pass
+        for data in results:
+            lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
+            test_path = os.path.abspath("/IU7Games/STRgame/tests/split")
+            split_res = split_runner.start_split(lib_path, test_path)
+            data.append(split_res[0] + "/20")
+            data.append(split_res[1])
+
+            """lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
+            test_path = os.path.abspath("/IU7Games/STRgame/tests/strtok")
+            strtok_res = strtok_runner.start_strtok(lib_path, test_path)
+            data.append(strtok_res[0])
+            data.append(strtok_res[1])"""
+            data.append(0 + "/20")
+            data.append(0)
     elif game == "XOgame":
         pass
     elif game == "TEEN48game":
@@ -158,7 +177,7 @@ def start_competition(game, group_name):
     else:
         pass
 
-    update_wiki(gl, iu7games, "STRgame", results)
+    update_wiki(gl, iu7games, game, results)
 
 
 if __name__ == "__main__":
