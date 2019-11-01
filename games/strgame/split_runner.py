@@ -16,13 +16,12 @@
 
 
 import timeit, functools, ctypes
-player_split_lib = ctypes.CDLL("./split_lib.so")
 
 OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-NUMBER_OF_TESTS = 1
+NUMBER_OF_TESTS = 20
 TEST_REPEAT = 1
 ENCODING = "utf-8"
 ARRAY_SIZE = 32000
@@ -73,7 +72,7 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
     return OK
 
 
-def run_split(test_data, delimiter):
+def run_split_test(test_data, delimiter, player_split_lib):
     """
         Вызов функций split, сравнения поведения функции
         из Python и функции игрока (СИ).
@@ -101,27 +100,30 @@ def run_split(test_data, delimiter):
 
 
 
-def main():
+def start_split(args_lib, args_tests):
     """
         Открытие файлов с тестами и запуск split.
         Печать количество успешных тестов и время ранинга.
     """
 
+    player_split_lib = ctypes.CDLL(args_lib)
+
     total_time = 0
     total_tests = 0
 
     for i in range(NUMBER_OF_TESTS):
-        f = open("test_" + str(i + 1) + ".txt",  "r")
+        f = open(args_tests + "/test_" + str(i + 1) + ".txt",  "r")
         test_data = concat_strings(f)
         f.close()
 
-        time, error_code = run_split(test_data, DELIMITERS[i])
+        time, error_code = run_split_test(test_data, DELIMITERS[i], player_split_lib)
         if not error_code:
             total_tests += 1
         total_time += time
 
-    print("TESTS:", total_tests, "TIME:", total_time)
+    print("SPLIT TESTS:", total_tests, "/ 20 TIME:", total_time)
+    return total_tests, total_time
 
 
 if __name__ == "__main__":
-    main()
+    start_split("./split_lib.so", "./split_tests")

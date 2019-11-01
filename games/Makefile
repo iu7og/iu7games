@@ -1,4 +1,3 @@
-/* тут надо всё переделать */
 
 LIB_NAME := split_lib.so
 STRTOK_LIB := std_strtok.so
