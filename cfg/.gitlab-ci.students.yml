@@ -1,0 +1,24 @@
+stages:
+  - build
+
+variables:
+  XOGAME_PATH: XOgame/
+  STRGAME_PATH: STRgame/
+  TEEN48GAME_PATH: TEEN48game/
+
+strgame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c
+    - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c
+    - gcc -shared -o split_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.o
+    - gcc -shared -o strtok_lib.so ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.o
+  after_script:
+    - rm *.o
+  artifacts:
+    paths: 
+      - ./*.so
+  only:
+    refs:
+      - STRgame
