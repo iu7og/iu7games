@@ -160,7 +160,7 @@ def start_competition(game, group_name):
             lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
             test_path = os.path.abspath("/IU7Games/STRgame/tests/split")
             split_res = split_runner.start_split(lib_path, test_path)
-            data.append(split_res[0] + "/20")
+            data.append(str(split_res[0]) + "/20")
             data.append(split_res[1])
 
             """lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
@@ -168,7 +168,7 @@ def start_competition(game, group_name):
             strtok_res = strtok_runner.start_strtok(lib_path, test_path)
             data.append(strtok_res[0])
             data.append(strtok_res[1])"""
-            data.append(0 + "/20")
+            data.append(str(0) + "/20")
             data.append(0)
     elif game == "XOgame":
         pass
