@@ -182,5 +182,7 @@ RUN apk add --no-cache \
     && make install \
     && cd .. \
     && rm -rf lcov/
+RUN mkdir /IU7Games
+COPY ./IU7Games /IU7Games
 
 CMD ["bash"]
