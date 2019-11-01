@@ -107,16 +107,20 @@ def update_wiki(instance, project, game, results):
     }
     games_keys = games.keys()
 
-    res = "| **ФИ Студента** | **GitLab ID** |\n" \
-        "|---|---|\n"
+    res = None
 
-    for student in range(len(results)):
-        res += "|{0}|{1}|\n".format(results[student][0], results[student][1])
+    if game == "strgame":
+        res = "|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|**SPLIT Время**|" \
+            "**STRTOK Тесты**|**STRTOK Время**|\n" \
+            "|---|---|---|---|---|---|\n"
+
+        for student in range(len(results)):
+            res += "|{0}|{1}|||||\n".format(results[student][0], results[student][1])
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    res += "\n**Обновлено:** {0} МСК".format(date)
+    res += "\n**Обновлено:** {0} **МСК**".format(date)
 
     for key in games_keys:
         if game in key.lower():
@@ -144,16 +148,18 @@ def start_competition(game, group_name):
         results.append(user_result)
         get_artifacts(project, job)
 
-    update_wiki(gl, iu7games, "xogame", results)
-
     if game == "strgame":
-        pass
+        for data in results:
+            subprocess.run(["python3", "games/strgame/split_runner.py", data[1][1:] + "_split_lib.so"])
+            # WIP
     elif game == "xogame":
         pass
     elif game == "teen48game":
         pass
     else:
         pass
+
+    update_wiki(gl, iu7games, "strgame", results)
 
 
 if __name__ == "__main__":
