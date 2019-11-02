@@ -156,7 +156,7 @@ def start_competition(game, group_name):
         get_artifacts(project, job)
 
     if game == "STRgame":
-        print("\nSTRGAME RESULTS\n")
+        print("STRGAME RESULTS\n")
         for data in results:
             lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
             test_path = os.path.abspath("/IU7Games/STRgame/tests/split")
@@ -173,6 +173,8 @@ def start_competition(game, group_name):
             data.append(strtok_res[1])"""
             data.append(str(0) + "/20")
             data.append(0)
+
+            print()
     elif game == "XOgame":
         pass
     elif game == "TEEN48game":

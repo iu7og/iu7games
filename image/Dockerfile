@@ -187,6 +187,5 @@ RUN apk add --no-cache \
     && rm -rf lcov/ \
     && mkdir /IU7Games
 COPY ./IU7Games /IU7Games
-COPY ./std_strtok_lib.so /usr/lib/
 
 CMD ["bash"]
