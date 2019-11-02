@@ -16,7 +16,7 @@ deploy_strgame:
   stage: deploy
   image: hackfeed/iu7games
   script:
-    - sed -i 's/^private_token.*$/private_token = ${API_TOKEN}/' cfg/api_config.cfg
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
     - PYTHONPATH='.' python worker/worker.py STRgame iu7-cprog-labs-2019
   only:
     refs:
