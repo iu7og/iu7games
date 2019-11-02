@@ -21,7 +21,6 @@ INVALID_PTR = 1
 NUMBER_OF_TESTS = 20
 TEST_REPEAT = 1
 ENCODING = "utf-8"
-STRTOK_LIB = "/usr/lib/std_strtok_lib.so"
 NULL = 0
 
 DELIMITERS = " ,.;:"
@@ -74,8 +73,8 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         Сравнение возвращаемых результатов этих функций.
         Замеры времени ранинга с помощью timeit.
 
-        libs[0] - player_strtok_lib
-        libs[1] - std_strtok_lib
+        libs[0] - lib_player
+        libs[1] - libc
     """
 
     pointer_buffer = []
@@ -119,8 +118,8 @@ def start_strtok(args_lib, args_tests):
         Печать количества успешных тестов и время ранинга.
     """
 
-    player_strtok_lib = ctypes.CDLL(args_lib)
-    std_strtok_lib = ctypes.CDLL(STRTOK_LIB)
+    lib_player = ctypes.CDLL(args_lib)
+    libc = ctypes.CDLL("libc.so.6")
 
     total_time = 0
     total_tests = 0
@@ -131,7 +130,7 @@ def start_strtok(args_lib, args_tests):
         f.close()
 
         time, error_code = run_strtok_test(test_data, DELIMITERS, \
-            [player_strtok_lib, std_strtok_lib])
+            [lib_player, libc])
 
         if not error_code:
             total_tests += 1

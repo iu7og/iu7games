@@ -72,7 +72,7 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
     return OK
 
 
-def run_split_test(test_data, delimiter, player_split_lib):
+def run_split_test(test_data, delimiter, lib_player):
     """
         Вызов функций split, сравнения поведения функции
         из Python и функции игрока (СИ).
@@ -89,7 +89,7 @@ def run_split_test(test_data, delimiter, player_split_lib):
         """
             Обёртка для timeit, для сохранения возвращаемого split значения
         """
-        size_buffer.append(player_split_lib.split(string, matrix, delimiter))
+        size_buffer.append(lib_player.split(string, matrix, delimiter))
 
 
     run_time = timeit.Timer(functools.partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
@@ -106,7 +106,7 @@ def start_split(args_lib, args_tests):
         Печать количество успешных тестов и время ранинга.
     """
 
-    player_split_lib = ctypes.CDLL(args_lib)
+    lib_player = ctypes.CDLL(args_lib)
 
     total_time = 0
     total_tests = 0
@@ -116,7 +116,7 @@ def start_split(args_lib, args_tests):
         test_data = concat_strings(f)
         f.close()
 
-        time, error_code = run_split_test(test_data, DELIMITERS[i], player_split_lib)
+        time, error_code = run_split_test(test_data, DELIMITERS[i], lib_player)
         if not error_code:
             total_tests += 1
         total_time += time
