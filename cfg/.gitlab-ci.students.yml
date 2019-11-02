@@ -15,7 +15,7 @@ strgame:
     - gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o
     - gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o
   after_script:
-    - rm *.o
+    - rm -f *.o
   artifacts:
     paths:
       - ./*.so

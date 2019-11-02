@@ -176,13 +176,16 @@ RUN apk add --no-cache \
     musl-dev \
     perl \
     unzip \
+    tzdata \
     \
+    && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
+    && echo "Europe/Moscow" > /etc/timezone \
     && git clone https://github.com/linux-test-project/lcov \
     && cd lcov/ \
     && make install \
     && cd .. \
-    && rm -rf lcov/
-RUN mkdir /IU7Games
+    && rm -rf lcov/ \
+    && mkdir /IU7Games
 COPY ./IU7Games /IU7Games
 COPY ./std_strtok_lib.so /usr/lib/
 
