@@ -98,7 +98,7 @@ def get_artifacts(project, success_job):
 
     with open(ziparts, "wb") as f:
         job.artifacts(streamed=True, action=f.write)
-    subprocess.run(["unzip", "-bo", ziparts])
+    subprocess.run(["unzip", "-boq", ziparts])
     os.unlink(ziparts)
 
 
