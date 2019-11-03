@@ -30,7 +30,7 @@ codestyle:
   stage: test
   image: hackfeed/iu7games
   script:
-    - pylint --exit-zero $(find ./ - name \*.py) > pylintlog.log
+    - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.log
     - anybadge --label=pylint --value=$(ack -o '\b\d{1,2}\.\d{2}(?=\/10$)' pylintlog.log)
       --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
   artifacts:
