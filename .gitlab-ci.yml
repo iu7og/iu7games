@@ -11,7 +11,7 @@ build:
   image: hackfeed/iu7games
   script:
     - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
-    - anybadge -l pylint -v $(grep -Po '\b\d{1,2}\.\d{2}(?=\/10 )' pylintlog.txt) \
+    - anybadge -l pylint -v $(grep -Po '\b\d{1,2}\.\d{2}(?=\/10 )' pylintlog.txt)
       -f pylint.svg 2=red 4=orange 8=yellow 10=green
   artifacts:
     paths:
