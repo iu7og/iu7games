@@ -30,8 +30,8 @@ codestyle:
   stage: test
   image: hackfeed/iu7games
   script:
-    - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
-    - anybadge --label=pylint --value=$(ack -o '\b\d{1,2}\.\d{2}(?=\/10$)' pylintlog.txt)
+    - pylint --exit-zero $(find ./ - name \*.py) > pylintlog.log
+    - anybadge --label=pylint --value=$(ack -o '\b\d{1,2}\.\d{2}(?=\/10$)' pylintlog.log)
       --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
   artifacts:
     paths:
@@ -44,13 +44,13 @@ deploy_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/worker.py STRgame iu7-cprog-labs-2019 > log.txt
+    - PYTHONPATH='.' python worker/worker.py STRgame iu7-cprog-labs-2019 > log.log
   after_script:
     - rm -f *.so
   artifacts:
     name: log
     paths:
-      - ./log.txt
+      - ./log.log
   only:
     refs:
       - master
