@@ -11,9 +11,9 @@ badges:
   image: hackfeed/iu7games
   script:
     - anybadge --label=docker
-      --value=$(wget -q https':'//registry.hub.docker.com/v1/repositories/hackfeed/iu7games/tags -O -  |
+      --value=$(wget -q https://registry.hub.docker.com/v1/repositories/hackfeed/iu7games/tags -O -  |
       sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  |
-      awk -F':'' '{print $3}' | awk 'END{print}') --file=docker.svg --color=#0000FF
+      awk -F':'' '{print $3}' | awk 'END{print}') --file=docker.svg -o --color=#0000FF
   artifacts:
     paths:
       - docker.svg
@@ -32,7 +32,7 @@ codestyle:
   script:
     - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
     - anybadge --label=pylint --value=$(ack -o -1 '\d{1,2}\.\d{2}(?=\/10)' pylintlog.txt)
-      --file=pylint.svg 2=red 4=orange 8=yellow 10=green
+      --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
   artifacts:
     paths:
       - pylint*
