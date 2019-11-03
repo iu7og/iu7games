@@ -25,5 +25,4 @@ deploy_strgame:
     paths:
       - ./log.txt
   only:
-    refs:
-      - master
+    - schedules
