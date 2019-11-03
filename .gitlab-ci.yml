@@ -6,12 +6,11 @@ stages:
 before_script:
   - pip3 install -r cfg/requirements.txt
 
-build:
-  stage: build
+codestyle:
+  stage: test
   image: hackfeed/iu7games
   script:
-    - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
-    - anybadge --value=$(grep -Po "\b\d{1,2}\.\d{2}(?=\/10 )" pylintlog.txt)
+    - anybadge --value=$(pylint --exit-zero $(find ./ -name \*.py) | grep -Po "\b\d{1,2}\.\d{2}(?=\/10 )")
       --file=pylint.svg pylint
   artifacts:
     paths:
