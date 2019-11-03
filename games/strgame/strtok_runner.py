@@ -120,6 +120,8 @@ def start_strtok(args_lib, args_tests):
 
     lib_player = ctypes.CDLL(args_lib)
     libc = ctypes.CDLL("libc.so.6")
+    libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
+    lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
 
     total_time = 0
     total_tests = 0
