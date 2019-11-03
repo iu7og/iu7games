@@ -10,7 +10,14 @@ build:
   stage: build
   image: hackfeed/iu7games
   script:
-    - pylint -E $(find ./ -name \*.py)
+    - pylint $(find ./ -name \*.py) > pylintlog.txt
+    - export LINT=$(grep -Po '\b\d{1,2}\.\d{2}(?=\/10 )' pylintlog.txt)
+    - anybadge -l pylint -v $LINT -f pylint.svg 2=red 4=orange 8=yellow 10=green
+  artifacts:
+    paths:
+      - pylint*
+    when: always
+    expire_in: 30 days
 
 deploy_strgame:
   stage: deploy
@@ -25,4 +32,5 @@ deploy_strgame:
     paths:
       - ./log.txt
   only:
-    - schedules
+    refs:
+      - master
