@@ -176,10 +176,10 @@ RUN apk add --no-cache \
     musl-dev \
     perl \
     pcre \
+    ack \
     unzip \
     tzdata \
     \
-    && apk add grep \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone \
     && git clone https://github.com/linux-test-project/lcov \
