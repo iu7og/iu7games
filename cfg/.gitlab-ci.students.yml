@@ -12,10 +12,10 @@ strgame:
   stage: build
   image: hackfeed/iu7games
   script:
-    - gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c
-    - gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c
-    - gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o
-    - gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o
+    - gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c || true
+    - gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c || true
+    - gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o || true
+    - gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o || true
   after_script:
     - rm -f *.o
   artifacts:
