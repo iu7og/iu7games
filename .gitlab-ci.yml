@@ -44,13 +44,14 @@ deploy_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/worker.py STRgame iu7-cprog-labs-2019 > log.log
+    - PYTHONPATH='.' python worker/worker.py STRgame iu7-cprog-labs-2019 > deploylog.txt
   after_script:
     - rm -f *.so
   artifacts:
-    name: log
     paths:
-      - ./log.log
+      - deploylog.txt
+    when: always
+    expire_in: 30 days
   only:
     refs:
       - master
