@@ -30,9 +30,9 @@ codestyle:
   stage: test
   image: hackfeed/iu7games
   script:
-    - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.log
-    - anybadge --label=pylint --value=$(ack -o '\b\d{1,2}\.\d{2}(?=\/10$)' pylintlog.log)
-      --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
+    - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
+    - SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' pylintlog.txt)
+    - anybadge --label=pylint --value=$score --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
   artifacts:
     paths:
       - pylint*
