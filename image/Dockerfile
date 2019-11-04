@@ -175,6 +175,8 @@ RUN apk add --no-cache \
     gcc \
     musl-dev \
     perl \
+    pcre \
+    ack \
     unzip \
     tzdata \
     \

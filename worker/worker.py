@@ -1,17 +1,16 @@
 """ Worker for IU7Games project. """
 
 
-import gitlab
 import os
 import subprocess
 import argparse
-import sys
-
 from datetime import datetime
+
+import gitlab
 from games.strgame import split_runner, strtok_runner
 
 
-def create_page(instance, project, title, content):
+def create_page(project, title, content):
     """ Create Wiki page. """
 
     project.wikis.create(
@@ -22,7 +21,7 @@ def create_page(instance, project, title, content):
     )
 
 
-def update_page(instance, project, page_slug, title, content):
+def update_page(project, page_slug, title, content):
     """ Update Wiki page. """
 
     page = project.wikis.get(page_slug)
@@ -31,7 +30,7 @@ def update_page(instance, project, page_slug, title, content):
     page.save()
 
 
-def delete_page(instance, project, page_slug):
+def delete_page(project, page_slug):
     """ Delete Wiki page. """
 
     page = project.wikis.get(page_slug)
@@ -78,15 +77,15 @@ def get_project(instance, group, name):
 def get_last_success_job(project, ref):
     """ Get project's last success job by ref name. """
 
-    job = None
+    success_job = None
 
     jobs = project.jobs.list(all=True, ref=ref)
-    for jb in jobs:
-        if jb.status == "success" and jb.ref == ref:
-            job = jb
+    for job in jobs:
+        if job.status == "success" and job.ref == ref:
+            success_job = job
             break
 
-    return job
+    return success_job
 
 
 def get_artifacts(project, success_job):
@@ -96,13 +95,13 @@ def get_artifacts(project, success_job):
 
     ziparts = job.user.get("username") + ".zip"
 
-    with open(ziparts, "wb") as f:
-        job.artifacts(streamed=True, action=f.write)
+    with open(ziparts, "wb") as file:
+        job.artifacts(streamed=True, action=file.write)
     subprocess.run(["unzip", "-boq", ziparts])
     os.unlink(ziparts)
 
 
-def update_wiki(instance, project, game, results):
+def update_wiki(project, game, results):
     """ Update Wiki pages with new games results. """
 
     games = {
@@ -119,10 +118,10 @@ def update_wiki(instance, project, game, results):
             "**STRTOK Тесты**|**STRTOK Время**|\n" \
             "|---|---|---|---|---|---|\n"
 
-        for student in range(len(results)):
+        for student in results:
             res += "|{0}|{1}|{2}|{3}|{4}|{5}|\n".format(
-                results[student][0], results[student][1], results[student][2],
-                results[student][3], results[student][4], results[student][5])
+                student[0], student[1], student[2],
+                student[3], student[4], student[5])
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -131,7 +130,7 @@ def update_wiki(instance, project, game, results):
 
     for key in games_keys:
         if game in key:
-            update_page(instance, project, games.get(key), key, res)
+            update_page(project, games.get(key), key, res)
 
 
 def start_competition(game, group_name):
@@ -180,7 +179,7 @@ def start_competition(game, group_name):
     else:
         pass
 
-    update_wiki(gl, iu7games, game, results)
+    update_wiki(iu7games, game, results)
 
 
 if __name__ == "__main__":
