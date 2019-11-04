@@ -159,15 +159,23 @@ def start_competition(game, group_name):
         for data in results:
             print(data[0] + ":")
 
-            lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
-            test_path = os.path.abspath("/IU7Games/STRgame/tests/split")
-            split_res = split_runner.start_split(lib_path, test_path)
+            try:
+                lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
+                test_path = os.path.abspath("/IU7Games/STRgame/tests/split")
+                split_res = split_runner.start_split(lib_path, test_path)
+            except OSError:
+                split_res = (0, "Отсутствует стратегия")
+
             data.append(str(split_res[0]) + "/20")
             data.append(split_res[1])
 
-            lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
-            test_path = os.path.abspath("/IU7Games/STRgame/tests/strtok")
-            strtok_res = strtok_runner.start_strtok(lib_path, test_path)
+            try:
+                lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
+                test_path = os.path.abspath("/IU7Games/STRgame/tests/strtok")
+                strtok_res = strtok_runner.start_strtok(lib_path, test_path)
+            except OSError:
+                strtok_res = (0, "Отсутствует стратегия")
+
             data.append(str(strtok_res[0]) + "/20")
             data.append(strtok_res[1])
 
@@ -182,11 +190,18 @@ def start_competition(game, group_name):
     update_wiki(iu7games, game, results)
 
 
-if __name__ == "__main__":
+def add_args():
+    """ Add command line arguments to agent. """
+
     parser = argparse.ArgumentParser()
     parser.add_argument("game", help="Select a game to be played")
     parser.add_argument(
         "group_name", help="Select a GitLab group name to be searched")
     args = parser.parse_args()
 
-    start_competition(args.game, args.group_name)
+    return args
+
+
+if __name__ == "__main__":
+    ARGS = add_args()
+    start_competition(ARGS.game, ARGS.group_name)
