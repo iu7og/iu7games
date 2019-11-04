@@ -32,7 +32,7 @@ codestyle:
   script:
     - pylint --exit-zero $(find ./ -name \*.py) > pylintlog.txt
     - SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' pylintlog.txt)
-    - anybadge --label=pylint --value=$score --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
+    - anybadge --label=pylint --value=$SCORE --file=pylint.svg -o 2=red 4=orange 8=yellow 10=green
   artifacts:
     paths:
       - pylint*
