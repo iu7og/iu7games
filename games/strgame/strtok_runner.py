@@ -151,8 +151,10 @@ def start_strtok(args_lib, args_tests):
     libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
 
-    total_tests, total_time = runner(args_tests, \
-        partial(run_strtok_test, DELIMITERS, [lib_player, libc]))
+    total_tests, total_time = runner(
+        args_tests,
+        partial(run_strtok_test, DELIMITERS, [lib_player, libc])
+    )
 
     print("STRTOK TESTS:", total_tests, "/ 20 TIME:", total_time)
     return total_tests, total_time
