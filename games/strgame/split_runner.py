@@ -18,7 +18,7 @@
 import timeit
 import ctypes
 from functools import partial
-from strtok_runner import runner
+from games.strgame.strtok_runner import runner
 
 OK = 0
 INCORRECT_LEN = 1
@@ -59,8 +59,11 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
     if player_size != len(correct_strings_array):
         return INCORRECT_LEN
 
-    player_strings_array = list(map(lambda x: x.value.decode(ENCODING), player_strings_array))
-    if player_strings_array != correct_strings_array:
+    correct_strings_array = [correct_strings_array[i] \
+        for i in range(len(correct_strings_array)) \
+        if correct_strings_array[i] != player_strings_array[i].value.decode(ENCODING)]
+
+    if correct_strings_array:
         return INCORRECT_TEST
 
     return OK
