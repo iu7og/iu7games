@@ -104,6 +104,24 @@ def get_artifacts(project, success_job):
     os.unlink(zip_arts)
 
 
+def by_split(student):
+    """ Key to sort by split results. """
+
+    if isinstance(student[3], float):
+        return student[3]
+    else:
+        return 100.0
+
+
+def by_strtok(student):
+    """ Key to sort by strtok results. """
+
+    if isinstance(student[5], float):
+        return student[5]
+    else:
+        return 100.0
+
+
 def update_wiki(project, game, results):
     """ Update Wiki pages with new games results. """
 
@@ -114,17 +132,32 @@ def update_wiki(project, game, results):
     }
     games_keys = games.keys()
 
-    res = None
+    res = ""
 
     if game == "STRgame":
-        res = "|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|**SPLIT Время**|" \
-            "**STRTOK Тесты**|**STRTOK Время**|\n" \
-            "|---|---|---|---|---|---|\n"
+        head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
+            "**SPLIT Время**|**STRTOK Тесты**|**STRTOK Время**|\n" \
+            "|---|---|---|---|---|---|---|\n"
 
-        for student in results:
-            res += "|{0}|{1}|{2}|{3}|{4}|{5}|\n".format(
-                student[0], student[1], student[2],
+        res += "# По SPLIT\n\n" + head
+
+        num = 1
+        sorted_split = sorted(results, key=by_split)
+        for student in sorted_split:
+            res += "|{0}|{1}|{2}|{3}|{4}|{5}|{6}|\n".format(
+                num, student[0], student[1], student[2],
                 student[3], student[4], student[5])
+            num += 1
+
+        res += "\n# По STRTOK\n\n" + head
+
+        num = 1
+        sorted_strtok = sorted(results, key=by_strtok)
+        for student in sorted_strtok:
+            res += "|{0}|{1}|{2}|{3}|{4}|{5}|{6}|\n".format(
+                num, student[0], student[1], student[2],
+                student[3], student[4], student[5])
+            num += 1
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -171,6 +204,7 @@ def start_competition(game, group_name):
 
             data.append(str(split_res[0]) + "/20")
             data.append(split_res[1])
+            
 
             try:
                 lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
