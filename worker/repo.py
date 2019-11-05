@@ -66,7 +66,7 @@ def get_artifacts(project, success_job):
     try:
         with open(zip_arts, "wb") as file:
             job.artifacts(streamed=True, action=file.write)
-        subprocess.run(["unzip", "-qo", zip_arts])
+        subprocess.run(["unzip", "-qo", zip_arts], check=True)
     except gitlab.exceptions.GitlabGetError:
         pass
     os.unlink(zip_arts)
