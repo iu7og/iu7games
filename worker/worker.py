@@ -93,12 +93,15 @@ def get_artifacts(project, success_job):
 
     job = project.jobs.get(success_job.id)
 
-    ziparts = job.user.get("username") + ".zip"
+    zip_arts = job.user.get("username") + ".zip"
 
-    with open(ziparts, "wb") as file:
-        job.artifacts(streamed=True, action=file.write)
-    subprocess.run(["unzip", "-boq", ziparts])
-    os.unlink(ziparts)
+    try:
+        with open(zip_arts, "wb") as file:
+            job.artifacts(streamed=True, action=file.write)
+        subprocess.run(["unzip", "-boq", zip_arts])
+    except gitlab.exceptions.GitlabGetError:
+        pass
+    os.unlink(zip_arts)
 
 
 def update_wiki(project, game, results):
