@@ -61,8 +61,9 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
             return INCORRECT_LEN
 
     for string in correct_strings_array:
-        if string != player_strings_array[0].value.decode(ENCODING):
-            return INCORRECT_TEST
+            if string != player_strings_array[0].value.decode(ENCODING):
+        return INCORRECT_TEST
+        
         player_strings_array.pop(0)
 
     return OK
