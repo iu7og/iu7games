@@ -129,7 +129,7 @@ def runner(args_tests, tests_runner, delims=None):
     total_tests = 0
 
     for i in range(NUMBER_OF_TESTS):
-        file = open(args_tests + "/test_" + str(i + 1) + ".txt", "r")
+        file = open(args_tests + "/test_" + str((i % 20) + 1) + ".txt", "r")
         test_data = concat_strings(file)
         file.close()
 
