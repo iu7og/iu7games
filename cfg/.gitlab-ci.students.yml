@@ -2,6 +2,8 @@ stages:
   - build
 
 variables:
+  COMPILE_FLAGS: -Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual
+    -Wconversion  -Wenum-compare -Wfloat-equal  -Wredundant-decls -Wsign-conversion -c
   XOGAME_PATH: XOgame/
   STRGAME_PATH: STRgame/
   TEEN48GAME_PATH: TEEN48game/
@@ -10,10 +12,18 @@ strgame:
   stage: build
   image: hackfeed/iu7games
   script:
-    - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c
-    - gcc -Wall -Werror -c -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c
-    - gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o
-    - gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o
+    - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c ];
+      then gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c;
+      fi
+    - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c ];
+      then gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c;
+      fi
+    - if [ -e ${GITLAB_USER_LOGIN}_split.o ];
+      then gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o;
+      fi
+    - if [ -e ${GITLAB_USER_LOGIN}_strtok.o ];
+      then gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o;
+      fi
   after_script:
     - rm -f *.o
   artifacts:
