@@ -18,10 +18,10 @@ strgame:
     - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c ];
       then gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c;
       fi
-    - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.o ];
+    - if [ -e ${GITLAB_USER_LOGIN}_split.o ];
       then gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o;
       fi
-    - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.o ];
+    - if [ -e ${GITLAB_USER_LOGIN}_strtok.o ];
       then gcc -shared -o ${GITLAB_USER_LOGIN}_strtok_lib.so ${GITLAB_USER_LOGIN}_strtok.o;
       fi
   after_script:
