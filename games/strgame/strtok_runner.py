@@ -13,7 +13,9 @@
 """
 
 
-import timeit, functools, ctypes, argparse
+import timeit
+import ctypes
+from functools import partial, reduce
 
 OK = 0
 INVALID_PTR = 1
@@ -25,6 +27,16 @@ NULL = 0
 
 DELIMITERS = " ,.;:"
 
+
+def concat_strings(file):
+    """
+        Склеивание каждой строки файла в одну единственную строку
+        и удаление символов окончания строки.
+    """
+
+    return reduce(lambda x, y: x + y[:-1], file)
+
+
 def check_strtok_correctness(player_ptr, correct_ptr):
     """
         Проверка корректности возвращаемого указателя
@@ -35,20 +47,11 @@ def check_strtok_correctness(player_ptr, correct_ptr):
     if not player_ptr and correct_ptr:
         return INVALID_PTR
 
-    if player_ptr.value != None:
+    if player_ptr.value is not None:
         if player_ptr.value.decode(ENCODING) != correct_ptr.value.decode(ENCODING):
             return INVALID_PTR
 
     return OK
-
-
-def concat_strings(f):
-    """
-        Склеивание каждой строки файла в одну единственную строку
-        и удаление символов окончания строки.
-    """
-
-    return functools.reduce(lambda x, y: x + y[:-1], f)
 
 
 def create_c_objects(bytes_string, delimiters):
@@ -82,7 +85,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
     def timeit_wrapper(c_pointer, c_delimiters):
         pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
 
-    run_time = timeit.Timer(functools.partial(timeit_wrapper, c_string_player, c_delimiters_string))
+    run_time = timeit.Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
     time = run_time.timeit(TEST_REPEAT)
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
@@ -94,7 +97,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
     return time, error_code, ctypes.cast(std_ptr, ctypes.c_char_p)
 
 
-def run_strtok_test(test_data, delimiters, libs):
+def run_strtok_test(delimiters, libs, test_data):
     """
         Запуск функций strtok, пока исходная строка не будет
         полностью уничтожена (ф-я вернёт NULL).
@@ -104,18 +107,47 @@ def run_strtok_test(test_data, delimiters, libs):
     c_delimiters_string, c_string, c_string_player = \
         create_c_objects(bytes_string, delimiters.encode(ENCODING))
 
-    total_time, error_code, std_ptr = strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
-    while std_ptr.value != None and not error_code:
+    total_time, error_code, std_ptr = \
+        strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
+    while std_ptr.value is not None and not error_code:
         time, error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
         total_time += time
 
     return total_time, error_code
 
 
+def runner(args_tests, tests_runner, delims=None):
+    """
+        Функция на вход принимает дирректорию папку с тестами,
+        функцию, запускающую тесты для strtok или split.
+        У deilms есть дефолтное значение, в случае
+        если этот аргумент не передан (в strtok он не нужен)
+        Суть функции: загружает файлы с тестами и запускает их.
+    """
+
+    total_time = 0
+    total_tests = 0
+
+    for i in range(NUMBER_OF_TESTS):
+        file = open(args_tests + "/test_" + str(i + 1) + ".txt", "r")
+        test_data = concat_strings(file)
+        file.close()
+
+        if delims is not None:
+            time, error_code = tests_runner(test_data, delims[i])
+        else:
+            time, error_code = tests_runner(test_data)
+
+        if not error_code:
+            total_tests += 1
+        total_time += time
+
+    return total_tests, total_time
+
+
 def start_strtok(args_lib, args_tests):
     """
-        Открытие файлов с тестами и запуск strtok.
-        Печать количества успешных тестов и время ранинга.
+        Открытие библиотек, запуск ранера, печать резултатов
     """
 
     lib_player = ctypes.CDLL(args_lib)
@@ -123,20 +155,10 @@ def start_strtok(args_lib, args_tests):
     libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
 
-    total_time = 0
-    total_tests = 0
-
-    for i in range(NUMBER_OF_TESTS):
-        f = open(args_tests + "/test_" + str(i + 1) + ".txt",  "r")
-        test_data = concat_strings(f)
-        f.close()
-
-        time, error_code = run_strtok_test(test_data, DELIMITERS, \
-            [lib_player, libc])
-
-        if not error_code:
-            total_tests += 1
-        total_time += time
+    total_tests, total_time = runner(
+        args_tests,
+        partial(run_strtok_test, DELIMITERS, [lib_player, libc])
+    )
 
     print("STRTOK TESTS:", total_tests, "/ 20 TIME:", total_time)
     return total_tests, total_time
