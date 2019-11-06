@@ -15,18 +15,18 @@ IU7GAMES_ID = 2546
 def start_competition(game, group_name):
     """ Start competition with collected strategies. """
 
-    glab = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
-    glab.auth()
+    git_inst = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
+    git_inst.auth()
 
-    group = worker.repo.get_group(glab, group_name)
-    projects = worker.repo.get_group_projects(glab, group)
+    group = worker.repo.get_group(git_inst, group_name)
+    projects = worker.repo.get_group_projects(git_inst, group)
 
-    iu7games = glab.projects.get(IU7GAMES_ID)
+    iu7games = git_inst.projects.get(IU7GAMES_ID)
 
     results = []
 
     for prj in projects:
-        project = worker.repo.get_project(glab, group, prj.name)
+        project = worker.repo.get_project(git_inst, group, prj.name)
         job = worker.repo.get_last_success_job(project, game)
 
         if job is not None:
