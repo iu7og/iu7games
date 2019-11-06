@@ -175,8 +175,6 @@ RUN apk add --no-cache \
     gcc \
     musl-dev \
     perl \
-    pcre \
-    ack \
     unzip \
     tzdata \
     \
@@ -186,8 +184,6 @@ RUN apk add --no-cache \
     && cd lcov/ \
     && make install \
     && cd .. \
-    && rm -rf lcov/ \
-    && mkdir /IU7Games
-COPY ./IU7Games /IU7Games
+    && rm -rf lcov/
 
 CMD ["bash"]
