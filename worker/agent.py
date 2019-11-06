@@ -43,8 +43,7 @@ def start_competition(game, group_name):
 
             try:
                 lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
-                test_path = os.path.abspath(
-                    "image/IU7Games/STRgame/tests/split")
+                test_path = os.path.abspath("games/strgame/tests/split")
                 split_res = split_runner.start_split(lib_path, test_path)
             except OSError:
                 split_res = (0, "Отсутствует стратегия")
@@ -54,8 +53,7 @@ def start_competition(game, group_name):
 
             try:
                 lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
-                test_path = os.path.abspath(
-                    "image/IU7Games/STRgame/tests/strtok")
+                test_path = os.path.abspath("games/strgame/tests/strtok")
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
             except OSError:
                 strtok_res = (0, "Отсутствует стратегия")
