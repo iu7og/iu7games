@@ -3,10 +3,10 @@
 
 from datetime import datetime
 
-STRGAME_TABLE = 7
+STRG_TABLE_WIDTH = 7
 
-SPLIT_COL = 3
-STRTOK_COL = 5
+SPLIT_RES_COL = 3
+STRTOK_RES_COL = 5
 NO_RESULT = 100.0
 
 
@@ -40,8 +40,8 @@ def delete_page(project, page_slug):
 def by_split(student):
     """ Key to sort by split results. """
 
-    if isinstance(student[SPLIT_COL], float):
-        return student[SPLIT_COL]
+    if isinstance(student[SPLIT_RES_COL], float):
+        return student[SPLIT_RES_COL]
 
     return NO_RESULT
 
@@ -49,8 +49,8 @@ def by_split(student):
 def by_strtok(student):
     """ Key to sort by strtok results. """
 
-    if isinstance(student[STRTOK_COL], float):
-        return student[STRTOK_COL]
+    if isinstance(student[STRTOK_RES_COL], float):
+        return student[STRTOK_RES_COL]
 
     return NO_RESULT
 
@@ -91,10 +91,10 @@ def update_wiki(project, game, results):
             "|---|---|---|---|---|---|---|\n"
 
         sorted_split = sorted(results, key=by_split)
-        res += print_table(head, split_theme, STRGAME_TABLE, sorted_split)
+        res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
 
         sorted_strtok = sorted(results, key=by_strtok)
-        res += print_table(head, strtok_theme, STRGAME_TABLE, sorted_strtok)
+        res += print_table(head, strtok_theme, STRG_TABLE_WIDTH, sorted_strtok)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
