@@ -9,6 +9,9 @@ import worker.repo
 from games.strgame import split_runner, strtok_runner
 
 
+IU7GAMES_ID = 2546
+
+
 def start_competition(game, group_name):
     """ Start competition with collected strategies. """
 
@@ -18,7 +21,7 @@ def start_competition(game, group_name):
     group = worker.repo.get_group(glab, group_name)
     projects = worker.repo.get_group_projects(glab, group)
 
-    iu7games = glab.projects.get(2546)
+    iu7games = glab.projects.get(IU7GAMES_ID)
 
     results = []
 
