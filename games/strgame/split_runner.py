@@ -56,8 +56,7 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
         значения тестируемой функции split.
     """
 
-    if player_size != len(correct_strings_array) or \
-            len(player_strings_array) != len(correct_strings_array):
+    if player_size != len(correct_strings_array):
         return INCORRECT_LEN
 
     for string in correct_strings_array:
