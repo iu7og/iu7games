@@ -24,8 +24,8 @@ OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-NUMBER_OF_TESTS = 20
 TEST_REPEAT = 1
+NUMBER_OF_STARTS = 1
 ENCODING = "utf-8"
 ARRAY_SIZE = 32000
 
@@ -91,7 +91,7 @@ def run_split_test(lib_player, test_data, delimiter):
 
     run_time = \
         timeit.Timer(partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
-    time = run_time.timeit(TEST_REPEAT)
+    time = run_time.timeit(NUMBER_OF_STARTS)
 
     error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
     return time, error_code
@@ -110,7 +110,7 @@ def start_split(args_lib, args_tests):
         DELIMITERS
     )
 
-    print("SPLIT TESTS:", total_tests, "/ 20 TIME:", total_time)
+    print("SPLIT TESTS:", total_tests, "/ 2000 TIME:", total_time)
     return total_tests, total_time
 
 

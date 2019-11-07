@@ -20,8 +20,9 @@ from functools import partial, reduce
 OK = 0
 INVALID_PTR = 1
 
+TESTS_REPEATS = 2000
 NUMBER_OF_TESTS = 20
-TEST_REPEAT = 1
+NUMBER_OF_STARTS = 1
 ENCODING = "utf-8"
 NULL = 0
 
@@ -86,7 +87,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
 
     run_time = timeit.Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
-    time = run_time.timeit(TEST_REPEAT)
+    time = run_time.timeit(NUMBER_OF_STARTS)
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
     player_ptr = pointer_buffer[0]
@@ -109,6 +110,7 @@ def run_strtok_test(delimiters, libs, test_data):
 
     total_time, error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
+
     while std_ptr.value is not None and not error_code:
         time, error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
         total_time += time
@@ -128,8 +130,8 @@ def runner(args_tests, tests_runner, delims=None):
     total_time = 0
     total_tests = 0
 
-    for i in range(NUMBER_OF_TESTS):
-        file = open(args_tests + "/test_" + str((i % 20) + 1) + ".txt", "r")
+    for i in range(TESTS_REPEATS):
+        file = open(args_tests + "/test_" + str((i % NUMBER_OF_TESTS) + 1) + ".txt", "r")
         test_data = concat_strings(file)
         file.close()
 
