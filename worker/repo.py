@@ -5,6 +5,10 @@ import os
 import subprocess
 import gitlab
 
+COLLECTED = 1
+BAD_REQUEST = 2
+BAD_CALL = 3
+
 
 def get_group(instance, name):
     """ Get group by it's name. """
@@ -43,30 +47,30 @@ def get_project(instance, group, name):
     return project
 
 
-def get_last_success_job(project, ref):
-    """ Get project's last success job by ref name. """
+def get_last_job(project, ref):
+    """ Get project's last job by ref name. """
 
-    success_job = None
+    job = project.jobs.list(all=True, ref=ref)[0]
 
-    jobs = project.jobs.list(all=True, ref=ref)
-    for job in jobs:
-        if job.status == "success" and job.ref == ref:
-            success_job = job
-            break
-
-    return success_job
+    return job
 
 
-def get_artifacts(project, success_job):
-    """ Get success job's artifacts. """
+def get_artifacts(project, job):
+    """ Get job's artifacts. """
 
-    job = project.jobs.get(success_job.id)
+    job = project.jobs.get(job.id)
     zip_arts = job.user.get("username") + ".zip"
 
-    try:
-        with open(zip_arts, "wb") as file:
-            job.artifacts(streamed=True, action=file.write)
-        subprocess.run(["unzip", "-qo", zip_arts], check=True)
-    except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
-        pass
-    os.unlink(zip_arts)
+    if job.status == "success":
+        try:
+            with open(zip_arts, "wb") as file:
+                job.artifacts(streamed=True, action=file.write)
+            subprocess.run(["unzip", "-qo", zip_arts], check=True)
+        except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
+            return BAD_CALL
+
+        os.unlink(zip_arts)
+
+        return COLLECTED
+
+    return BAD_REQUEST
