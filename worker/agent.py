@@ -47,7 +47,7 @@ def start_competition(game, group_name):
             if status == worker.repo.COLLECTED:
                 print("ARTIFACTS FOR " + user_result[1] + " ARE COLLECTED")
             elif status == worker.repo.BAD_REQUEST:
-                print("THERE ARE FAILED JOB FOR " + user_result[1])
+                print("THERE IS FAILED JOB FOR " + user_result[1])
             elif status == worker.repo.BAD_CALL:
                 print("THERE ARE NO ARTIFACTS FOR " + user_result[1])
         else:
