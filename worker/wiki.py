@@ -60,9 +60,12 @@ def print_table(head, theme, columns, results):
 
     res = theme + head
 
+    prize = {1: "🥇", 2: "🥈", 3: "🥉"}
+
     num = 1
     for student in results:
-        res += "|{0}|".format(num)
+        place = prize.setdefault(num, num)
+        res += "|{0}|".format(place)
         for field in range(columns - 1):
             res += "{0}|".format(student[field])
         num += 1
