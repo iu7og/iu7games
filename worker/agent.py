@@ -24,17 +24,36 @@ def start_competition(game, group_name):
 
     results = []
 
+    print("START ARTIFACTS COLLECTION")
+
     for prj in projects:
         project = worker.repo.get_project(GIT_INST, group, prj.name)
-        job = worker.repo.get_last_success_job(project, game)
+        job = worker.repo.get_last_job(project, game)
 
-        if job is not None:
-            user_result = [
-                job.user.get("name"),
-                "@" + job.user.get("username")
-            ]
+        developer = None
+        members = project.members.list(all=True)
+
+        for mmbr in members:
+            member = project.members.get(mmbr.id)
+            if member.access_level == gitlab.DEVELOPER_ACCESS:
+                developer = member
+                break
+
+        if developer is not None:
+            user_result = [developer.name, "@" + developer.username]
             results.append(user_result)
-            worker.repo.get_artifacts(project, job)
+            status = worker.repo.get_artifacts(project, job)
+
+            if status == worker.repo.COLLECTED:
+                print("ARTIFACTS FOR " + user_result[1] + " ARE COLLECTED")
+            elif status == worker.repo.BAD_REQUEST:
+                print("THERE ARE FAILED JOB FOR " + user_result[1])
+            elif status == worker.repo.BAD_CALL:
+                print("THERE ARE NO ARTIFACTS FOR " + user_result[1])
+        else:
+            print("THERE IS NO DEVELOPER FOR " + project.name)
+
+    print("FINISH ARTIFACTS COLLECTION")
 
     if game == "STRgame":
         print("STRGAME RESULTS\n")
