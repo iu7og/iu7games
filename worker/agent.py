@@ -53,7 +53,7 @@ def start_competition(game, group_name):
         else:
             print("THERE IS NO DEVELOPER FOR " + project.name)
 
-    print("FINISH ARTIFACTS COLLECTION")
+    print("FINISH ARTIFACTS COLLECTION\n")
 
     if game == "STRgame":
         print("STRGAME RESULTS\n")
