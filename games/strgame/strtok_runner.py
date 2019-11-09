@@ -15,26 +15,16 @@
 
 import timeit
 import ctypes
-from functools import partial, reduce
+from functools import partial
+from games.strgame.runner import runner
 
 OK = 0
 INVALID_PTR = 1
 
-NUMBER_OF_TESTS = 20
-TEST_REPEAT = 1
+TIMEIT_REPEAT = 1
+DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
-
-DELIMITERS = " ,.;:"
-
-
-def concat_strings(file):
-    """
-        Склеивание каждой строки файла в одну единственную строку
-        и удаление символов окончания строки.
-    """
-
-    return reduce(lambda x, y: x + y[:-1], file)
 
 
 def check_strtok_correctness(player_ptr, correct_ptr):
@@ -76,8 +66,8 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         Сравнение возвращаемых результатов этих функций.
         Замеры времени ранинга с помощью timeit.
 
-        libs[0] - lib_player
-        libs[1] - libc
+        libs[0] - lib_player (библиотека с функцией игрока)
+        libs[1] - libc (стандартная бибилотека СИ)
     """
 
     pointer_buffer = []
@@ -86,7 +76,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
 
     run_time = timeit.Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
-    time = run_time.timeit(TEST_REPEAT)
+    time = run_time.timeit(TIMEIT_REPEAT)
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
     player_ptr = pointer_buffer[0]
@@ -109,6 +99,7 @@ def run_strtok_test(delimiters, libs, test_data):
 
     total_time, error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
+
     while std_ptr.value is not None and not error_code:
         time, error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
         total_time += time
@@ -116,38 +107,9 @@ def run_strtok_test(delimiters, libs, test_data):
     return total_time, error_code
 
 
-def runner(args_tests, tests_runner, delims=None):
-    """
-        Функция на вход принимает дирректорию папку с тестами,
-        функцию, запускающую тесты для strtok или split.
-        У deilms есть дефолтное значение, в случае
-        если этот аргумент не передан (в strtok он не нужен)
-        Суть функции: загружает файлы с тестами и запускает их.
-    """
-
-    total_time = 0
-    total_tests = 0
-
-    for i in range(NUMBER_OF_TESTS):
-        file = open(args_tests + "/test_" + str((i % 20) + 1) + ".txt", "r")
-        test_data = concat_strings(file)
-        file.close()
-
-        if delims is not None:
-            time, error_code = tests_runner(test_data, delims[i])
-        else:
-            time, error_code = tests_runner(test_data)
-
-        if not error_code:
-            total_tests += 1
-        total_time += time
-
-    return total_tests, total_time
-
-
 def start_strtok(args_lib, args_tests):
     """
-        Открытие библиотек, запуск ранера, печать резултатов
+        Открытие библиотек, запуск ранера, печать результатов.
     """
 
     lib_player = ctypes.CDLL(args_lib)
@@ -160,7 +122,7 @@ def start_strtok(args_lib, args_tests):
         partial(run_strtok_test, DELIMITERS, [lib_player, libc])
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 20 TIME:", total_time)
+    print("STRTOK TESTS:", total_tests, "/ 2000 TIME:", total_time)
     return total_tests, total_time
 
 
