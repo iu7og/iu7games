@@ -13,10 +13,24 @@ strgame:
   image: hackfeed/iu7games
   script:
     - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c ];
-      then gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c;
+      then
+      VAR=$(sed -n 's/\(system(".*");\)/\1/p' ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c)y;
+      if [ "$VAR" != 'y' ];
+      then
+      exit 1;
+      else
+      gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_split.c;
+      fi;
       fi
     - if [ -e ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c ];
-      then gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c;
+      then
+      VAR=$(sed -n 's/\(system(".*");\)/\1/p' ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c)y;
+      if [ "$VAR" != 'y' ];
+      then
+      exit 1;
+      else
+      gcc ${COMPILE_FLAGS} -fpic ${STRGAME_PATH}${GITLAB_USER_LOGIN}_strtok.c;
+      fi;
       fi
     - if [ -e ${GITLAB_USER_LOGIN}_split.o ];
       then gcc -shared -o ${GITLAB_USER_LOGIN}_split_lib.so ${GITLAB_USER_LOGIN}_split.o;
