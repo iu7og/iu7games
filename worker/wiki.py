@@ -7,7 +7,8 @@ STRG_TABLE_WIDTH = 7
 
 SPLIT_RES_COL = 3
 STRTOK_RES_COL = 5
-NO_RESULT = 100.0
+MISSED_RESULT = 100.0
+NO_RESULT = 150.0
 
 
 def create_page(project, title, content):
@@ -43,6 +44,9 @@ def by_split(student):
     if isinstance(student[SPLIT_RES_COL], float):
         return student[SPLIT_RES_COL]
 
+    if isinstance(student[STRTOK_RES_COL], float):
+        return MISSED_RESULT
+
     return NO_RESULT
 
 
@@ -52,6 +56,9 @@ def by_strtok(student):
     if isinstance(student[STRTOK_RES_COL], float):
         return student[STRTOK_RES_COL]
 
+    if isinstance(student[SPLIT_RES_COL], float):
+        return MISSED_RESULT
+
     return NO_RESULT
 
 
@@ -60,9 +67,12 @@ def print_table(head, theme, columns, results):
 
     res = theme + head
 
+    prize = {1: "🥇", 2: "🥈", 3: "🥉"}
+
     num = 1
     for student in results:
-        res += "|{0}|".format(num)
+        place = prize.setdefault(num, num)
+        res += "|{0}|".format(place)
         for field in range(columns - 1):
             res += "{0}|".format(student[field])
         num += 1
