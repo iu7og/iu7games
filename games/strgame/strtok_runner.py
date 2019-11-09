@@ -107,18 +107,18 @@ def run_strtok_test(delimiters, libs, test_data):
     return total_time, error_code
 
 
-def start_strtok(args_lib, args_tests):
+def start_strtok(player_lib, tests_dir):
     """
         Открытие библиотек, запуск ранера, печать результатов.
     """
 
-    lib_player = ctypes.CDLL(args_lib)
+    lib_player = ctypes.CDLL(player_lib)
     libc = ctypes.CDLL("libc.so.6")
     libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
 
     total_tests, total_time = runner(
-        args_tests,
+        tests_dir,
         partial(run_strtok_test, DELIMITERS, [lib_player, libc])
     )
 
