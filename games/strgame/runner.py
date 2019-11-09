@@ -35,7 +35,7 @@ def runner(args_tests, tests_runner, delims=None):
         file.close()
 
         if delims is not None:
-            time, error_code = tests_runner(test_data, delims[i])
+            time, error_code = tests_runner(test_data, delims[i % NUMBER_OF_TESTS])
         else:
             time, error_code = tests_runner(test_data)
 
