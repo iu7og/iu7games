@@ -18,14 +18,13 @@
 import timeit
 import ctypes
 from functools import partial
-from games.strgame.strtok_runner import runner
+from games.strgame.runner import runner
 
 OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-TEST_REPEAT = 1
-NUMBER_OF_STARTS = 1
+TIMEIT_REPEAT = 1
 ENCODING = "utf-8"
 ARRAY_SIZE = 32000
 
@@ -91,7 +90,7 @@ def run_split_test(lib_player, test_data, delimiter):
 
     run_time = \
         timeit.Timer(partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
-    time = run_time.timeit(NUMBER_OF_STARTS)
+    time = run_time.timeit(TIMEIT_REPEAT)
 
     error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
     return time, error_code
