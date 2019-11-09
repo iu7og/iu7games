@@ -1,4 +1,6 @@
 """
+    strtok runner v.1.1
+
     Данный скрипт предназначен для тестирования самописной функции strtok,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
 
@@ -90,7 +92,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
 def run_strtok_test(delimiters, libs, test_data):
     """
         Запуск функций strtok, пока исходная строка не будет
-        полностью уничтожена (ф-я вернёт NULL).
+        полностью уничтожена (функция strtok вернёт NULL).
     """
 
     bytes_string = test_data.encode(ENCODING)
@@ -122,7 +124,7 @@ def start_strtok(player_lib, tests_dir):
         partial(run_strtok_test, DELIMITERS, [lib_player, libc])
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 2000 TIME:", total_time)
+    print("STRTOK TESTS:", total_tests, "/ 100 TIME:", total_time)
     return total_tests, total_time
 
 
