@@ -96,15 +96,16 @@ def run_split_test(lib_player, test_data, delimiter):
     return time, error_code
 
 
-def start_split(args_lib, args_tests):
+def start_split(player_lib, tests_dir):
     """
         Открытие файлов с тестами и запуск split.
         Печать количество успешных тестов и время ранинга.
     """
 
-    lib_player = ctypes.CDLL(args_lib)
+    lib_player = ctypes.CDLL(player_lib)
+    
     total_tests, total_time = runner(
-        args_tests,
+        tests_dir,
         partial(run_split_test, lib_player),
         DELIMITERS
     )

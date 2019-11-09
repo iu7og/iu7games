@@ -5,7 +5,7 @@
 
 from functools import reduce
 
-TESTS_REPEATS = 2000
+TESTS_REPEATS = 100
 NUMBER_OF_TESTS = 20
 
 def concat_strings(file):
