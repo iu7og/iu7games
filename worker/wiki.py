@@ -10,6 +10,7 @@ SPLIT_TESTS_COL = 2
 SPLIT_RES_COL = 3
 STRTOK_TESTS_COL = 4
 STRTOK_RES_COL = 5
+NO_RESULT = 1337
 
 
 def create_page(project, title, content):
@@ -91,9 +92,9 @@ def update_wiki(project, game, results):
             rec[SPLIT_TESTS_COL] = str(rec[SPLIT_TESTS_COL]) + "/20"
             rec[STRTOK_TESTS_COL] = str(rec[STRTOK_TESTS_COL]) + "/20"
 
-            if rec[SPLIT_RES_COL] == 1337:
+            if rec[SPLIT_RES_COL] == NO_RESULT:
                 rec[SPLIT_RES_COL] = "Отсутствует стратегия"
-            if rec[STRTOK_RES_COL] == 1337:
+            if rec[STRTOK_RES_COL] == NO_RESULT:
                 rec[STRTOK_RES_COL] = "Отсутствует стратегия"
 
         res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
