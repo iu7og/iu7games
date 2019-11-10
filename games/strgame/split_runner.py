@@ -1,4 +1,6 @@
 """
+    split runner v.1.1
+
     Данный скрипт предназначен для тестирования самописной функции split,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
 
@@ -103,14 +105,14 @@ def start_split(player_lib, tests_dir):
     """
 
     lib_player = ctypes.CDLL(player_lib)
-    
+
     total_tests, total_time = runner(
         tests_dir,
         partial(run_split_test, lib_player),
         DELIMITERS
     )
 
-    print("SPLIT TESTS:", total_tests, "/ 2000 TIME:", total_time)
+    print("SPLIT TESTS:", total_tests, "/ 100 TIME:", total_time)
     return total_tests, total_time
 
 
