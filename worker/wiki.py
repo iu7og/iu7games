@@ -1,14 +1,15 @@
 """ GitLab Wiki handling module. """
 
 
+import operator
 from datetime import datetime
 
 STRG_TABLE_WIDTH = 7
 
+SPLIT_TESTS_COL = 2
 SPLIT_RES_COL = 3
+STRTOK_TESTS_COL = 4
 STRTOK_RES_COL = 5
-MISSED_RESULT = 100.0
-NO_RESULT = 150.0
 
 
 def create_page(project, title, content):
@@ -36,30 +37,6 @@ def delete_page(project, page_slug):
 
     page = project.wikis.get(page_slug)
     page.delete()
-
-
-def by_split(student):
-    """ Key to sort by split results. """
-
-    if isinstance(student[SPLIT_RES_COL], float):
-        return student[SPLIT_RES_COL]
-
-    if isinstance(student[STRTOK_RES_COL], float):
-        return MISSED_RESULT
-
-    return NO_RESULT
-
-
-def by_strtok(student):
-    """ Key to sort by strtok results. """
-
-    if isinstance(student[STRTOK_RES_COL], float):
-        return student[STRTOK_RES_COL]
-
-    if isinstance(student[SPLIT_RES_COL], float):
-        return MISSED_RESULT
-
-    return NO_RESULT
 
 
 def print_table(head, theme, columns, results):
@@ -100,10 +77,26 @@ def update_wiki(project, game, results):
             "**SPLIT Время**|**STRTOK Тесты**|**STRTOK Время**|\n" \
             "|---|---|---|---|---|---|---|\n"
 
-        sorted_split = sorted(results, key=by_split)
-        res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
+        sorted_split = sorted(
+            results, key=operator.itemgetter(SPLIT_RES_COL))
+        sorted_split = sorted(
+            sorted_split, key=operator.itemgetter(SPLIT_TESTS_COL), reverse=True)
 
-        sorted_strtok = sorted(results, key=by_strtok)
+        sorted_strtok = sorted(
+            results, key=operator.itemgetter(STRTOK_RES_COL))
+        sorted_strtok = sorted(
+            sorted_strtok, key=operator.itemgetter(STRTOK_TESTS_COL), reverse=True)
+
+        for rec in sorted_strtok:
+            rec[SPLIT_TESTS_COL] = str(rec[SPLIT_TESTS_COL]) + "/20"
+            rec[STRTOK_TESTS_COL] = str(rec[STRTOK_TESTS_COL]) + "/20"
+
+            if rec[SPLIT_RES_COL] == 1337:
+                rec[SPLIT_RES_COL] = "Отсутствует стратегия"
+            if rec[STRTOK_RES_COL] == 1337:
+                rec[STRTOK_RES_COL] = "Отсутствует стратегия"
+
+        res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
         res += print_table(head, strtok_theme, STRG_TABLE_WIDTH, sorted_strtok)
 
     now = datetime.now()
