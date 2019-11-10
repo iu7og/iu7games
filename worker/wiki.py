@@ -11,6 +11,7 @@ SPLIT_RES_COL = 3
 STRTOK_TESTS_COL = 4
 STRTOK_RES_COL = 5
 NO_RESULT = 1337
+TEST_COEF = 5
 
 
 def create_page(project, title, content):
@@ -89,8 +90,10 @@ def update_wiki(project, game, results):
             sorted_strtok, key=operator.itemgetter(STRTOK_TESTS_COL), reverse=True)
 
         for rec in sorted_strtok:
-            rec[SPLIT_TESTS_COL] = str(rec[SPLIT_TESTS_COL]) + "/20"
-            rec[STRTOK_TESTS_COL] = str(rec[STRTOK_TESTS_COL]) + "/20"
+            rec[SPLIT_TESTS_COL] = str(
+                rec[SPLIT_TESTS_COL] // TEST_COEF) + "/20"
+            rec[STRTOK_TESTS_COL] = str(
+                rec[STRTOK_TESTS_COL] // TEST_COEF) + "/20"
 
             if rec[SPLIT_RES_COL] == NO_RESULT:
                 rec[SPLIT_RES_COL] = "Отсутствует стратегия"
