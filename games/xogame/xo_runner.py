@@ -39,40 +39,29 @@ def check_win(c_strings, symbol):
         на признак победы одного из игроков.
     """
 
-    # Проверка строк
+    # Проверка строк и столбцов
     for i in range(DIME):
-        counter = 0
+        row_counter = 0
+        column_counter = 0
         for j in range(DIME):
             if (c_strings[i].value)[j] == symbol:
-                counter += 1
-        if (counter == DIME):
-            return True
-
-    # Проверка столбцов
-    for i in range(DIME):
-        counter = 0
-        for j in range(DIME):
+                row_counter += 1
             if (c_strings[j].value)[i] == symbol:
-                counter += 1
-        if (counter == DIME):
+                column_counter += 1
+
+        if row_counter == DIME or column_counter == DIME:
             return True
 
-    # Проверка главной диагонали
-    counter = 0
+    # Проверка главной и побочной диагонали
+    main_diag_counter = 0
+    side_diag_counter = 0
     for i in range(DIME):
         if (c_strings[i].value)[i] == symbol:
-            counter += 1
-
-    if (counter == DIME):
-        return True
-
-    # Проверка побочной диагонали
-    counter = 0
-    for i in range(DIME):
+            main_diag_counter += 1
         if (c_strings[i].value)[DIME - i - 1] == symbol:
-            counter += 1
+            side_diag_counter += 1
 
-    if (counter == DIME):
+    if side_diag_counter == DIME or main_diag_counter == DIME:
         return True
 
     return False
@@ -94,10 +83,10 @@ def check_move_correctness(c_strings, move):
     """
 
     # ADD: Проверка на испорченность матрицы
-    if (move >= DIME * DIME):
+    if move >= DIME * DIME:
         return INVALID_MOVE
 
-    if ((c_strings[move // DIME].value)[move % DIME] != ASCII_SPACE):
+    if (c_strings[move // DIME].value)[move % DIME] != ASCII_SPACE:
         return INVALID_MOVE
 
     return OK
@@ -114,47 +103,38 @@ def make_move(c_strings, move, symb):
     return c_strings
 
 
-#отладка228
-"""
-def print_matr(c_strings):
-    for i in range(DIME):
-        print((c_strings[i].value))
-"""
-
-
 def xogame_round(player1_lib, player2_lib):
     """
         Запуск одного раунда игры для двух игроков.
         Каждому игроку предоставляется возможность сходить как за Х, так и за О.
     """
 
-    c_symb_X, c_symb_O, c_strings, c_battlefield = create_c_objects()
+    c_symb_x, c_symb_o, c_strings, c_battlefield = create_c_objects()
     shot_count = 0
 
-    for i in range(DIME * DIME // 2 + 1):
+    while shot_count != DIME * DIME:
         shot_count += 1
-        move = player1_lib.xogame(c_battlefield, DIME, c_symb_X)
-        if (check_move_correctness(c_strings, move)):
+        move = player1_lib.xogame(c_battlefield, DIME, c_symb_x)
+        if check_move_correctness(c_strings, move):
             return PLAYER_TWO_WIN
 
         c_strings = make_move(c_strings, move, ASCII_X)
-        if (check_win(c_strings, ASCII_X)):
+        if check_win(c_strings, ASCII_X):
             return PLAYER_ONE_WIN
 
-        if (shot_count == DIME * DIME):
+        if shot_count == DIME * DIME:
             return DRAW
 
         shot_count += 1
-        move = player2_lib.xogame(c_battlefield, DIME, c_symb_O)
-        if (check_move_correctness(c_strings, move)):
+        move = player2_lib.xogame(c_battlefield, DIME, c_symb_o)
+        if check_move_correctness(c_strings, move):
             return PLAYER_ONE_WIN
 
         c_strings = make_move(c_strings, move, ASCII_O)
-        if (check_win(c_strings, ASCII_O)):
+        if check_win(c_strings, ASCII_O):
             return PLAYER_TWO_WIN
 
-        if (shot_count == DIME * DIME):
-            return DRAW
+    return DRAW
 
 
 def scoring(points, player1_index, player2_index, result):
@@ -162,9 +142,9 @@ def scoring(points, player1_index, player2_index, result):
         Запись очков в результирующий массив очков points.
     """
 
-    if (result == PLAYER_ONE_WIN):
+    if result == PLAYER_ONE_WIN:
         points[player1_index] += WIN_POINTS
-    elif (result == PLAYER_TWO_WIN):
+    elif result == PLAYER_TWO_WIN:
         points[player2_index] += WIN_POINTS
     else:
         points[player1_index] += DRAW_POINTS

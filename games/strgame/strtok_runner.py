@@ -15,10 +15,10 @@
 """
 
 
-import timeit
 import ctypes
-from functools import partial
+import timeit
 from games.strgame.runner import runner
+from functools import partial
 
 OK = 0
 INVALID_PTR = 1
