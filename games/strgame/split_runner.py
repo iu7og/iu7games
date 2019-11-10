@@ -103,7 +103,6 @@ def start_split(player_lib, tests_dir):
     """
 
     lib_player = ctypes.CDLL(player_lib)
-    
     total_tests, total_time = runner(
         tests_dir,
         partial(run_split_test, lib_player),
