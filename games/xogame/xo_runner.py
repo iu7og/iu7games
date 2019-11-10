@@ -49,7 +49,7 @@ def check_win(c_strings, symbol):
             if (c_strings[j].value)[i] == symbol:
                 column_counter += 1
 
-        if row_counter == DIME or column_counter == DIME:
+        if DIME in (row_counter, column_counter):
             return True
 
     # Проверка главной и побочной диагонали
@@ -61,7 +61,7 @@ def check_win(c_strings, symbol):
         if (c_strings[i].value)[DIME - i - 1] == symbol:
             side_diag_counter += 1
 
-    if side_diag_counter == DIME or main_diag_counter == DIME:
+    if DIME in (side_diag_counter, main_diag_counter):
         return True
 
     return False
