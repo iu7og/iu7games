@@ -1,4 +1,6 @@
 """
+    strtok runner v.1.1
+
     Данный скрипт предназначен для тестирования самописной функции strtok,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
 
@@ -13,15 +15,14 @@
 """
 
 
-import timeit
 import ctypes
+from time import process_time
 from functools import partial
 from games.strgame.runner import runner
 
 OK = 0
 INVALID_PTR = 1
 
-TIMEIT_REPEAT = 1
 DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
@@ -70,16 +71,12 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         libs[1] - libc (стандартная бибилотека СИ)
     """
 
-    pointer_buffer = []
-
-    def timeit_wrapper(c_pointer, c_delimiters):
-        pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
-
-    run_time = timeit.Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
-    time = run_time.timeit(TIMEIT_REPEAT)
+    start_time = process_time()
+    player_ptr = libs[0].strtok(c_string_player, c_delimiters_string)
+    end_time = process_time()
+    time = end_time - start_time
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
-    player_ptr = pointer_buffer[0]
 
     error_code = check_strtok_correctness(ctypes.cast(player_ptr, ctypes.c_char_p), \
         ctypes.cast(std_ptr, ctypes.c_char_p))
@@ -90,7 +87,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
 def run_strtok_test(delimiters, libs, test_data):
     """
         Запуск функций strtok, пока исходная строка не будет
-        полностью уничтожена (ф-я вернёт NULL).
+        полностью уничтожена (функция strtok вернёт NULL).
     """
 
     bytes_string = test_data.encode(ENCODING)
@@ -122,9 +119,9 @@ def start_strtok(player_lib, tests_dir):
         partial(run_strtok_test, DELIMITERS, [lib_player, libc])
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 2000 TIME:", total_time)
+    print("STRTOK TESTS:", total_tests, "/ 100 TIME:", total_time)
     return total_tests, total_time
 
 
 if __name__ == "__main__":
-    start_strtok("./strtok_lib.so", "strtok_tests")
+    start_strtok("./strtok_lib.so", "tests/strtok")
