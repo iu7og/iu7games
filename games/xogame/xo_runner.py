@@ -27,7 +27,7 @@ PLAYER_TWO_WIN = 2
 
 WIN_POINTS = 3
 DRAW_POINTS = 1
-FIELD_RANGE = 3
+FIELD_SIZE = 3
 
 ASCII_O = 79
 ASCII_X = 88
@@ -40,28 +40,28 @@ def check_win(c_strings, symbol):
     """
 
     # Проверка строк и столбцов
-    for i in range(FIELD_RANGE):
+    for i in range(FIELD_SIZE):
         row_counter = 0
         column_counter = 0
-        for j in range(FIELD_RANGE):
+        for j in range(FIELD_SIZE):
             if (c_strings[i].value)[j] == symbol:
                 row_counter += 1
             if (c_strings[j].value)[i] == symbol:
                 column_counter += 1
 
-        if FIELD_RANGE in (row_counter, column_counter):
+        if FIELD_SIZE in (row_counter, column_counter):
             return True
 
     # Проверка главной и побочной диагонали
     main_diag_counter = 0
     side_diag_counter = 0
-    for i in range(FIELD_RANGE):
+    for i in range(FIELD_SIZE):
         if (c_strings[i].value)[i] == symbol:
             main_diag_counter += 1
-        if (c_strings[i].value)[FIELD_RANGE - i - 1] == symbol:
+        if (c_strings[i].value)[FIELD_SIZE - i - 1] == symbol:
             side_diag_counter += 1
 
-    if FIELD_RANGE in (side_diag_counter, main_diag_counter):
+    if FIELD_SIZE in (side_diag_counter, main_diag_counter):
         return True
 
     return False
@@ -72,8 +72,8 @@ def create_c_objects():
         Создание боевого поля (массива строк) в виде С объекта.
     """
 
-    c_strings = [ctypes.create_string_buffer(b' ' * FIELD_RANGE) for i in range(FIELD_RANGE)]
-    c_battlefield = (ctypes.c_char_p * FIELD_RANGE)(*map(ctypes.addressof, c_strings))
+    c_strings = [ctypes.create_string_buffer(b' ' * FIELD_SIZE) for i in range(FIELD_SIZE)]
+    c_battlefield = (ctypes.c_char_p * FIELD_SIZE)(*map(ctypes.addressof, c_strings))
     return ctypes.c_wchar('O'), ctypes.c_wchar('X'), c_strings, c_battlefield
 
 
@@ -83,10 +83,10 @@ def check_move_correctness(c_strings, move):
     """
 
     # ADD: Проверка на испорченность матрицы
-    if move >= FIELD_RANGE * FIELD_RANGE:
+    if move >= FIELD_SIZE * FIELD_SIZE:
         return INVALID_MOVE
 
-    if (c_strings[move // FIELD_RANGE].value)[move % FIELD_RANGE] != ASCII_SPACE:
+    if (c_strings[move // FIELD_SIZE].value)[move % FIELD_SIZE] != ASCII_SPACE:
         return INVALID_MOVE
 
     return OK
@@ -97,24 +97,23 @@ def make_move(c_strings, move, symb):
         Ход в указанную игроком клетку.
     """
 
-    replacement_string = list(c_strings[move // FIELD_RANGE].value)
-    replacement_string[move % FIELD_RANGE] = symb
-    c_strings[move // FIELD_RANGE].value = bytes(replacement_string)
+    replacement_string = list(c_strings[move // FIELD_SIZE].value)
+    replacement_string[move % FIELD_SIZE] = symb
+    c_strings[move // FIELD_SIZE].value = bytes(replacement_string)
     return c_strings
 
 
 def xogame_round(player1_lib, player2_lib):
     """
         Запуск одного раунда игры для двух игроков.
-        Каждый игрок сначала ходит за Х, потом за О.
     """
 
     c_symb_x, c_symb_o, c_strings, c_battlefield = create_c_objects()
     shot_count = 0
 
-    while shot_count != FIELD_RANGE * FIELD_RANGE:
+    while shot_count != FIELD_SIZE * FIELD_SIZE:
         shot_count += 1
-        move = player1_lib.xogame(c_battlefield, FIELD_RANGE, c_symb_x)
+        move = player1_lib.xogame(c_battlefield, FIELD_SIZE, c_symb_x)
         if check_move_correctness(c_strings, move) == INVALID_MOVE:
             return PLAYER_TWO_WIN
 
@@ -122,11 +121,11 @@ def xogame_round(player1_lib, player2_lib):
         if check_win(c_strings, ASCII_X):
             return PLAYER_ONE_WIN
 
-        if shot_count == FIELD_RANGE * FIELD_RANGE:
+        if shot_count == FIELD_SIZE * FIELD_SIZE:
             return DRAW
 
         shot_count += 1
-        move = player2_lib.xogame(c_battlefield, FIELD_RANGE, c_symb_o)
+        move = player2_lib.xogame(c_battlefield, FIELD_SIZE, c_symb_o)
         if check_move_correctness(c_strings, move) == INVALID_MOVE:
             return PLAYER_ONE_WIN
 

@@ -16,14 +16,13 @@
 
 
 import ctypes
+from time import process_time
 from functools import partial
-import timeit
-from games.strgame.runner import runner
+from runner import runner
 
 OK = 0
 INVALID_PTR = 1
 
-TIMEIT_REPEAT = 1
 DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
@@ -77,8 +76,10 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
     def timeit_wrapper(c_pointer, c_delimiters):
         pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
 
-    run_time = timeit.Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
-    time = run_time.timeit(TIMEIT_REPEAT)
+    start_time = process_time()
+    timeit_wrapper(c_string_player, c_delimiters_string)
+    end_time = process_time()
+    time = end_time - start_time
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
     player_ptr = pointer_buffer[0]
@@ -129,4 +130,4 @@ def start_strtok(player_lib, tests_dir):
 
 
 if __name__ == "__main__":
-    start_strtok("./strtok_lib.so", "strtok_tests")
+    start_strtok("./strtok_lib.so", "tests/strtok")

@@ -17,18 +17,17 @@
 """
 
 
-import timeit
 import ctypes
 from functools import partial
+from time import process_time
 from games.strgame.runner import runner
 
 OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-TIMEIT_REPEAT = 1
 ENCODING = "utf-8"
-ARRAY_SIZE = 32000
+ARRAY_SIZE = 11000
 
 DELIMITERS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
     '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
@@ -60,11 +59,9 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
     if player_size != len(correct_strings_array):
         return INCORRECT_LEN
 
-    for string in correct_strings_array:
-        if string != player_strings_array[0].value.decode(ENCODING):
+    for i in range(len(correct_strings_array)):
+        if correct_strings_array[i] != player_strings_array[i].value.decode(ENCODING):
             return INCORRECT_TEST
-
-        player_strings_array.pop(0)
 
     return OK
 
@@ -90,11 +87,13 @@ def run_split_test(lib_player, test_data, delimiter):
         size_buffer.append(lib_player.split(string, matrix, delimiter))
 
 
-    run_time = \
-        timeit.Timer(partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
-    time = run_time.timeit(TIMEIT_REPEAT)
+    start_time = process_time()
+    timeit_wrapper(c_string, c_array_pointer, c_delimiter)
+    end_time = process_time()
 
+    time = end_time - start_time
     error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
+
     return time, error_code
 
 
@@ -116,4 +115,4 @@ def start_split(player_lib, tests_dir):
 
 
 if __name__ == "__main__":
-    start_split("./split_lib.so", "./split_tests")
+    start_split("./split_lib.so", "tests/split")
