@@ -71,18 +71,12 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         libs[1] - libc (стандартная бибилотека СИ)
     """
 
-    pointer_buffer = []
-
-    def timeit_wrapper(c_pointer, c_delimiters):
-        pointer_buffer.append(libs[0].strtok(c_pointer, c_delimiters))
-
     start_time = process_time()
-    timeit_wrapper(c_string_player, c_delimiters_string)
+    player_ptr = libs[0].strtok(c_string_player, c_delimiters_string)
     end_time = process_time()
     time = end_time - start_time
 
     std_ptr = libs[1].strtok(c_string, c_delimiters_string)
-    player_ptr = pointer_buffer[0]
 
     error_code = check_strtok_correctness(ctypes.cast(player_ptr, ctypes.c_char_p), \
         ctypes.cast(std_ptr, ctypes.c_char_p))

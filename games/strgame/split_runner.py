@@ -73,26 +73,18 @@ def run_split_test(lib_player, test_data, delimiter):
         Замеры времени ранинга с помощью timeit.
     """
 
-    size_buffer = []
     correct_strings_array = test_data.split(delimiter)
     bytes_string = test_data.encode(ENCODING)
 
     c_string, c_array_strings, c_array_pointer, c_delimiter = \
         create_c_objects(bytes_string, delimiter)
 
-    def timeit_wrapper(string, matrix, delimiter):
-        """
-            Обёртка для timeit, для сохранения возвращаемого split значения
-        """
-        size_buffer.append(lib_player.split(string, matrix, delimiter))
-
-
     start_time = process_time()
-    timeit_wrapper(c_string, c_array_pointer, c_delimiter)
+    player_split_size = lib_player.split(c_string, c_array_pointer, c_delimiter)
     end_time = process_time()
-
     time = end_time - start_time
-    error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
+
+    error_code = check_split_correctness(player_split_size, c_array_strings, correct_strings_array)
 
     return time, error_code
 
