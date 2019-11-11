@@ -65,9 +65,9 @@ def start_competition(game, group_name):
                 test_path = os.path.abspath("games/strgame/tests/split")
                 split_res = split_runner.start_split(lib_path, test_path)
             except OSError:
-                split_res = (0, "Отсутствует стратегия")
+                split_res = (0, worker.wiki.NO_RESULT)
 
-            data.append(str(split_res[0]) + "/20")
+            data.append(split_res[0])
             data.append(split_res[1])
 
             try:
@@ -75,9 +75,9 @@ def start_competition(game, group_name):
                 test_path = os.path.abspath("games/strgame/tests/strtok")
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
             except OSError:
-                strtok_res = (0, "Отсутствует стратегия")
+                strtok_res = (0, worker.wiki.NO_RESULT)
 
-            data.append(str(strtok_res[0]) + "/20")
+            data.append(strtok_res[0])
             data.append(strtok_res[1])
 
             print()

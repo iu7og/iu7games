@@ -1,14 +1,28 @@
 """ GitLab Wiki handling module. """
 
 
+import operator
 from datetime import datetime
+from copy import deepcopy
 
-STRG_TABLE_WIDTH = 7
+STRG_TABLE_WIDTH = 5
 
+TESTS_COL = 2
+RES_COL = 3
+SORT_KEYS = (TESTS_COL, RES_COL)
+
+SPLIT_TESTS_COL = 2
 SPLIT_RES_COL = 3
+SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_RES_COL)
+
+STRTOK_TESTS_COL = 4
 STRTOK_RES_COL = 5
-MISSED_RESULT = 100.0
-NO_RESULT = 150.0
+STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_RES_COL)
+
+TEST_COEF = 5
+NO_RESULT = 1337
+MSG = "Отсутствует стратегия"
+OUTPUT_PARAMS = (TEST_COEF, NO_RESULT, MSG)
 
 
 def create_page(project, title, content):
@@ -38,28 +52,24 @@ def delete_page(project, page_slug):
     page.delete()
 
 
-def by_split(student):
-    """ Key to sort by split results. """
+def form_table(results, removable, sort_keys, output_params):
+    """ Preprinting table format. """
 
-    if isinstance(student[SPLIT_RES_COL], float):
-        return student[SPLIT_RES_COL]
+    new = deepcopy(results)
 
-    if isinstance(student[STRTOK_RES_COL], float):
-        return MISSED_RESULT
+    for rec in new:
+        del rec[removable[0]:removable[1] + 1]
 
-    return NO_RESULT
+    new = sorted(new, key=operator.itemgetter(sort_keys[1]))
+    new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
+    for rec in new:
+        rec[sort_keys[0]] = str(rec[sort_keys[0]] // output_params[0]) + "/20"
 
-def by_strtok(student):
-    """ Key to sort by strtok results. """
+        if rec[sort_keys[1]] == output_params[1]:
+            rec[sort_keys[1]] = output_params[2]
 
-    if isinstance(student[STRTOK_RES_COL], float):
-        return student[STRTOK_RES_COL]
-
-    if isinstance(student[SPLIT_RES_COL], float):
-        return MISSED_RESULT
-
-    return NO_RESULT
+    return new
 
 
 def print_table(head, theme, columns, results):
@@ -96,15 +106,22 @@ def update_wiki(project, game, results):
     if game == "STRgame":
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
-        head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
-            "**SPLIT Время**|**STRTOK Тесты**|**STRTOK Время**|\n" \
-            "|---|---|---|---|---|---|---|\n"
+        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
+            "**SPLIT Время**|\n" \
+            "|---|---|---|---|---|\n"
+        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|" \
+            "**STRTOK Время**|\n" \
+            "|---|---|---|---|---|\n"
 
-        sorted_split = sorted(results, key=by_split)
-        res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
+        sorted_split = form_table(
+            results, STRTOK_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
+        sorted_strtok = form_table(
+            results, SPLIT_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
 
-        sorted_strtok = sorted(results, key=by_strtok)
-        res += print_table(head, strtok_theme, STRG_TABLE_WIDTH, sorted_strtok)
+        res += print_table(split_head, split_theme,
+                           STRG_TABLE_WIDTH, sorted_split)
+        res += print_table(strtok_head, strtok_theme,
+                           STRG_TABLE_WIDTH, sorted_strtok)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
