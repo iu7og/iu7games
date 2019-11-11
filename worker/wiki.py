@@ -3,15 +3,26 @@
 
 import operator
 from datetime import datetime
+from copy import deepcopy
 
-STRG_TABLE_WIDTH = 7
+STRG_TABLE_WIDTH = 5
+
+TESTS_COL = 2
+RES_COL = 3
+SORT_KEYS = (TESTS_COL, RES_COL)
 
 SPLIT_TESTS_COL = 2
 SPLIT_RES_COL = 3
+SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_RES_COL)
+
 STRTOK_TESTS_COL = 4
 STRTOK_RES_COL = 5
-NO_RESULT = 1337
+STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_RES_COL)
+
 TEST_COEF = 5
+NO_RESULT = 1337
+MSG = "Отсутствует стратегия"
+OUTPUT_PARAMS = (TEST_COEF, NO_RESULT, MSG)
 
 
 def create_page(project, title, content):
@@ -39,6 +50,26 @@ def delete_page(project, page_slug):
 
     page = project.wikis.get(page_slug)
     page.delete()
+
+
+def form_table(results, removable, sort_keys, output_params):
+    """ Preprinting table format. """
+
+    new = deepcopy(results)
+
+    for rec in new:
+        del rec[removable[0]:removable[1] + 1]
+
+    new = sorted(new, key=operator.itemgetter(sort_keys[1]))
+    new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
+
+    for rec in new:
+        rec[sort_keys[0]] = str(rec[sort_keys[0]] // output_params[0]) + "/20"
+
+        if rec[sort_keys[1]] == output_params[1]:
+            rec[sort_keys[1]] = output_params[2]
+
+    return new
 
 
 def print_table(head, theme, columns, results):
@@ -75,33 +106,22 @@ def update_wiki(project, game, results):
     if game == "STRgame":
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
-        head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
-            "**SPLIT Время**|**STRTOK Тесты**|**STRTOK Время**|\n" \
-            "|---|---|---|---|---|---|---|\n"
+        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
+            "**SPLIT Время**|\n" \
+            "|---|---|---|---|---|\n"
+        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|" \
+            "**STRTOK Время**|\n" \
+            "|---|---|---|---|---|\n"
 
-        sorted_split = sorted(
-            results, key=operator.itemgetter(SPLIT_RES_COL))
-        sorted_split = sorted(
-            sorted_split, key=operator.itemgetter(SPLIT_TESTS_COL), reverse=True)
+        sorted_split = form_table(
+            results, STRTOK_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
+        sorted_strtok = form_table(
+            results, SPLIT_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
 
-        sorted_strtok = sorted(
-            results, key=operator.itemgetter(STRTOK_RES_COL))
-        sorted_strtok = sorted(
-            sorted_strtok, key=operator.itemgetter(STRTOK_TESTS_COL), reverse=True)
-
-        for rec in sorted_strtok:
-            rec[SPLIT_TESTS_COL] = str(
-                rec[SPLIT_TESTS_COL] // TEST_COEF) + "/20"
-            rec[STRTOK_TESTS_COL] = str(
-                rec[STRTOK_TESTS_COL] // TEST_COEF) + "/20"
-
-            if rec[SPLIT_RES_COL] == NO_RESULT:
-                rec[SPLIT_RES_COL] = "Отсутствует стратегия"
-            if rec[STRTOK_RES_COL] == NO_RESULT:
-                rec[STRTOK_RES_COL] = "Отсутствует стратегия"
-
-        res += print_table(head, split_theme, STRG_TABLE_WIDTH, sorted_split)
-        res += print_table(head, strtok_theme, STRG_TABLE_WIDTH, sorted_strtok)
+        res += print_table(split_head, split_theme,
+                           STRG_TABLE_WIDTH, sorted_split)
+        res += print_table(strtok_head, strtok_theme,
+                           STRG_TABLE_WIDTH, sorted_strtok)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
