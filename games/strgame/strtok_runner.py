@@ -18,7 +18,7 @@
 import ctypes
 from time import process_time
 from functools import partial
-from runner import runner
+from games.strgame.runner import runner
 
 OK = 0
 INVALID_PTR = 1
