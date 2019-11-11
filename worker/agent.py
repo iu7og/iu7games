@@ -42,6 +42,13 @@ def start_competition(game, group_name):
         if developer is not None:
             user_result = [developer.name, "@" + developer.username]
             results.append(user_result)
+            if worker.repo.check_md5(
+                    os.path.abspath("cfg/.gitlab-ci.students.yml"),
+                    project, game, ".gitlab-ci.yml"
+            ) is False:
+                print("CORRUPTED CI FOUND FOR " + user_result[1])
+                continue
+            print("CORRECT CI FOUND FOR " + user_result[1])
             status = worker.repo.get_artifacts(project, job)
 
             if status == worker.repo.COLLECTED:

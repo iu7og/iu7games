@@ -3,6 +3,7 @@
 
 import os
 import subprocess
+import hashlib
 import gitlab
 
 COLLECTED = 1
@@ -53,6 +54,20 @@ def get_last_job(project, ref):
     job = project.jobs.list(all=True, ref=ref)[0]
 
     return job
+
+
+def check_md5(master, project, ref, user):
+    """ Check user file's identity to master file. """
+
+    master_file = open(master, "rt").read()
+    master_md5 = hashlib.md5(master_file.encode("utf-8")).hexdigest()
+    user_file = project.files.get(file_path=user, ref=ref)
+    user_md5 = hashlib.md5(user_file.decode()).hexdigest()
+
+    if master_md5 != user_md5:
+        return False
+
+    return True
 
 
 def get_artifacts(project, job):
