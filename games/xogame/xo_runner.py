@@ -80,7 +80,7 @@ def create_c_objects(field_size):
 def check_move_correctness(c_strings, c_strings_copy, move, field_size):
     """
         Проверка на корректность присланного игроком хода и
-        на испорченость матрицы стратегий игрока.
+        на испорченость матрицы стратегией игрока.
     """
 
     for i in range(field_size):
