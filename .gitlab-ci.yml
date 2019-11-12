@@ -3,9 +3,6 @@ stages:
   - test
   - deploy
 
-before_script:
-  - pip3 install -r cfg/requirements.txt
-
 badges:
   stage: build
   image: hackfeed/iu7games
