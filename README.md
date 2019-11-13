@@ -1,3 +1,16 @@
-# IU7Games Project [![pipeline status](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/badges/master/pipeline.svg)](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/commits/master) [![docker image](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/jobs/artifacts/master/raw/docker.svg?job=badges)](https://hub.docker.com/r/hackfeed/iu7games/tags) [![pylint status](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/jobs/artifacts/master/raw/pylint.svg?job=codestyle)](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/commits/master)
+# IU7Games
 
-[Соревновательная система для студентов кафедры **ИУ7** МГТУ им. Н. Э. Баумана](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/home)
+## О проекте
+[Соревновательная система для студентов по курсу **"Программирование на Си"**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/home)
+
+## Как начать играть 
+
+Тут будет ссылка на Wiki-страницу с правилами игр (которая будет вести на страницы с правилами игры для каждой игры)
+
+## Результаты
+
+Ссылки на таблицы с результатами (чтобы не лезть в вики и не делать лишний клик)
+
+## Changelog
+
+Думаю, пора вести?

@@ -1,4 +1,6 @@
 """
+    split runner v.1.1
+
     Данный скрипт предназначен для тестирования самописной функции split,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
 
@@ -15,28 +17,20 @@
 """
 
 
-import timeit, functools, ctypes
+import ctypes
+from functools import partial
+from time import process_time
+from games.strgame.runner import runner
 
 OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-NUMBER_OF_TESTS = 20
-TEST_REPEAT = 1
 ENCODING = "utf-8"
-ARRAY_SIZE = 32000
+ARRAY_SIZE = 11000
 
 DELIMITERS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
     '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
-
-
-def concat_strings(f):
-    """
-        Склеивание каждой строки файла в одну единственную строку
-        и удаление символов окончания строки.
-    """
-
-    return functools.reduce(lambda x, y: x + y[:-1], f)
 
 
 def create_c_objects(bytes_string, delimiter):
@@ -62,68 +56,55 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
         значения тестируемой функции split.
     """
 
-    if (player_size != len(correct_strings_array)):
+    if player_size != len(correct_strings_array):
         return INCORRECT_LEN
 
     for i in range(len(correct_strings_array)):
-        if (player_strings_array[i].value).decode(ENCODING) != correct_strings_array[i]:
+        if correct_strings_array[i] != player_strings_array[i].value.decode(ENCODING):
             return INCORRECT_TEST
 
     return OK
 
 
-def run_split_test(test_data, delimiter, lib_player):
+def run_split_test(lib_player, test_data, delimiter):
     """
         Вызов функций split, сравнения поведения функции
         из Python и функции игрока (СИ).
         Замеры времени ранинга с помощью timeit.
     """
 
-    size_buffer = []
     correct_strings_array = test_data.split(delimiter)
     bytes_string = test_data.encode(ENCODING)
 
-    c_string, c_array_strings, c_array_pointer, c_delimiter = create_c_objects(bytes_string, delimiter)
+    c_string, c_array_strings, c_array_pointer, c_delimiter = \
+        create_c_objects(bytes_string, delimiter)
 
-    def timeit_wrapper(string, matrix, delimiter):
-        """
-            Обёртка для timeit, для сохранения возвращаемого split значения
-        """
-        size_buffer.append(lib_player.split(string, matrix, delimiter))
+    start_time = process_time()
+    player_split_size = lib_player.split(c_string, c_array_pointer, c_delimiter)
+    end_time = process_time()
+    time = end_time - start_time
 
+    error_code = check_split_correctness(player_split_size, c_array_strings, correct_strings_array)
 
-    run_time = timeit.Timer(functools.partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
-    time = run_time.timeit(TEST_REPEAT)
-
-    error_code = check_split_correctness(size_buffer[0], c_array_strings, correct_strings_array)
     return time, error_code
 
 
-
-def start_split(args_lib, args_tests):
+def start_split(player_lib, tests_dir):
     """
         Открытие файлов с тестами и запуск split.
         Печать количество успешных тестов и время ранинга.
     """
 
-    lib_player = ctypes.CDLL(args_lib)
+    lib_player = ctypes.CDLL(player_lib)
+    total_tests, total_time = runner(
+        tests_dir,
+        partial(run_split_test, lib_player),
+        DELIMITERS
+    )
 
-    total_time = 0
-    total_tests = 0
-
-    for i in range(NUMBER_OF_TESTS):
-        f = open(args_tests + "/test_" + str(i + 1) + ".txt",  "r")
-        test_data = concat_strings(f)
-        f.close()
-
-        time, error_code = run_split_test(test_data, DELIMITERS[i], lib_player)
-        if not error_code:
-            total_tests += 1
-        total_time += time
-
-    print("SPLIT TESTS:", total_tests, "/ 20 TIME:", total_time)
+    print("SPLIT TESTS:", total_tests, "/ 100 TIME:", total_time)
     return total_tests, total_time
 
 
 if __name__ == "__main__":
-    start_split("./split_lib.so", "./split_tests")
+    start_split("./split_lib.so", "tests/split")
