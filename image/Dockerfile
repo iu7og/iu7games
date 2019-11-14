@@ -22,4 +22,4 @@ RUN adduser -D -h /deathstar imperialclone
 WORKDIR /deathstar
 USER imperialclone
 
-CMD ["sh"]
+CMD ["bash"]
