@@ -51,7 +51,13 @@ def get_project(instance, group, name):
 def get_last_job(project, ref):
     """ Get project's last job by ref name. """
 
-    job = project.jobs.list(all=True, ref=ref)[0]
+    job = None
+
+    jobs = project.jobs.list(all=True)
+    for jb in jobs:
+        if jb.ref == ref:
+            job = jb
+            break
 
     return job
 

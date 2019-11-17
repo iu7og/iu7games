@@ -3,8 +3,7 @@
 FROM python:3.7-alpine
 
 ENV PYTHONBUFFERED 1
-
-COPY ./requirements.txt /requirements.txt
+ENV PATH $PATH:/scripts
 
 RUN apk add --no-cache \
     git \
@@ -15,11 +14,16 @@ RUN apk add --no-cache \
     \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
+
+COPY ./requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt \
     && rm -f requirements.txt
 
-RUN adduser -D -h /deathstar imperialclone
+COPY ./scripts /scripts
+RUN adduser -D -h /deathstar imperialclone \
+    && chmod -R o+x /scripts
+
 WORKDIR /deathstar
 USER imperialclone
 
-CMD ["sh"]
+CMD ["bash"]
