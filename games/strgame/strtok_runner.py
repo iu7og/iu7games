@@ -1,5 +1,5 @@
 """
-    strtok runner v.1.1
+    strtok runner v.1.2
 
     Данный скрипт предназначен для тестирования самописной функции strtok,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
@@ -16,7 +16,8 @@
 
 
 import ctypes
-from time import process_time
+from timeit import Timer
+from time import process_time_ns
 from functools import partial
 from games.strgame.runner import runner
 
@@ -71,17 +72,29 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         libs[1] - libc (стандартная бибилотека СИ)
     """
 
-    start_time = process_time()
-    player_ptr = libs[0].strtok(c_string_player, c_delimiters_string)
-    end_time = process_time()
-    time = end_time - start_time
+    def timeit_wrapper(string, delims):
+        """
+            Обёртка для timeit, для сохранения возвращаемого strtok значения
+            и подсчёта времени запуска функции игрока.
+        """
 
-    std_ptr = libs[1].strtok(c_string, c_delimiters_string)
+        start_time = process_time_ns()
+        run_info_buffer["player_ptr"] = libs[0].strtok(string, delims)
+        end_time = process_time_ns()
+        run_info_buffer["run_time"] = end_time - start_time
 
-    error_code = check_strtok_correctness(ctypes.cast(player_ptr, ctypes.c_char_p), \
-        ctypes.cast(std_ptr, ctypes.c_char_p))
+    run_info_buffer = {"player_ptr": 0, "run_time": 0}
+    timeit_timer = Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
+    timeit_timer.timeit(1)
 
-    return time, error_code, ctypes.cast(std_ptr, ctypes.c_char_p)
+    libary_ptr = libs[1].strtok(c_string, c_delimiters_string)
+
+    error_code = check_strtok_correctness(
+        ctypes.cast(run_info_buffer["player_ptr"], ctypes.c_char_p),
+        ctypes.cast(libary_ptr, ctypes.c_char_p)
+    )
+
+    return run_info_buffer["run_time"], error_code, ctypes.cast(libary_ptr, ctypes.c_char_p)
 
 
 def run_strtok_test(delimiters, libs, test_data):
@@ -119,7 +132,7 @@ def start_strtok(player_lib, tests_dir):
         partial(run_strtok_test, DELIMITERS, [lib_player, libc])
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 100 TIME:", total_time)
+    print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time)
     return total_tests, total_time
 
 

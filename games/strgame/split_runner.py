@@ -1,5 +1,5 @@
 """
-    split runner v.1.1
+    split runner v.1.2
 
     Данный скрипт предназначен для тестирования самописной функции split,
     реализованной на СИ. Функция на СИ имеет сигнатуру:
@@ -18,8 +18,9 @@
 
 
 import ctypes
+from timeit import Timer
 from functools import partial
-from time import process_time
+from time import process_time_ns
 from games.strgame.runner import runner
 
 OK = 0
@@ -27,7 +28,8 @@ INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
 ENCODING = "utf-8"
-ARRAY_SIZE = 11000
+WORDS_COUNT = 10364970
+MAX_LEN_WORD = 11
 
 DELIMITERS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
     '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
@@ -43,8 +45,8 @@ def create_c_objects(bytes_string, delimiter):
     """
 
     c_string = ctypes.create_string_buffer(bytes_string)
-    c_array_strings = [ctypes.create_string_buffer(ARRAY_SIZE) for i in range(ARRAY_SIZE)]
-    c_array_pointer = (ctypes.c_char_p * ARRAY_SIZE)(*map(ctypes.addressof, c_array_strings))
+    c_array_strings = [ctypes.create_string_buffer(MAX_LEN_WORD) for i in range(WORDS_COUNT)]
+    c_array_pointer = (ctypes.c_char_p * WORDS_COUNT)(*map(ctypes.addressof, c_array_strings))
     c_delimiter = ctypes.c_wchar(delimiter)
 
     return c_string, c_array_strings, c_array_pointer, c_delimiter
@@ -79,14 +81,28 @@ def run_split_test(lib_player, test_data, delimiter):
     c_string, c_array_strings, c_array_pointer, c_delimiter = \
         create_c_objects(bytes_string, delimiter)
 
-    start_time = process_time()
-    player_split_size = lib_player.split(c_string, c_array_pointer, c_delimiter)
-    end_time = process_time()
-    time = end_time - start_time
+    def timeit_wrapper(string, matrix, delimiter):
+        """
+            Обёртка для timeit, для сохранения возвращаемого split значения
+            и подсчёта времени запуска функции игрока.
+        """
 
-    error_code = check_split_correctness(player_split_size, c_array_strings, correct_strings_array)
+        start_time = process_time_ns()
+        run_info_buffer["split_size"] = lib_player.split(string, matrix, delimiter)
+        end_time = process_time_ns()
+        run_info_buffer["run_time"] = end_time - start_time
 
-    return time, error_code
+    run_info_buffer = {"split_size": 0, "run_time": 0}
+    timeit_timer = Timer(partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
+    timeit_timer.timeit(1)
+
+    error_code = check_split_correctness(
+        run_info_buffer["split_size"],
+        c_array_strings,
+        correct_strings_array
+    )
+
+    return run_info_buffer["run_time"], error_code
 
 
 def start_split(player_lib, tests_dir):
@@ -102,7 +118,7 @@ def start_split(player_lib, tests_dir):
         DELIMITERS
     )
 
-    print("SPLIT TESTS:", total_tests, "/ 100 TIME:", total_time)
+    print("SPLIT TESTS:", total_tests, "/ 1 TIME:", total_time)
     return total_tests, total_time
 
 

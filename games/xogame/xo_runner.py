@@ -1,5 +1,5 @@
 """
-    XO runner v.0.1 (alpha)
+    XO runner v.1.0
 
     Данный скрипт предназначен для проведения соревнования
     по XOgame (крестики - нолики).
@@ -17,6 +17,7 @@
 """
 
 import ctypes
+from math import fabs
 
 OK = 0
 INVALID_MOVE = 1
@@ -24,9 +25,6 @@ INVALID_MOVE = 1
 DRAW = 0
 PLAYER_ONE_WIN = 1
 PLAYER_TWO_WIN = 2
-
-WIN_POINTS = 3
-DRAW_POINTS = 1
 
 ASCII_O = 79
 ASCII_X = 88
@@ -142,40 +140,54 @@ def xogame_round(player1_lib, player2_lib, field_size):
     return DRAW
 
 
-def scoring(points, player1_index, player2_index, result):
+def scoring(points, player1_index, player2_index, result, pts_difference):
     """
-        Запись очков в результирующий массив очков points.
+        Запись и подсчёт очков в результирующий массив points.
+
+        Система подсчёта очков:
+        1. Победивший получает abs(p1 - p2) + 1 очков
+        2. Проигравший теряет abs(p1 - p2) + 1 очков
+        3. В случае ничьи обра игрока получают по (abs(p1 - p2) + 1) / 2 очков
+        Минимальное количество очков - 0, то есть в минус уйти нельзя.
     """
 
     if result == PLAYER_ONE_WIN:
-        points[player1_index] += WIN_POINTS
+        points[player1_index] += pts_difference
+        points[player2_index] -= pts_difference
     elif result == PLAYER_TWO_WIN:
-        points[player2_index] += WIN_POINTS
+        points[player2_index] += pts_difference
+        points[player1_index] -= pts_difference
     else:
-        points[player1_index] += DRAW_POINTS
-        points[player2_index] += DRAW_POINTS
+        points[player1_index] += pts_difference / 2
+        points[player2_index] += pts_difference / 2
 
     return points
 
 
-def start_xogame_competition(players_libs, field_size):
+def start_xogame_competition(players_info, field_size):
     """
         Функция запускает каждую стратегию с каждой,
         результаты для каждого игрока записываются в массив points.
     """
 
-    points = [0] * len(players_libs)
+    points = [0] * len(players_info)
 
-    for i in range(len(players_libs) - 1):
-        player_lib = ctypes.CDLL(players_libs[i])
-        for j in range(i + 1, len(players_libs)):
-            opponent_lib = ctypes.CDLL(players_libs[j])
-            points = scoring(points, i, j, xogame_round(player_lib, opponent_lib, field_size))
-            points = scoring(points, j, i, xogame_round(opponent_lib, player_lib, field_size))
+    for i in range(len(players_info) - 1):
+        player_lib = ctypes.CDLL(players_info[i][0])
+        for j in range(i + 1, len(players_info)):
+            opponent_lib = ctypes.CDLL(players_info[j][0])
+            pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
+            points = scoring(points, i, j, xogame_round(player_lib, opponent_lib,
+                                                        field_size), pts_difference)
+            points = scoring(points, j, i, xogame_round(opponent_lib, player_lib,
+                                                        field_size), pts_difference)
 
+    points = list(map(lambda x: 0 if x <= 0 else x, points))
     print(points)
     return points
 
 
 if __name__ == "__main__":
-    start_xogame_competition(["./test1.so", "./test2.so", "./test3.so"], 3)
+    start_xogame_competition([("./test1.so", 0),
+                              ("./test2.so", 0),
+                              ("./test3.so", 0)], 3)
