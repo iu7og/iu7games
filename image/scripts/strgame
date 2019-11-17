@@ -9,7 +9,8 @@ then
     echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_split.c FOUND\033[0m";
     SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(system(".*");\)/\1/p')y;
     FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(fork();\)/\1/p')y;
-    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] 
+    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(exec.{0,4}(.*);\)/\1/p')y;
+    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ]
     then
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c\033[0m";
         exit 1;
@@ -27,7 +28,8 @@ then
     echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c FOUND\033[0m";
     SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(system(".*");\)/\1/p')y;
     FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(fork();\)/\1/p')y;
-    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] 
+    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(exec.{0,4}(.*);\)/\1/p')y;
+    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ] 
     then
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c\033[0m";
         exit 1;
