@@ -30,6 +30,11 @@ def start_competition(game, group_name):
         project = worker.repo.get_project(GIT_INST, group, prj.name)
         job = worker.repo.get_last_job(project, game)
 
+        if job is None:
+            print("THERE IS NO {0} BRANCH JOBS FOR {1}".format(
+                game, project.name))
+            continue
+
         developer = None
         members = project.members.list(all=True)
 
