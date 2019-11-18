@@ -30,6 +30,7 @@ INCORRECT_TEST = 2
 ENCODING = "utf-8"
 WORDS_COUNT = 10364970
 MAX_LEN_WORD = 11
+TIMEIT_REPEATS = 20
 
 DELIMITERS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
     '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
@@ -71,7 +72,7 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
 def run_split_test(lib_player, test_data, delimiter):
     """
         Вызов функций split, сравнения поведения функции
-        из Python и функции игрока (СИ).
+        из Python и функции игрока реализованной в СИ.
         Замеры времени ранинга с помощью timeit.
     """
 
@@ -81,28 +82,17 @@ def run_split_test(lib_player, test_data, delimiter):
     c_string, c_array_strings, c_array_pointer, c_delimiter = \
         create_c_objects(bytes_string, delimiter)
 
-    def timeit_wrapper(string, matrix, delimiter):
-        """
-            Обёртка для timeit, для сохранения возвращаемого split значения
-            и подсчёта времени запуска функции игрока.
-        """
-
-        start_time = process_time_ns()
-        run_info_buffer["split_size"] = lib_player.split(string, matrix, delimiter)
-        end_time = process_time_ns()
-        run_info_buffer["run_time"] = end_time - start_time
-
-    run_info_buffer = {"split_size": 0, "run_time": 0}
-    timeit_timer = Timer(partial(timeit_wrapper, c_string, c_array_pointer, c_delimiter))
-    timeit_timer.timeit(1)
-
+    split_size = lib_player.split(c_string, c_array_pointer, c_delimiter)
     error_code = check_split_correctness(
-        run_info_buffer["split_size"],
+        split_size,
         c_array_strings,
         correct_strings_array
     )
 
-    return run_info_buffer["run_time"], error_code
+    timeit_timer = Timer(lib_player.split(c_string, c_array_pointer, c_delimiter), process_time_ns)
+    run_time = timeit_timer.timeit(TIMEIT_REPEATS)
+
+    return run_time, error_code
 
 
 def start_split(player_lib, tests_dir):

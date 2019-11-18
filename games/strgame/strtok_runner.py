@@ -28,6 +28,8 @@ DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
 
+TIMEIT_REPEATS = 1
+
 
 def check_strtok_correctness(player_ptr, correct_ptr):
     """
@@ -72,29 +74,26 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         libs[1] - libc (стандартная бибилотека СИ)
     """
 
-    def timeit_wrapper(string, delims):
-        """
-            Обёртка для timeit, для сохранения возвращаемого strtok значения
-            и подсчёта времени запуска функции игрока.
-        """
-
-        start_time = process_time_ns()
-        run_info_buffer["player_ptr"] = libs[0].strtok(string, delims)
-        end_time = process_time_ns()
-        run_info_buffer["run_time"] = end_time - start_time
-
-    run_info_buffer = {"player_ptr": 0, "run_time": 0}
-    timeit_timer = Timer(partial(timeit_wrapper, c_string_player, c_delimiters_string))
-    timeit_timer.timeit(1)
-
+    player_ptr = libs[0].strtok(c_string_player, c_delimiters_string)
     libary_ptr = libs[1].strtok(c_string, c_delimiters_string)
 
     error_code = check_strtok_correctness(
-        ctypes.cast(run_info_buffer["player_ptr"], ctypes.c_char_p),
+        ctypes.cast(player_ptr, ctypes.c_char_p),
         ctypes.cast(libary_ptr, ctypes.c_char_p)
     )
 
-    return run_info_buffer["run_time"], error_code, ctypes.cast(libary_ptr, ctypes.c_char_p)
+    return error_code, ctypes.cast(libary_ptr, ctypes.c_char_p)
+
+
+def strtok_timer(player_lib, c_string_player, c_delimiters_string):
+    """
+        Простой запуск strtok без проверки на корректность
+        для замеров времени.
+    """
+
+    player_ptr = player_lib.strtok(c_string_player, c_delimiters_string)
+    while player_ptr.value is not None:
+        player_ptr = player_lib.strtok(NULL, c_delimiters_string)
 
 
 def run_strtok_test(delimiters, libs, test_data):
@@ -107,14 +106,20 @@ def run_strtok_test(delimiters, libs, test_data):
     c_delimiters_string, c_string, c_string_player = \
         create_c_objects(bytes_string, delimiters.encode(ENCODING))
 
-    total_time, error_code, std_ptr = \
+    error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
 
     while std_ptr.value is not None and not error_code:
-        time, error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
-        total_time += time
+        error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
 
-    return total_time, error_code
+    timeit_timer = Timer(
+        partial(strtok_timer, libs[0], c_string_player, c_delimiters_string),
+        process_time_ns
+    )
+
+    run_time = timeit_timer.timeit(TIMEIT_REPEATS)
+
+    return run_time, error_code
 
 
 def start_strtok(player_lib, tests_dir):
