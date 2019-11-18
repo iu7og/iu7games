@@ -23,6 +23,7 @@ import ctypes
 from timeit import Timer
 from functools import partial
 from time import process_time_ns
+#from math import sqrt
 from games.strgame.runner import runner
 
 OK = 0
@@ -34,8 +35,8 @@ DELIMITER = ' '
 
 WORDS_COUNT = 2068800
 MAX_LEN_WORD = 11
-TIMEIT_REPEATS = 1
-TIME_COUNTER_REPEATS = 1000
+TIMEIT_REPEATS = 1001
+#TIME_COUNTER_REPEATS = 1000
 
 
 def create_c_objects(bytes_string, delimiter):
@@ -84,11 +85,19 @@ def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
 
         lib_player.split(c_string, c_array_pointer, c_delimiter)
 
-    run_time = 0
-    for _ in range(TIME_COUNTER_REPEATS):
-        run_time += Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS)
+    run_time_info = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
 
-    return run_time
+    time_sum = sum(run_time_info)
+
+    """
+    run_time_info.sort()
+    mediana = run_time_info[TIMEIT_REPEATS // 2]
+    avg_time = time_sum / len(run_time_info)
+    run_time_info = list(map(lambda x: (x - avg_time) * (x - avg_time), run_time_info))
+    dispersion = sqrt(time_sum / len(run_time_info))
+    """
+
+    return time_sum
 
 
 def run_split_test(lib_player, delimiter, test_data):
