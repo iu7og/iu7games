@@ -1,6 +1,9 @@
 """
-    В этом модуле расположена универсальная функция запуска
-    тестов как для strtok, так и split.
+      ===== SMART RUNNER v.1.1a =====
+      Copyright (C) 2019 IU7Games Team.
+
+    - В этом модуле расположена универсальная функция запуска
+      тестирования функций как strtok, так и split.
 """
 
 from functools import reduce
@@ -17,27 +20,21 @@ def concat_strings(file):
     return reduce(lambda x, y: x + y[:-1], file)
 
 
-def runner(args_tests, tests_runner, delims=None):
+def runner(tests_path, tests_runner):
     """
-        Функция на вход принимает дирректорию папку с тестами,
+        Функция на вход принимает дирректорию путь к папке с тестами и
         функцию, запускающую тесты для strtok или split.
-        У deilms есть дефолтное значение, в случае
-        если этот аргумент не передан (в strtok он не нужен)
-        Суть функции: загружает файлы с тестами и запускает их.
     """
 
     total_time = 0
     total_tests = 0
 
     for i in range(TESTS_REPEATS):
-        file = open(args_tests + "/test_" + str((i % NUMBER_OF_TESTS) + 1) + ".txt", "r")
+        file = open(tests_path + "/test_" + str((i % NUMBER_OF_TESTS) + 1) + ".txt", "r")
         test_data = concat_strings(file)
         file.close()
 
-        if delims is not None:
-            time, error_code = tests_runner(test_data, delims[i % NUMBER_OF_TESTS])
-        else:
-            time, error_code = tests_runner(test_data)
+        time, error_code = tests_runner(test_data)
 
         if not error_code:
             total_tests += 1

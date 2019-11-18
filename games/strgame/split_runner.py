@@ -1,19 +1,21 @@
 """
-    split runner v.1.2
+      ===== SPLIT RUNNER v.1.2b =====
+      Copyright (C) 2019 IU7Games Team.
 
-    Данный скрипт предназначен для тестирования самописной функции split,
-    реализованной на СИ. Функция на СИ имеет сигнатуру:
+    - Данный скрипт предназначен для тестирования самописной функции split,
+    - реализованной на СИ. Функция на СИ имеет сигнатуру:
 
-    int split(const char *string, char **matrix, const char symbol)
+    - int split(const char *string, char **matrix, const char symbol)
 
-    const char *string - указатель на начало разбиваемой строки (строка)
-    char **matrix - указатель на массив указателей, который в свою очередь
-    указывает на разбиваемые сплитом строки (матрица)
-    const char symbol - делитель для разбиваемой строки
+    - const char *string - указатель на начало разбиваемой строки (строка)
+    - char **matrix - указатель на массив указателей, который в свою очередь
+      указывает на разбиваемые сплитом строки (матрица)
+    - const char symbol - делитель для разбиваемой строки
 
-    Возвращаемое значение: длина массива строк (кол-во строк в matrix)
-    Функция должна полностью повторяет поведение одноименной функции в Python 3.X,
-    за исключением того, что делителей не может быть несколько.
+    - Возвращаемое значение: длина массива строк (кол-во строк в matrix)
+    - Функция должна полностью повторяет поведение одноименной функции в Python 3.X,
+      за исключением того, что делителей не может быть несколько.
+    - Функция НЕ должна ставить терминальный нуль в конце каждого разбитого слова.
 """
 
 
@@ -28,12 +30,12 @@ INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
 ENCODING = "utf-8"
-WORDS_COUNT = 10364970
-MAX_LEN_WORD = 11
-TIMEIT_REPEATS = 20
+DELIMITER = ' '
 
-DELIMITERS = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ',', \
-    '1', '0', '-', 'X', '!', '?', '.', ';', 'N']
+WORDS_COUNT = 2068800
+MAX_LEN_WORD = 11
+TIMEIT_REPEATS = 1
+TIME_COUNTER_REPEATS = 1000
 
 
 def create_c_objects(bytes_string, delimiter):
@@ -69,11 +71,31 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
     return OK
 
 
-def run_split_test(lib_player, test_data, delimiter):
+def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
+    """
+        Запуск split без проверки на корректность действий,
+        для замеров времени.
+    """
+
+    def timeit_wrapper():
+        """
+            Обёртка для timeit.
+        """
+
+        lib_player.split(c_string, c_array_pointer, c_delimiter)
+
+    run_time = 0
+    for _ in range(TIME_COUNTER_REPEATS):
+        run_time += Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS)
+
+    return run_time
+
+
+def run_split_test(lib_player, delimiter, test_data):
     """
         Вызов функций split, сравнения поведения функции
         из Python и функции игрока реализованной в СИ.
-        Замеры времени ранинга с помощью timeit.
+        Замеры времени.
     """
 
     correct_strings_array = test_data.split(delimiter)
@@ -89,8 +111,7 @@ def run_split_test(lib_player, test_data, delimiter):
         correct_strings_array
     )
 
-    timeit_timer = Timer(lib_player.split(c_string, c_array_pointer, c_delimiter), process_time_ns)
-    run_time = timeit_timer.timeit(TIMEIT_REPEATS)
+    run_time = split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter)
 
     return run_time, error_code
 
@@ -104,8 +125,7 @@ def start_split(player_lib, tests_dir):
     lib_player = ctypes.CDLL(player_lib)
     total_tests, total_time = runner(
         tests_dir,
-        partial(run_split_test, lib_player),
-        DELIMITERS
+        partial(run_split_test, lib_player, DELIMITER)
     )
 
     print("SPLIT TESTS:", total_tests, "/ 1 TIME:", total_time)
