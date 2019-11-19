@@ -19,9 +19,9 @@ IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
 def start_competition(instance, game, group_name):
     """ Start competition with collected strategies. """
 
-    results = worker.repo.get_group_artifacts(instance, game, group_name)
-
     if game == "STRgame":
+        results = worker.repo.get_group_artifacts(instance, game, group_name)
+
         print("STRGAME RESULTS\n")
         for data in results:
             print(f"{data[0]}:")
