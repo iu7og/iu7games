@@ -28,23 +28,25 @@ def start_competition(instance, game, group_name):
 
             try:
                 lib_path = os.path.abspath(f"{data[1][1:]}_split_lib.so")
-                test_path = os.path.abspath("games/strgame/tests/split")
+                test_path = os.path.abspath("/tests/strgame/split")
                 split_res = split_runner.start_split(lib_path, test_path)
             except OSError:
-                split_res = (0, worker.wiki.NO_RESULT)
+                split_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(split_res[0])
             data.append(split_res[1])
+            data.append(split_res[2])
 
             try:
                 lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
-                test_path = os.path.abspath("games/strgame/tests/strtok")
+                test_path = os.path.abspath("/tests/strgame/strtok")
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
             except OSError:
-                strtok_res = (0, worker.wiki.NO_RESULT)
+                strtok_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(strtok_res[0])
             data.append(strtok_res[1])
+            data.append(strtok_res[2])
 
             print()
     elif game == "XOgame":

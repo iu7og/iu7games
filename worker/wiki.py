@@ -5,24 +5,24 @@ import operator
 from datetime import datetime
 from copy import deepcopy
 
-STRG_TABLE_WIDTH = 5
+STRG_TABLE_WIDTH = 6
 
 TESTS_COL = 2
 RES_COL = 3
-SORT_KEYS = (TESTS_COL, RES_COL)
+DISP_COL = 4
+SORT_KEYS = (TESTS_COL, RES_COL, DISP_COL)
 
 SPLIT_TESTS_COL = 2
-SPLIT_RES_COL = 3
-SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_RES_COL)
+SPLIT_DISP_COL = 4
+SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_DISP_COL)
 
-STRTOK_TESTS_COL = 4
-STRTOK_RES_COL = 5
-STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_RES_COL)
+STRTOK_TESTS_COL = 5
+STRTOK_DISP_COL = 7
+STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_DISP_COL)
 
-TEST_COEF = 5
 NO_RESULT = 1337
 MSG = "Отсутствует стратегия"
-OUTPUT_PARAMS = (TEST_COEF, NO_RESULT, MSG)
+OUTPUT_PARAMS = (NO_RESULT, MSG)
 
 
 def create_page(project, title, content):
@@ -64,10 +64,12 @@ def form_table(results, removable, sort_keys, output_params):
     new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
     for rec in new:
-        rec[sort_keys[0]] = f"{str(rec[sort_keys[0]] // output_params[0])}/20"
+        rec[sort_keys[0]] = f"{str(rec[sort_keys[0]])}/1"
 
-        if rec[sort_keys[1]] == output_params[1]:
-            rec[sort_keys[1]] = output_params[2]
+        if rec[sort_keys[1]] == output_params[0]:
+            rec[sort_keys[1]] = output_params[1]
+        if rec[sort_keys[2]] == output_params[0]:
+            rec[sort_keys[2]] = output_params[1]
 
     return new
 
@@ -107,11 +109,11 @@ def update_wiki(project, game, results):
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
         split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
-            "**SPLIT Время**|\n" \
-            "|---|---|---|---|---|\n"
+            "**SPLIT Время**|**Погрешность**|\n" \
+            "|---|---|---|---|---|---|\n"
         strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|" \
-            "**STRTOK Время**|\n" \
-            "|---|---|---|---|---|\n"
+            "**STRTOK Время**|**Погрешность**|\n" \
+            "|---|---|---|---|---|---|\n"
 
         sorted_split = form_table(
             results, STRTOK_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
