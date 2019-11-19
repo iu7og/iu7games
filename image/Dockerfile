@@ -19,9 +19,12 @@ COPY ./requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt \
     && rm -f requirements.txt
 
+COPY ./tests /tests
 COPY ./scripts /scripts
+
 RUN adduser -D -h /deathstar imperialclone \
-    && chmod -R o+x /scripts
+    && chmod -R o+x /scripts \
+    && chmod -R o+r /tests
 
 WORKDIR /deathstar
 USER imperialclone
