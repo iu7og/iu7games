@@ -64,7 +64,7 @@ def form_table(results, removable, sort_keys, output_params):
     new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
     for rec in new:
-        rec[sort_keys[0]] = str(rec[sort_keys[0]] // output_params[0]) + "/20"
+        rec[sort_keys[0]] = f"{str(rec[sort_keys[0]] // output_params[0])}/20"
 
         if rec[sort_keys[1]] == output_params[1]:
             rec[sort_keys[1]] = output_params[2]
@@ -82,9 +82,9 @@ def print_table(head, theme, columns, results):
     num = 1
     for student in results:
         place = prize.setdefault(num, num)
-        res += "|{0}|".format(place)
+        res += f"|{place}|"
         for field in range(columns - 1):
-            res += "{0}|".format(student[field])
+            res += f"{student[field]}|"
         num += 1
         res += "\n"
 
@@ -126,7 +126,7 @@ def update_wiki(project, game, results):
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    res += "\n**Обновлено:** {0} **МСК**".format(date)
+    res += f"\n**Обновлено:** {date} **МСК**"
 
     for key in games_keys:
         if game in key:

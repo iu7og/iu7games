@@ -108,7 +108,7 @@ def get_group_artifacts(instance, game, group_name):
         job = get_last_job(project, game)
 
         if job is None:
-            print(r"THERE IS NO {game} BRANCH JOBS FOR {project.name}")
+            print(f"THERE IS NO {game} BRANCH JOBS FOR {project.name}")
             continue
 
         developer = None
@@ -125,17 +125,17 @@ def get_group_artifacts(instance, game, group_name):
             results.append(user_result)
             if check_md5(os.path.abspath("cfg/.gitlab-ci.students.yml"),
                          project, game, ".gitlab-ci.yml") is False:
-                print(r"CORRUPTED CI FOUND FOR {user_result[1]}")
+                print(f"CORRUPTED CI FOUND FOR {user_result[1]}")
                 continue
-            print(r"CORRECT CI FOUND FOR {user_result[1]}")
+            print(f"CORRECT CI FOUND FOR {user_result[1]}")
             status = get_artifacts(project, job)
 
             if status[0] == COLLECTED:
-                print(r"ARTIFACTS FOR {user_result[1]} ARE COLLECTED")
+                print(f"ARTIFACTS FOR {user_result[1]} ARE COLLECTED")
             elif status[0] == BAD_CALL:
-                print(r"THERE ARE NO ARTIFACTS FOR {user_result[1]}")
+                print(f"THERE ARE NO ARTIFACTS FOR {user_result[1]}")
         else:
-            print(r"THERE IS NO DEVELOPER FOR {project.name}")
+            print(f"THERE IS NO DEVELOPER FOR {project.name}")
 
     print("FINISH ARTIFACTS COLLECTION\n")
 

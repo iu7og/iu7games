@@ -24,10 +24,10 @@ def start_competition(instance, game, group_name):
     if game == "STRgame":
         print("STRGAME RESULTS\n")
         for data in results:
-            print(data[0] + ":")
+            print(f"{data[0]}:")
 
             try:
-                lib_path = os.path.abspath(data[1][1:] + "_split_lib.so")
+                lib_path = os.path.abspath(f"{data[1][1:]}_split_lib.so")
                 test_path = os.path.abspath("games/strgame/tests/split")
                 split_res = split_runner.start_split(lib_path, test_path)
             except OSError:
@@ -37,7 +37,7 @@ def start_competition(instance, game, group_name):
             data.append(split_res[1])
 
             try:
-                lib_path = os.path.abspath(data[1][1:] + "_strtok_lib.so")
+                lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
                 test_path = os.path.abspath("games/strgame/tests/strtok")
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
             except OSError:
