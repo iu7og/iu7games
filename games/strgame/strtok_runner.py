@@ -127,7 +127,7 @@ def run_strtok_test(delimiters, libs, test_data):
 
     run_time = strtok_time_counter(libs["player"], bytes_string, delimiters, iterations)
 
-    return run_time, error_code
+    return run_time, error_code, 0
 
 
 def start_strtok(player_lib, tests_path):
@@ -141,13 +141,13 @@ def start_strtok(player_lib, tests_path):
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
     libs = {"player": lib_player, "libary": libc}
 
-    total_tests, total_time = runner(
+    total_tests, total_time, dispersion = runner(
         tests_path,
         partial(run_strtok_test, DELIMITERS, libs)
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time)
-    return total_tests, total_time
+    print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time, "DISPERSION:", dispersion)
+    return total_tests, total_time, dispersion
 
 
 if __name__ == "__main__":

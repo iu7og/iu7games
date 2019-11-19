@@ -34,10 +34,10 @@ def runner(tests_path, tests_runner):
         test_data = concat_strings(file)
         file.close()
 
-        time, error_code = tests_runner(test_data)
+        time, error_code, dispersion = tests_runner(test_data)
 
         if not error_code:
             total_tests += 1
         total_time += time
 
-    return total_tests, total_time
+    return total_tests, total_time, dispersion
