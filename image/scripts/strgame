@@ -7,10 +7,11 @@ GAME_PATH="STRgame/"
 if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c ]
 then
     echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_split.c FOUND\033[0m";
-    SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(system(".*");\)/\1/p')y;
-    FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(fork();\)/\1/p')y;
-    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(exec.{0,4}(.*);\)/\1/p')y;
-    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ]
+    SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(system(.*)\)/\1/p')y;
+    FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(fork()\)/\1/p')y;
+    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')y;
+    ASM=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c | sed -n 's/\([_]\{0,2\}asm[_]\{0,2\}\)/\1/p')y;
+    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ] || [ "$ASM" != 'y' ]
     then
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_split.c\033[0m";
         exit 1;
@@ -26,10 +27,11 @@ fi
 if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c ]
 then
     echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c FOUND\033[0m";
-    SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(system(".*");\)/\1/p')y;
-    FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(fork();\)/\1/p')y;
-    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(exec.{0,4}(.*);\)/\1/p')y;
-    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ] 
+    SYS=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(system(.*)\)/\1/p')y;
+    FORK=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(fork()\)/\1/p')y;
+    EXEC=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')y;
+    ASM=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c | sed -n 's/\([_]\{0,2\}asm[_]\{0,2\}\)/\1/p')y;
+    if [ "$SYS" != 'y' ] || [ "$FORK" != 'y' ] || [ "$EXEC" != 'y' ] || [ "$ASM" != 'y' ]
     then
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_strtok.c\033[0m";
         exit 1;
