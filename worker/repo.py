@@ -50,15 +50,15 @@ def get_project(instance, group, name):
 def get_success_job(project, ref):
     """ Get project's last sucess job by ref name. """
 
-    job = None
+    success_job = None
 
     jobs = project.jobs.list(all=True)
-    for jb in jobs:
-        if jb.ref == ref and jb.status == "success":
-            job = jb
+    for job in jobs:
+        if job.ref == ref and job.status == "success":
+            success_job = job
             break
 
-    return job
+    return success_job
 
 
 def check_md5(master, project, ref, user):
