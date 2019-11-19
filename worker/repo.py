@@ -47,14 +47,14 @@ def get_project(instance, group, name):
     return project
 
 
-def get_last_job(project, ref):
-    """ Get project's last job by ref name. """
+def get_success_job(project, ref):
+    """ Get project's last sucess job by ref name. """
 
     job = None
 
     jobs = project.jobs.list(all=True)
     for jb in jobs:
-        if jb.ref == ref:
+        if jb.ref == ref and jb.status == "success":
             job = jb
             break
 
@@ -84,13 +84,14 @@ def get_artifacts(project, job):
     try:
         with open(zip_arts, "wb") as file:
             job.artifacts(streamed=True, action=file.write)
+
         subprocess.run(["unzip", "-qo", zip_arts], check=True)
     except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
-        return BAD_CALL, job.status
+        return BAD_CALL
 
     os.unlink(zip_arts)
 
-    return COLLECTED, job.status
+    return COLLECTED
 
 
 def get_group_artifacts(instance, game, group_name):
@@ -105,10 +106,10 @@ def get_group_artifacts(instance, game, group_name):
 
     for prj in projects:
         project = get_project(instance, group, prj.name)
-        job = get_last_job(project, game)
+        job = get_success_job(project, game)
 
         if job is None:
-            print(f"THERE IS NO {game} BRANCH JOBS FOR {project.name}")
+            print(f"THERE ARE NO OK JOBS FOR {game} BRANCH IN {project.name}")
             continue
 
         developer = None
@@ -130,9 +131,9 @@ def get_group_artifacts(instance, game, group_name):
             print(f"CORRECT CI FOUND FOR {user_result[1]}")
             status = get_artifacts(project, job)
 
-            if status[0] == COLLECTED:
+            if status == COLLECTED:
                 print(f"ARTIFACTS FOR {user_result[1]} ARE COLLECTED")
-            elif status[0] == BAD_CALL:
+            elif status == BAD_CALL:
                 print(f"THERE ARE NO ARTIFACTS FOR {user_result[1]}")
         else:
             print(f"THERE IS NO DEVELOPER FOR {project.name}")
