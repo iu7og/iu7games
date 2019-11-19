@@ -11,6 +11,7 @@ strgame:
   artifacts:
     paths:
       - ./*.so
+      - STRgame/round.txt
   only:
     refs:
       - STRgame
