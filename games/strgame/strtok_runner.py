@@ -1,22 +1,24 @@
 """
-    strtok runner v.1.1
+      ===== STRTOK RUNNER v.1.2b =====
+      Copyright (C) 2019 IU7Games Team.
 
-    Данный скрипт предназначен для тестирования самописной функции strtok,
-    реализованной на СИ. Функция на СИ имеет сигнатуру:
+    - Данный скрипт предназначен для тестирования самописной функции strtok,
+      реализованной на СИ. Функция на СИ имеет сигнатуру:
 
-    char *strtok(char *string, const char *delim)
+    - char *strtok(char *string, const char *delim)
 
-    char *string - указатель на начало разбиваемой строки
-    const char *delim - указатель на начало строки с разделителями
+    - char *string - указатель на начало разбиваемой строки
+    - const char *delim - указатель на начало строки с разделителями
 
-    Возвращаемое значение: указатель на следующий элемент
-    после первого встреченного делителя.
-    Функция должна полностью повторять поведение стандартного strtok c99.
+    - Возвращаемое значение: указатель на следующий элемент
+      после первого встреченного делителя.
+    - Функция должна полностью повторять поведение стандартного strtok (c99).
 """
 
 
 import ctypes
-from time import process_time
+from timeit import Timer
+from time import process_time_ns
 from functools import partial
 from games.strgame.runner import runner
 
@@ -26,6 +28,9 @@ INVALID_PTR = 1
 DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
+
+TIMEIT_REPEATS = 1
+TIME_COUNTER_REPEATS = 20
 
 
 def check_strtok_correctness(player_ptr, correct_ptr):
@@ -65,23 +70,41 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         Запуск одной итерации функции strtok игрока,
         и одной итерации функци strtok из стандартной билиотеки.
         Сравнение возвращаемых результатов этих функций.
-        Замеры времени ранинга с помощью timeit.
-
-        libs[0] - lib_player (библиотека с функцией игрока)
-        libs[1] - libc (стандартная бибилотека СИ)
     """
 
-    start_time = process_time()
-    player_ptr = libs[0].strtok(c_string_player, c_delimiters_string)
-    end_time = process_time()
-    time = end_time - start_time
+    player_ptr = libs["player"].strtok(c_string_player, c_delimiters_string)
+    libary_ptr = libs["libary"].strtok(c_string, c_delimiters_string)
 
-    std_ptr = libs[1].strtok(c_string, c_delimiters_string)
+    player_ptr = ctypes.cast(player_ptr, ctypes.c_char_p)
+    libary_ptr = ctypes.cast(libary_ptr, ctypes.c_char_p)
+    error_code = check_strtok_correctness(player_ptr, libary_ptr)
 
-    error_code = check_strtok_correctness(ctypes.cast(player_ptr, ctypes.c_char_p), \
-        ctypes.cast(std_ptr, ctypes.c_char_p))
+    return error_code, libary_ptr
 
-    return time, error_code, ctypes.cast(std_ptr, ctypes.c_char_p)
+
+def strtok_time_counter(player_lib, bytes_string, delimiters, iterations):
+    """
+        Запуск strtok без проверки на корректность действий,
+        для замеров времени.
+    """
+
+    def timeit_wrapper():
+        """
+            Обёртка для timeit.
+        """
+
+        player_lib.strtok(c_string_player, c_delimiters_string)
+        for _ in range(iterations):
+            player_lib.strtok(NULL, c_delimiters_string)
+
+    run_time = 0
+    for _ in range(TIME_COUNTER_REPEATS):
+        c_delimiters_string, _, c_string_player = \
+            create_c_objects(bytes_string, delimiters.encode(ENCODING))
+
+        run_time += Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS)
+
+    return run_time
 
 
 def run_strtok_test(delimiters, libs, test_data):
@@ -94,17 +117,20 @@ def run_strtok_test(delimiters, libs, test_data):
     c_delimiters_string, c_string, c_string_player = \
         create_c_objects(bytes_string, delimiters.encode(ENCODING))
 
-    total_time, error_code, std_ptr = \
+    error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
 
+    iterations = 0
     while std_ptr.value is not None and not error_code:
-        time, error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
-        total_time += time
+        error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
+        iterations += 1
 
-    return total_time, error_code
+    run_time = strtok_time_counter(libs["player"], bytes_string, delimiters, iterations)
+
+    return run_time, error_code, 0
 
 
-def start_strtok(player_lib, tests_dir):
+def start_strtok(player_lib, tests_path):
     """
         Открытие библиотек, запуск ранера, печать результатов.
     """
@@ -113,14 +139,15 @@ def start_strtok(player_lib, tests_dir):
     libc = ctypes.CDLL("libc.so.6")
     libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
+    libs = {"player": lib_player, "libary": libc}
 
-    total_tests, total_time = runner(
-        tests_dir,
-        partial(run_strtok_test, DELIMITERS, [lib_player, libc])
+    total_tests, total_time, dispersion = runner(
+        tests_path,
+        partial(run_strtok_test, DELIMITERS, libs)
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 100 TIME:", total_time)
-    return total_tests, total_time
+    print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time, "DISPERSION:", dispersion)
+    return total_tests, total_time, dispersion
 
 
 if __name__ == "__main__":
