@@ -7,8 +7,7 @@ import hashlib
 import gitlab
 
 COLLECTED = 1
-BAD_REQUEST = 2
-BAD_CALL = 3
+BAD_CALL = 2
 
 
 def get_group(instance, name):
@@ -82,16 +81,62 @@ def get_artifacts(project, job):
     job = project.jobs.get(job.id)
     zip_arts = job.user.get("username") + ".zip"
 
-    if job.status == "success":
-        try:
-            with open(zip_arts, "wb") as file:
-                job.artifacts(streamed=True, action=file.write)
-            subprocess.run(["unzip", "-qo", zip_arts], check=True)
-        except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
-            return BAD_CALL
+    try:
+        with open(zip_arts, "wb") as file:
+            job.artifacts(streamed=True, action=file.write)
+        subprocess.run(["unzip", "-qo", zip_arts], check=True)
+    except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
+        return BAD_CALL, job.status
 
-        os.unlink(zip_arts)
+    os.unlink(zip_arts)
 
-        return COLLECTED
+    return COLLECTED, job.status
 
-    return BAD_REQUEST
+
+def get_group_artifacts(instance, game, group_name):
+    """ Collect group projects artifacts by game's name. """
+
+    group = get_group(instance, group_name)
+    projects = get_group_projects(instance, group)
+
+    results = []
+
+    print("START ARTIFACTS COLLECTION")
+
+    for prj in projects:
+        project = get_project(instance, group, prj.name)
+        job = get_last_job(project, game)
+
+        if job is None:
+            print(r"THERE IS NO {game} BRANCH JOBS FOR {project.name}")
+            continue
+
+        developer = None
+        members = project.members.list(all=True)
+
+        for mmbr in members:
+            member = project.members.get(mmbr.id)
+            if member.access_level == gitlab.DEVELOPER_ACCESS:
+                developer = member
+                break
+
+        if developer is not None:
+            user_result = [developer.name, "@" + developer.username]
+            results.append(user_result)
+            if check_md5(os.path.abspath("cfg/.gitlab-ci.students.yml"),
+                         project, game, ".gitlab-ci.yml") is False:
+                print(r"CORRUPTED CI FOUND FOR {user_result[1]}")
+                continue
+            print(r"CORRECT CI FOUND FOR {user_result[1]}")
+            status = get_artifacts(project, job)
+
+            if status[0] == COLLECTED:
+                print(r"ARTIFACTS FOR {user_result[1]} ARE COLLECTED")
+            elif status[0] == BAD_CALL:
+                print(r"THERE ARE NO ARTIFACTS FOR {user_result[1]}")
+        else:
+            print(r"THERE IS NO DEVELOPER FOR {project.name}")
+
+    print("FINISH ARTIFACTS COLLECTION\n")
+
+    return results
