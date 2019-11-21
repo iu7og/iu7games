@@ -6,7 +6,7 @@ import operator
 from datetime import datetime
 from copy import deepcopy
 
-STRG_TABLE_WIDTH = 5
+STRG_TABLE_WIDTH = 6
 
 TESTS_COL = 2
 RES_COL = 3
@@ -53,6 +53,16 @@ def delete_page(project, page_slug):
 
     page = project.wikis.get(page_slug)
     page.delete()
+
+
+def fix_date(results, columns):
+    """ Move commit date to the end of table. """
+
+    for rec in results:
+        commit_date = rec.pop(2)
+        rec.append(commit_date)
+
+    return results
 
 
 def form_table(results, removable, sort_keys, output_params):
@@ -121,6 +131,8 @@ def update_wiki(project, game, results):
     res = ""
 
     if game == "STRgame":
+        results = fix_date(results, STRG_TABLE_WIDTH)
+
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
         split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \

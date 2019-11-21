@@ -68,11 +68,25 @@ def get_deploy_job(project, game, ref):
 
     jobs = project.jobs.list(all=True)
     for job in jobs:
-        if job.ref == ref and job.status == "success" and job.stage == f"deploy_{game}":
+        if job.ref == ref and job.status == "success" and job.name == f"deploy_{game}":
             deploy_job = job
             break
 
     return deploy_job
+
+
+def get_job_date(job):
+    """ Get job finishing time in HH:MM:SS DD.MM.YYYY format. """
+
+    job_date = job.finished_at[0:10].split("-")
+    job_date[0], job_date[2] = job_date[2], job_date[0]
+    job_date = ".".join(job_date)
+
+    job_time = job.finished_at[11:19]
+
+    job_status = f"{job_time} {job_date}"
+
+    return job_status
 
 
 def check_md5(master, project, ref, user):
@@ -136,7 +150,8 @@ def get_group_artifacts(instance, game, group_name):
                 break
 
         if developer is not None:
-            user_result = [developer.name, "@" + developer.username]
+            user_result = [developer.name, "@" +
+                           developer.username, get_job_date(job)]
             results.append(user_result)
             if check_md5(os.path.abspath("cfg/.gitlab-ci.students.yml"),
                          project, game, ".gitlab-ci.yml") is False:
