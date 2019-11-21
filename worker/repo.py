@@ -61,6 +61,20 @@ def get_success_job(project, ref):
     return success_job
 
 
+def get_deploy_job(project, game, ref):
+    """ Get game deploy job. """
+
+    deploy_job = None
+
+    jobs = project.jobs.list(all=True)
+    for job in jobs:
+        if job.ref == ref and job.status == "success" and job.stage == f"deploy_{game}":
+            deploy_job = job
+            break
+
+    return deploy_job
+
+
 def check_md5(master, project, ref, user):
     """ Check user file's identity to master file. """
 
