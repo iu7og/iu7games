@@ -34,8 +34,7 @@ def start_competition(instance, game, group_name):
                 split_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(split_res[0])
-            data.append(split_res[1])
-            data.append(split_res[2])
+            data.append(f"{split_res[1]:.9f}±{split_res[2]:.9f}")
 
             try:
                 lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
@@ -45,8 +44,7 @@ def start_competition(instance, game, group_name):
                 strtok_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(strtok_res[0])
-            data.append(strtok_res[1])
-            data.append(strtok_res[2])
+            data.append(f"{strtok_res[1]:.9f}±{strtok_res[2]:.9f}")
 
             print()
     elif game == "XOgame":
