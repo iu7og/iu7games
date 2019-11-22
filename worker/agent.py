@@ -1,4 +1,4 @@
-""" 
+"""
     Агент для запуска соревнований IU7Games Project.
 """
 
@@ -19,7 +19,7 @@ IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
 
 
 def start_competition(instance, game, group_name):
-    """ 
+    """
         Старт соревнования с собранными стратегиями.
     """
 
@@ -65,7 +65,7 @@ def start_competition(instance, game, group_name):
 
 
 def add_args():
-    """ 
+    """
         Добавление аргументов командной строки для агента.
     """
 

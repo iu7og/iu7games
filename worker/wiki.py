@@ -1,4 +1,4 @@
-""" 
+"""
     Модуль для работы над Wiki-страницами.
 """
 
@@ -44,7 +44,7 @@ def create_page(project, title, content):
 
 
 def update_page(project, page_slug, title, content):
-    """ 
+    """
         Обновление Wiki-страницы.
     """
 
@@ -55,7 +55,7 @@ def update_page(project, page_slug, title, content):
 
 
 def delete_page(project, page_slug):
-    """ 
+    """
         Удаление Wiki-страницы.
     """
 
@@ -64,7 +64,7 @@ def delete_page(project, page_slug):
 
 
 def fix_date(results):
-    """ 
+    """
         Перемещение даты завершения job'ы в последний столбец таблицы.
     """
 
@@ -76,7 +76,7 @@ def fix_date(results):
 
 
 def form_table(results, removable, sort_keys, output_params):
-    """ 
+    """
         Предварительное формирование таблицы.
     """
 
@@ -98,7 +98,7 @@ def form_table(results, removable, sort_keys, output_params):
 
 
 def print_table(head, theme, columns, results, compet):
-    """ 
+    """
         Печать таблицы с предопределенной шапкой.
     """
 
@@ -133,7 +133,7 @@ def print_table(head, theme, columns, results, compet):
 
 
 def update_wiki(project, game, results):
-    """ 
+    """
         Обновление Wiki-страницы с обновленными результатами.
     """
 
@@ -151,11 +151,11 @@ def update_wiki(project, game, results):
 
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
-        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|" \
-            "**SPLIT Время**|**Последнее обновление**|\n" \
+        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|"\
+            "**SPLIT Время**|**Последнее обновление**|\n"\
             "|---|---|---|---|---|---|\n"
-        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|" \
-            "**STRTOK Время**|**Последнее обновление**|\n" \
+        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|"\
+            "**STRTOK Время**|**Последнее обновление**|\n"\
             "|---|---|---|---|---|---|\n"
 
         sorted_split = form_table(

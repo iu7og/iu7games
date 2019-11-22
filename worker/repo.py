@@ -1,5 +1,5 @@
-""" 
-    Модуль для работы над GitLab-проектами.    
+"""
+    Модуль для работы над GitLab-проектами.
 """
 
 
@@ -13,7 +13,7 @@ BAD_CALL = 2
 
 
 def get_group(instance, name):
-    """ 
+    """
         Получение GitLab-группы по имени группы.
     """
 
@@ -29,7 +29,7 @@ def get_group(instance, name):
 
 
 def get_group_projects(instance, group):
-    """ 
+    """
         Получение GitLab-проектов внутри группы.
     """
 
@@ -40,7 +40,7 @@ def get_group_projects(instance, group):
 
 
 def get_project(instance, group, name):
-    """ 
+    """
         Получение GitLab-проекта по имени проекта.
     """
 
@@ -56,7 +56,7 @@ def get_project(instance, group, name):
 
 
 def get_success_job(project, ref):
-    """ 
+    """
         Получение последнего успешного job'а в ветке.
     """
 
@@ -72,15 +72,15 @@ def get_success_job(project, ref):
 
 
 def get_deploy_job(project, game, ref):
-    """ 
-        Получение job'а со статусом "deploy". 
+    """
+        Получение job'а со статусом "deploy".
     """
 
     deploy_job = None
 
     jobs = project.jobs.list(all=True)
     for job in jobs:
-        if job.ref == ref and job.status == "success" and job.name == f"deploy_{game}":
+        if job.ref == ref and job.status == "success"and job.name == f"deploy_{game}":
             deploy_job = job
             break
 
@@ -88,8 +88,8 @@ def get_deploy_job(project, game, ref):
 
 
 def get_job_date(job):
-    """ 
-        Получение даты последнего зверешения job'а в формате ЧЧ:ММ:СС ДД.ММ.ГГГ. 
+    """
+        Получение даты последнего зверешения job'а в формате ЧЧ:ММ:СС ДД.ММ.ГГГ.
     """
 
     job_date = job.finished_at[0:10].split("-")
@@ -104,9 +104,9 @@ def get_job_date(job):
 
 
 def check_md5(master, project, ref, user):
-    """ 
-        Проверка md5-суммы файла в репозитории пользователя 
-        с файлом в основном репозитории. 
+    """
+        Проверка md5-суммы файла в репозитории пользователя
+        с файлом в основном репозитории.
     """
 
     master_file = open(master, "rt").read()
@@ -121,7 +121,7 @@ def check_md5(master, project, ref, user):
 
 
 def get_artifacts(project, job):
-    """ 
+    """
         Получение артефактов job'ы.
     """
 
@@ -142,7 +142,7 @@ def get_artifacts(project, job):
 
 
 def get_group_artifacts(instance, game, group_name):
-    """ 
+    """
         Получение артефактов со всех проектов группы из определенной ветки.
     """
 
