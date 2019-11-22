@@ -1,5 +1,5 @@
 """
-      ===== SPLIT RUNNER v.1.2b =====
+      ===== SPLIT RUNNER v.1.2c =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции split,

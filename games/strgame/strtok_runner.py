@@ -1,5 +1,5 @@
 """
-      ===== STRTOK RUNNER v.1.2b =====
+      ===== STRTOK RUNNER v.1.2c =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции strtok,
@@ -20,6 +20,7 @@ import ctypes
 from timeit import Timer
 from time import process_time_ns
 from functools import partial
+from math import sqrt
 from games.strgame.runner import runner
 
 OK = 0
@@ -30,7 +31,7 @@ ENCODING = "utf-8"
 NULL = 0
 
 TIMEIT_REPEATS = 1
-TIME_COUNTER_REPEATS = 20
+TIME_COUNTER_REPEATS = 101
 
 
 def check_strtok_correctness(player_ptr, correct_ptr):
@@ -97,14 +98,21 @@ def strtok_time_counter(player_lib, bytes_string, delimiters, iterations):
         for _ in range(iterations):
             player_lib.strtok(NULL, c_delimiters_string)
 
-    run_time = 0
+    run_time_info = []
     for _ in range(TIME_COUNTER_REPEATS):
         c_delimiters_string, _, c_string_player = \
             create_c_objects(bytes_string, delimiters.encode(ENCODING))
 
-        run_time += Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS)
+        run_time_info.append(Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS))
 
-    return run_time
+    run_time_info.sort()
+    mediana = run_time_info[TIMEIT_REPEATS // 2]
+
+    avg_time = sum(run_time_info) / len(run_time_info)
+    run_time_info = list(map(lambda x: (x - avg_time) * (x - avg_time), run_time_info))
+    dispersion = sqrt(sum(run_time_info) / len(run_time_info))
+
+    return mediana, dispersion
 
 
 def run_strtok_test(delimiters, libs, test_data):
@@ -125,9 +133,9 @@ def run_strtok_test(delimiters, libs, test_data):
         error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
         iterations += 1
 
-    run_time = strtok_time_counter(libs["player"], bytes_string, delimiters, iterations)
+    run_time, dispersion = strtok_time_counter(libs["player"], bytes_string, delimiters, iterations)
 
-    return run_time, error_code, 0
+    return run_time, error_code, dispersion
 
 
 def start_strtok(player_lib, tests_path):
