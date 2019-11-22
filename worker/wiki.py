@@ -1,4 +1,6 @@
-""" GitLab Wiki handling module. """
+""" 
+    Модуль для работы над Wiki-страницами.
+"""
 
 
 import pickle
@@ -21,15 +23,17 @@ STRTOK_RES_COL = 5
 STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_RES_COL)
 
 NO_RESULT = 1337
-NO_RESULT_PREC = "1337.000000000"
+NO_RESULT_PRECISE = "1337.0000000"
 MSG = "Отсутствует стратегия"
-OUTPUT_PARAMS = (NO_RESULT, MSG, NO_RESULT_PREC)
+OUTPUT_PARAMS = (NO_RESULT, MSG, NO_RESULT_PRECISE)
 
 POS_CHANGE = ("🔺", "🔻")
 
 
 def create_page(project, title, content):
-    """ Create Wiki page. """
+    """
+        Создание Wiki-страницы.
+    """
 
     project.wikis.create(
         {
@@ -40,7 +44,9 @@ def create_page(project, title, content):
 
 
 def update_page(project, page_slug, title, content):
-    """ Update Wiki page. """
+    """ 
+        Обновление Wiki-страницы.
+    """
 
     page = project.wikis.get(page_slug)
     page.title = title
@@ -49,24 +55,30 @@ def update_page(project, page_slug, title, content):
 
 
 def delete_page(project, page_slug):
-    """ Delete Wiki page. """
+    """ 
+        Удаление Wiki-страницы.
+    """
 
     page = project.wikis.get(page_slug)
     page.delete()
 
 
-def fix_date(results, columns):
-    """ Move commit date to the end of table. """
+def fix_date(results):
+    """ 
+        Перемещение даты завершения job'ы в последний столбец таблицы.
+    """
 
     for rec in results:
-        commit_date = rec.pop(2)
-        rec.append(commit_date)
+        job_date = rec.pop(2)
+        rec.append(job_date)
 
     return results
 
 
 def form_table(results, removable, sort_keys, output_params):
-    """ Preprinting table format. """
+    """ 
+        Предварительное формирование таблицы.
+    """
 
     new = deepcopy(results)
 
@@ -86,7 +98,9 @@ def form_table(results, removable, sort_keys, output_params):
 
 
 def print_table(head, theme, columns, results, compet):
-    """ Print table with specified head. """
+    """ 
+        Печать таблицы с предопределенной шапкой.
+    """
 
     try:
         results_dump = open(f"tbdump_{compet}.obj", "rb")
@@ -103,7 +117,7 @@ def print_table(head, theme, columns, results, compet):
         place = prize.setdefault(num, str(num))
 
         for j in range(len(results_old)):
-            if (results[i][1] == results_old[j][1]):
+            if results[i][1] == results_old[j][1]:
                 if i > j:
                     place += f"{POS_CHANGE[1]}-{i - j}"
                 elif i < j:
@@ -119,7 +133,9 @@ def print_table(head, theme, columns, results, compet):
 
 
 def update_wiki(project, game, results):
-    """ Update Wiki pages with new games results. """
+    """ 
+        Обновление Wiki-страницы с обновленными результатами.
+    """
 
     games = {
         "XOgame Leaderboard": "XOgame-Leaderboard",
@@ -131,7 +147,7 @@ def update_wiki(project, game, results):
     res = ""
 
     if game == "STRgame":
-        results = fix_date(results, STRG_TABLE_WIDTH)
+        results = fix_date(results)
 
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
