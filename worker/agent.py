@@ -1,4 +1,6 @@
-""" Worker for IU7Games project. """
+"""
+    Агент для запуска соревнований IU7Games Project.
+"""
 
 import os
 import argparse
@@ -17,10 +19,15 @@ IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
 
 
 def start_competition(instance, game, group_name):
-    """ Start competition with collected strategies. """
+    """
+        Старт соревнования с собранными стратегиями.
+    """
 
     if game == "STRgame":
         results = worker.repo.get_group_artifacts(instance, game, group_name)
+        deploy_job = worker.repo.get_deploy_job(
+            IU7GAMES, game.lower(), "develop")
+        worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
         print("STRGAME RESULTS\n")
         for data in results:
@@ -34,8 +41,7 @@ def start_competition(instance, game, group_name):
                 split_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(split_res[0])
-            data.append(split_res[1])
-            data.append(split_res[2])
+            data.append(f"{split_res[1]:.7f}±{split_res[2]:.7f}")
 
             try:
                 lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
@@ -45,8 +51,7 @@ def start_competition(instance, game, group_name):
                 strtok_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(strtok_res[0])
-            data.append(strtok_res[1])
-            data.append(strtok_res[2])
+            data.append(f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}")
 
             print()
     elif game == "XOgame":
@@ -60,7 +65,9 @@ def start_competition(instance, game, group_name):
 
 
 def add_args():
-    """ Add command line arguments to agent. """
+    """
+        Добавление аргументов командной строки для агента.
+    """
 
     parser = argparse.ArgumentParser()
     parser.add_argument("game", help="Select a game")

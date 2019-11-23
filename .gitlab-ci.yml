@@ -50,6 +50,7 @@ deploy_strgame:
   artifacts:
     paths:
       - deploylog.txt
+      - ./*.obj
     when: always
     expire_in: 30 days
   only:
