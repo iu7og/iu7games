@@ -87,12 +87,12 @@ def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
     run_time_info = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
     run_time_info.sort()
 
-    mediana = run_time_info[TIMEIT_REPEATS // 2]
+    median = run_time_info[TIMEIT_REPEATS // 2]
     avg_time = sum(run_time_info) / len(run_time_info)
     run_time_info = list(map(lambda x: (x - avg_time) * (x - avg_time), run_time_info))
     dispersion = sqrt(sum(run_time_info) / len(run_time_info))
 
-    return mediana, dispersion
+    return median, dispersion
 
 
 def run_split_test(lib_player, delimiter, test_data):
