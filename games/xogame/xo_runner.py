@@ -174,7 +174,7 @@ def update_points(player_point):
     """
 
     if player_point == NO_RESULT:
-        return -1
+        return NO_RESULT
 
     if player_point <= 0:
         return 0
