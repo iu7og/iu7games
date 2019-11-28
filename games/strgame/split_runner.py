@@ -54,7 +54,7 @@ def create_c_objects(bytes_string, delimiter):
 
     c_string = ctypes.create_string_buffer(bytes_string)
     c_array_strings = ctypes.create_string_buffer(b' ' * WORDS_COUNT * MAX_LEN_WORD)
-    filling_lib = ctypes.CDLL("./filling.so")
+    filling_lib = ctypes.CDLL("filling.so")
     c_array_pointer = (ctypes.c_char_p * WORDS_COUNT)()
 
     filling_lib.filling_pointers_array(
