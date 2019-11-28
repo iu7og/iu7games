@@ -21,8 +21,7 @@ from timeit import Timer
 from time import process_time_ns
 from functools import partial
 from math import sqrt
-#from games.strgame.runner import runner
-from runner import runner
+from games.strgame.runner import runner
 
 OK = 0
 INVALID_PTR = 1

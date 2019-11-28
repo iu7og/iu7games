@@ -25,8 +25,7 @@ from time import process_time_ns
 from math import sqrt
 from timeit import Timer
 from psutil import virtual_memory
-#from games.strgame.runner import runner
-from runner import runner
+from games.strgame.runner import runner
 
 
 OK = 0
