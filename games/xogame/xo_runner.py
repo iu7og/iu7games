@@ -195,7 +195,7 @@ def start_xogame_competition(players_info, field_size):
             player_lib = ctypes.CDLL(players_info[i][0])
 
             for j in range(i + 1, len(players_info)):
-                if players_info[i][0] != "NULL":
+                if players_info[j][0] != "NULL":
                     opponent_lib = ctypes.CDLL(players_info[j][0])
 
                     pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
