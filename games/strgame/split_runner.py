@@ -20,11 +20,16 @@
 
 
 import ctypes
+import gc
+import time
+import psutil
 from timeit import Timer
 from functools import partial
 from time import process_time_ns
 from math import sqrt
-from games.strgame.runner import runner
+#from games.strgame.runner import runner
+from runner import runner
+
 
 OK = 0
 INCORRECT_LEN = 1
@@ -33,9 +38,9 @@ INCORRECT_TEST = 2
 ENCODING = "utf-8"
 DELIMITER = ' '
 
-WORDS_COUNT = 12412800
-MAX_LEN_WORD = 11
-TIMEIT_REPEATS = 101
+WORDS_COUNT = 5300 * 20000
+MAX_LEN_WORD = 17
+TIMEIT_REPEATS = 11
 
 
 def create_c_objects(bytes_string, delimiter):
@@ -47,10 +52,19 @@ def create_c_objects(bytes_string, delimiter):
         4. c_delimiter - символ-разделитель (const char symbol)
     """
 
+    a = time.time()
+
+    print(psutil.virtual_memory())
+    print("START")
     c_string = ctypes.create_string_buffer(bytes_string)
-    c_array_strings = [ctypes.create_string_buffer(MAX_LEN_WORD) for i in range(WORDS_COUNT)]
-    c_array_pointer = (ctypes.c_char_p * WORDS_COUNT)(*map(ctypes.addressof, c_array_strings))
+    print(psutil.virtual_memory())
+    c_array_strings = ctypes.create_string_buffer(b' ' * WORDS_COUNT * MAX_LEN_WORD)
+    print(psutil.virtual_memory())
+    test_lib = ctypes.CDLL("./test.so")
+    c_array_pointer = (ctypes.c_char_p * WORDS_COUNT)()
+    test_lib.filling_pointers_array(c_array_pointer, c_array_strings, ctypes.c_int(MAX_LEN_WORD), ctypes.c_int(WORDS_COUNT))
     c_delimiter = ctypes.c_wchar(delimiter)
+    print("OFF", time.time() - a)
 
     return c_string, c_array_strings, c_array_pointer, c_delimiter
 
@@ -61,12 +75,35 @@ def check_split_correctness(player_size, player_strings_array, correct_strings_a
         значения тестируемой функции split.
     """
 
-    if player_size != len(correct_strings_array):
-        return INCORRECT_LEN
+    #if player_size != len(correct_strings_array):
+        #return INCORRECT_LEN
 
+    a = psutil.virtual_memory()
+    print(a[1], a)
+    #k = 1000000
+
+    k = a[1] // 100
+    print(k)
+    correct_strings_array = correct_strings_array.split(' ', k)
+    print(psutil.virtual_memory())
+    for i in range(WORDS_COUNT // k):
+        print(psutil.virtual_memory())
+        for j in range(k):
+            if player_strings_array[k * i + j].decode(ENCODING) != correct_strings_array[j]:
+                print(i)
+                print(k * i + j)
+                print(player_strings_array[j].decode(ENCODING))
+                print(correct_strings_array[j])
+                return INCORRECT_TEST
+
+        del correct_strings_array[:k]
+        correct_strings_array = correct_strings_array[0].split(' ', k)
+
+    """
     for i in range(len(correct_strings_array)):
-        if correct_strings_array[i] != player_strings_array[i].value.decode(ENCODING):
+        if correct_strings_array[i] != player_strings_array[i].decode(ENCODING):
             return INCORRECT_TEST
+    """
 
     return OK
 
@@ -86,6 +123,7 @@ def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
 
     run_time_info = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
     run_time_info.sort()
+    print(run_time_info)
 
     median = run_time_info[TIMEIT_REPEATS // 2]
     avg_time = sum(run_time_info) / len(run_time_info)
@@ -102,18 +140,25 @@ def run_split_test(lib_player, delimiter, test_data):
         Замеры времени.
     """
 
-    correct_strings_array = test_data.split(delimiter)
     bytes_string = test_data.encode(ENCODING)
 
     c_string, c_array_strings, c_array_pointer, c_delimiter = \
         create_c_objects(bytes_string, delimiter)
 
+    print(psutil.virtual_memory())
+    #exit(0)
+
     split_size = lib_player.split(c_string, c_array_pointer, c_delimiter)
+    print(psutil.virtual_memory())
+    del bytes_string
+
+    error_code = 0
     error_code = check_split_correctness(
         split_size,
-        c_array_strings,
-        correct_strings_array
+        c_array_pointer,
+        test_data
     )
+    print(psutil.virtual_memory())
 
     run_time, dispersion = split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter)
 
@@ -126,6 +171,8 @@ def start_split(player_lib, tests_dir):
         Печать количество успешных тестов и время ранинга.
     """
 
+    a = psutil.virtual_memory()
+    print(a)
     lib_player = ctypes.CDLL(player_lib)
     total_tests, total_time, dispersion = runner(
         tests_dir,

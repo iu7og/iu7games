@@ -7,6 +7,7 @@
 """
 
 from functools import reduce
+import psutil
 
 TESTS_REPEATS = 1
 NUMBER_OF_TESTS = 1
@@ -17,7 +18,7 @@ def concat_strings(file):
         удаление символов окончания строки.
     """
 
-    return reduce(lambda x, y: x + y[:-1], file)
+    return reduce(lambda x, y: x + y[:-1], file) * 20000
 
 
 def runner(tests_path, tests_runner):
@@ -32,6 +33,8 @@ def runner(tests_path, tests_runner):
     for i in range(TESTS_REPEATS):
         file = open(tests_path + "/test_" + str((i % NUMBER_OF_TESTS) + 1) + ".txt", "r")
         test_data = concat_strings(file)
+
+        print(psutil.virtual_memory())
         file.close()
 
         time, error_code, dispersion = tests_runner(test_data)
