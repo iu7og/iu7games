@@ -168,6 +168,12 @@ def update_wiki(project, game, results):
         res += print_table(strtok_head, strtok_theme,
                            STRG_TABLE_WIDTH, sorted_strtok, "strtok")
 
+        split_dump = open("tbdump_split.obj", "wb")
+        pickle.dump(sorted_split, split_dump)
+
+        strtok_dump = open("tbdump_strtok.obj", "wb")
+        pickle.dump(sorted_strtok, strtok_dump)
+
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
 
@@ -176,9 +182,3 @@ def update_wiki(project, game, results):
     for key in games_keys:
         if game in key:
             update_page(project, games.get(key), key, res)
-
-    split_dump = open("tbdump_split.obj", "wb")
-    pickle.dump(sorted_split, split_dump)
-
-    strtok_dump = open("tbdump_strtok.obj", "wb")
-    pickle.dump(sorted_strtok, strtok_dump)
