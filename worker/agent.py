@@ -5,12 +5,12 @@
 import os
 import argparse
 import pickle
-from copy import deepcopy
 
 import gitlab
 import worker.wiki
 import worker.repo
 from games.strgame import split_runner, strtok_runner
+from games.xogame import xo_runner
 
 
 GIT_INST = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
@@ -35,50 +35,81 @@ def start_competition(instance, game, group_name):
         for data in results:
             print(f"{data[0]}:")
 
-            try:
-                lib_path = os.path.abspath(f"{data[1][1:]}_split_lib.so")
-                test_path = os.path.abspath("/tests/strgame/split")
+            lib_path = os.path.abspath(f"{data[1][1:]}_split_lib.so")
+            test_path = os.path.abspath("games/strgame/tests/split")
+
+            if os.path.exists(lib_path) and os.path.exists(test_path):
                 split_res = split_runner.start_split(lib_path, test_path)
-            except OSError:
+            else:
                 split_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(split_res[0])
             data.append(f"{split_res[1]:.7f}±{split_res[2]:.7f}")
 
-            try:
-                lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
-                test_path = os.path.abspath("/tests/strgame/strtok")
+            lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
+            test_path = os.path.abspath("games/strgame/tests/strtok")
+
+            if os.path.exists(lib_path) and os.path.exists(test_path):
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
-            except OSError:
+            else:
                 strtok_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
 
             data.append(strtok_res[0])
             data.append(f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}")
 
             print()
+
     elif game == "XOgame":
-        print("XOGAME RESULTS\n")
-        libs = []
+        libs_3x3 = []
+        libs_5x5 = []
 
         try:
-            results_dump = open(f"tbdump_xogame.obj", "rb")
-            results_old = pickle.load(results_dump)
+            results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
+            results_3x3_old = pickle.load(results_3x3_dump)
+            results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
+            results_5x5_old = pickle.load(results_5x5_dump)
         except FileNotFoundError:
-            results_old = []
+            results_3x3_old = []
+            results_5x5_old = []
 
         for data in results:
-            rating = 0
-            for data_old in results_old:
+            rating_3x3 = 0
+            rating_5x5 = 0
+
+            for data_old in results_3x3_old:
                 if data[0] == data_old[0]:
-                    rating = data_old[3]
-            try:
-                libs.append((os.path.abspath(f"{data[1][1:]}_xo.so"), rating))
-            except OSError:
-                libs.append(("NULL", -1))
+                    rating_3x3 = data_old[2]
+
+            for data_old in results_5x5_old:
+                if data[0] == data_old[0]:
+                    rating_5x5 = data_old[2]
+
+            lib_path = os.path.abspath(f"{data[1][1:]}_xo.so")
+
+            if os.path.exists(lib_path):
+                libs_3x3.append((lib_path, rating_3x3))
+                libs_5x5.append((lib_path, rating_5x5))
+            else:
+                libs_3x3.append(("NULL", rating_3x3))
+                libs_5x5.append(("NULL", rating_5x5))
+
+        print("XOGAME RESULTS\n")
+        print("\n3X3 DIV\n")
+        results_3x3 = xo_runner.start_xogame_competition(libs_3x3, 3)
+        print("\n5X5 DIV\n")
+        results_5x5 = xo_runner.start_xogame_competition(libs_5x5, 5)
+
+        i = 0
+        for data in results:
+            data.append(results_3x3[i])
+            data.append(results_5x5[i])
+            i += 1
 
         print()
+
     elif game == "TEEN48game":
         pass
+
     else:
         pass
 
