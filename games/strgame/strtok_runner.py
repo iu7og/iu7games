@@ -21,7 +21,8 @@ from timeit import Timer
 from time import process_time_ns
 from functools import partial
 from math import sqrt
-from games.strgame.runner import runner
+#from games.strgame.runner import runner
+from runner import runner
 
 OK = 0
 INVALID_PTR = 1
@@ -30,6 +31,7 @@ DELIMITERS = " ,.;:"
 ENCODING = "utf-8"
 NULL = 0
 
+STRING_MULTIPLIER = 15
 TIMEIT_REPEATS = 1
 TIME_COUNTER_REPEATS = 101
 
@@ -151,7 +153,8 @@ def start_strtok(player_lib, tests_path):
 
     total_tests, total_time, dispersion = runner(
         tests_path,
-        partial(run_strtok_test, DELIMITERS, libs)
+        partial(run_strtok_test, DELIMITERS, libs),
+        STRING_MULTIPLIER
     )
 
     print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time, "DISPERSION:", dispersion)
