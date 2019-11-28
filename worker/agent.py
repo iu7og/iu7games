@@ -4,6 +4,8 @@
 
 import os
 import argparse
+import pickle
+from copy import deepcopy
 
 import gitlab
 import worker.wiki
@@ -23,12 +25,12 @@ def start_competition(instance, game, group_name):
         Старт соревнования с собранными стратегиями.
     """
 
-    if game == "STRgame":
-        results = worker.repo.get_group_artifacts(instance, game, group_name)
-        deploy_job = worker.repo.get_deploy_job(
-            IU7GAMES, game.lower(), "develop")
-        worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    results = worker.repo.get_group_artifacts(instance, game, group_name)
 
+    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    worker.repo.get_artifacts(IU7GAMES, deploy_job)
+
+    if game == "STRgame":
         print("STRGAME RESULTS\n")
         for data in results:
             print(f"{data[0]}:")
@@ -55,7 +57,26 @@ def start_competition(instance, game, group_name):
 
             print()
     elif game == "XOgame":
-        pass
+        print("XOGAME RESULTS\n")
+        libs = []
+
+        try:
+            results_dump = open(f"tbdump_xogame.obj", "rb")
+            results_old = pickle.load(results_dump)
+        except FileNotFoundError:
+            results_old = []
+
+        for data in results:
+            rating = 0
+            for data_old in results_old:
+                if data[0] == data_old[0]:
+                    rating = data_old[3]
+            try:
+                libs.append((os.path.abspath(f"{data[1][1:]}_xo.so"), rating))
+            except OSError:
+                libs.append(("NULL", -1))
+
+        print()
     elif game == "TEEN48game":
         pass
     else:
