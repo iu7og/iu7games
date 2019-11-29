@@ -125,8 +125,6 @@ def run_split_test(lib_player, delimiter, test_data):
     c_string, _, c_array_pointer, c_delim = \
         create_c_objects(bytes_string, delimiter)
 
-    test_data *= STRING_MULTIPLIER
-
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(
         player_size,
