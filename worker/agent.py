@@ -63,14 +63,15 @@ def start_competition(instance, game, group_name):
         libs_3x3 = []
         libs_5x5 = []
 
-        try:
+        results_3x3_old = []
+        results_5x5_old = []
+
+        if os.path.exists("tbdump_xogame_3x3.obj"):
             results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
             results_3x3_old = pickle.load(results_3x3_dump)
+        if os.path.exists("tbdump_xogame_5x5.obj"):
             results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
             results_5x5_old = pickle.load(results_5x5_dump)
-        except FileNotFoundError:
-            results_3x3_old = []
-            results_5x5_old = []
 
         for data in results:
             rating_3x3 = 0
