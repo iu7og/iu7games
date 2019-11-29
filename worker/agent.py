@@ -41,22 +41,20 @@ def start_competition(instance, game, group_name):
 
             if os.path.exists(lib_path) and os.path.exists(test_path):
                 split_res = split_runner.start_split(lib_path, test_path)
+                data.extend(
+                    [split_res[0], f"{split_res[1]:.7f}±{split_res[2]:.7f}"])
             else:
-                split_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
-
-            data.append(split_res[0])
-            data.append(f"{split_res[1]:.7f}±{split_res[2]:.7f}")
+                data.extend([worker.wiki.NO_RESULT] * 2)
 
             lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
             test_path = os.path.abspath("games/strgame/tests/strtok")
 
             if os.path.exists(lib_path) and os.path.exists(test_path):
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
+                data.extend(
+                    [strtok_res[0], f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"])
             else:
-                strtok_res = (0, worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
-
-            data.append(strtok_res[0])
-            data.append(f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}")
+                data.extend([worker.wiki.NO_RESULT] * 2)
 
             print()
 
@@ -103,8 +101,7 @@ def start_competition(instance, game, group_name):
 
         i = 0
         for data in results:
-            data.append(results_3x3[i])
-            data.append(results_5x5[i])
+            data.extend([results_3x3[i], results_5x5[i]])
             i += 1
 
         print()
