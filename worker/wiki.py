@@ -3,6 +3,7 @@
 """
 
 
+import os
 import pickle
 import operator
 from datetime import datetime
@@ -10,24 +11,35 @@ from copy import deepcopy
 
 STRG_TABLE_WIDTH = 6
 
-TESTS_COL = 2
-RES_COL = 3
-SORT_KEYS = (TESTS_COL, RES_COL)
+STRG_TESTS_COL = 2
+STRG_RES_COL = 3
+STRG_SORT_KEYS = (STRG_TESTS_COL, STRG_RES_COL)
 
 SPLIT_TESTS_COL = 2
-SPLIT_RES_COL = 3
-SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_RES_COL)
+SPLIT_STRG_RES_COL = 3
+SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_STRG_RES_COL)
 
 STRTOK_TESTS_COL = 4
-STRTOK_RES_COL = 5
-STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_RES_COL)
+STRTOK_STRG_RES_COL = 5
+STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_STRG_RES_COL)
 
-NO_RESULT = 1337
-NO_RESULT_PRECISE = "1337.0000000"
+XOG_TABLE_WIDTH = 5
+
+XOG_RES_COL = 2
+XOG_SORT_KEYS = (XOG_RES_COL, )
+
+XOG_3X3_RES_COL = 2
+XOG_5X5_RES_COL = 3
+
+XOG_3X3_REMOVABLE = (XOG_5X5_RES_COL, XOG_5X5_RES_COL)
+XOG_5X5_REMOVABLE = (XOG_3X3_RES_COL, XOG_3X3_RES_COL)
+
+NO_RESULT = -1337
 MSG = "Отсутствует стратегия"
-OUTPUT_PARAMS = (NO_RESULT, MSG, NO_RESULT_PRECISE)
+OUTPUT_PARAMS = (NO_RESULT, MSG)
 
 POS_CHANGE = ("🔺", "🔻")
+STRG_RESULT = ("✅", "❌")
 
 
 def create_page(project, title, content):
@@ -75,7 +87,7 @@ def fix_date(results):
     return results
 
 
-def form_table(results, removable, sort_keys, output_params):
+def form_table(results, removable, sort_keys, output_params, game):
     """
         Предварительное формирование таблицы.
     """
@@ -85,14 +97,25 @@ def form_table(results, removable, sort_keys, output_params):
     for rec in new:
         del rec[removable[0]:removable[1] + 1]
 
-    new = sorted(new, key=operator.itemgetter(sort_keys[1]))
-    new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
+    if game == "STRgame":
+        new = sorted(new, key=operator.itemgetter(sort_keys[1]))
+        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
-    for rec in new:
-        rec[sort_keys[0]] = f"{str(rec[sort_keys[0]])}/1"
+        for rec in new:
+            if rec[sort_keys[0]] == 0:
+                rec[sort_keys[0]] = STRG_RESULT[0]
+            else:
+                rec[sort_keys[0]] = STRG_RESULT[1]
 
-        if rec[sort_keys[1]] == f"{output_params[2]}±{output_params[2]}":
-            rec[sort_keys[1]] = output_params[1]
+            if rec[sort_keys[1]] == output_params[0]:
+                rec[sort_keys[1]] = output_params[1]
+
+    if game == "XOgame":
+        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
+
+        for rec in new:
+            if rec[sort_keys[0]] == output_params[0]:
+                rec[sort_keys[0]] = 0
 
     return new
 
@@ -102,11 +125,11 @@ def print_table(head, theme, columns, results, compet):
         Печать таблицы с предопределенной шапкой.
     """
 
-    try:
+    results_old = []
+
+    if os.path.exists(f"tbdump_{compet}.obj"):
         results_dump = open(f"tbdump_{compet}.obj", "rb")
         results_old = pickle.load(results_dump)
-    except FileNotFoundError:
-        results_old = []
 
     res = theme + head
 
@@ -146,27 +169,53 @@ def update_wiki(project, game, results):
 
     res = ""
 
-    if game == "STRgame":
-        results = fix_date(results)
+    results = fix_date(results)
 
+    if game == "STRgame":
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
-        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|"\
-            "**SPLIT Время**|**Последнее обновление**|\n"\
-            "|---|---|---|---|---|---|\n"
-        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|"\
-            "**STRTOK Время**|**Последнее обновление**|\n"\
-            "|---|---|---|---|---|---|\n"
+        str_head = "|**№**|**ФИ Студента**|**GitLab ID**|**Тесты**|"\
+            "**SPLIT**|**Последнее обновление**|\n"\
+            "|---|---|---|:---:|---|---|\n"
 
         sorted_split = form_table(
-            results, STRTOK_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
+            results, STRTOK_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, game)
         sorted_strtok = form_table(
-            results, SPLIT_REMOVABLE, SORT_KEYS, OUTPUT_PARAMS)
+            results, SPLIT_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, game)
 
-        res += print_table(split_head, split_theme,
+        res += print_table(str_head, split_theme,
                            STRG_TABLE_WIDTH, sorted_split, "split")
-        res += print_table(strtok_head, strtok_theme,
+        res += print_table(str_head, strtok_theme,
                            STRG_TABLE_WIDTH, sorted_strtok, "strtok")
+
+        split_dump = open("tbdump_split.obj", "wb")
+        pickle.dump(sorted_split, split_dump)
+
+        strtok_dump = open("tbdump_strtok.obj", "wb")
+        pickle.dump(sorted_strtok, strtok_dump)
+
+    elif game == "XOgame":
+        div_3x3_theme = "# 3X3 DIVISION\n\n"
+        div_5x5_theme = "\n# 5X5 DIVISION\n\n"
+        xo_head = "|**№**|**ФИ Студента**|**GitLab ID**|"\
+            "**Очки**|**Последнее обновление**|\n"\
+            "|---|---|---|:---:|---|\n"
+
+        sorted_3x3 = form_table(
+            results, XOG_3X3_REMOVABLE, XOG_SORT_KEYS, OUTPUT_PARAMS, game)
+        sorted_5x5 = form_table(
+            results, XOG_5X5_REMOVABLE, XOG_SORT_KEYS, OUTPUT_PARAMS, game)
+
+        res += print_table(xo_head, div_3x3_theme,
+                           XOG_TABLE_WIDTH, sorted_3x3, "xogame_3x3")
+        res += print_table(xo_head, div_5x5_theme,
+                           XOG_TABLE_WIDTH, sorted_5x5, "xogame_5x5")
+
+        results_3x3_dump = open("tbdump_xogame_3x3.obj", "wb")
+        pickle.dump(sorted_3x3, results_3x3_dump)
+
+        results_5x5_dump = open("tbdump_xogame_5x5.obj", "wb")
+        pickle.dump(sorted_5x5, results_5x5_dump)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -176,9 +225,3 @@ def update_wiki(project, game, results):
     for key in games_keys:
         if game in key:
             update_page(project, games.get(key), key, res)
-
-    split_dump = open("tbdump_split.obj", "wb")
-    pickle.dump(sorted_split, split_dump)
-
-    strtok_dump = open("tbdump_strtok.obj", "wb")
-    pickle.dump(sorted_strtok, strtok_dump)
