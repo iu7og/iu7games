@@ -102,11 +102,6 @@ def form_table(results, removable, sort_keys, output_params, game):
         new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
         for rec in new:
-            if rec[sort_keys[0]] == 0:
-                rec[sort_keys[0]] = STRG_RESULT[0]
-            else:
-                rec[sort_keys[0]] = STRG_RESULT[1]
-
             if rec[sort_keys[1]] == output_params[0]:
                 rec[sort_keys[1]] = output_params[1]
 

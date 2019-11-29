@@ -41,20 +41,26 @@ def start_competition(instance, game, group_name):
 
             if os.path.exists(lib_path) and os.path.exists(test_path):
                 split_res = split_runner.start_split(lib_path, test_path)
-                data.extend(
-                    [split_res[0], f"{split_res[1]:.7f}±{split_res[2]:.7f}"])
+                sign = worker.wiki.STRG_RESULT[0]
+                if split_res[0] != 0:
+                    sign = worker.wiki.STRG_RESULT[1]
+                data.extend([sign, f"{split_res[1]:.7f}±{split_res[2]:.7f}"])
             else:
-                data.extend([worker.wiki.NO_RESULT] * 2)
+                data.extend(
+                    [worker.wiki.STRG_RESULT[1], worker.wiki.NO_RESULT])
 
             lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
             test_path = os.path.abspath("games/strgame/tests/strtok")
 
             if os.path.exists(lib_path) and os.path.exists(test_path):
                 strtok_res = strtok_runner.start_strtok(lib_path, test_path)
-                data.extend(
-                    [strtok_res[0], f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"])
+                sign = worker.wiki.STRG_RESULT[0]
+                if strtok_res[0] != 0:
+                    sign = worker.wiki.STRG_RESULT[1]
+                data.extend([sign, f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"])
             else:
-                data.extend([worker.wiki.NO_RESULT] * 2)
+                data.extend(
+                    [worker.wiki.STRG_RESULT[1], worker.wiki.NO_RESULT])
 
             print()
 
