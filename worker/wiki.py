@@ -35,11 +35,11 @@ XOG_3X3_REMOVABLE = (XOG_5X5_RES_COL, XOG_5X5_RES_COL)
 XOG_5X5_REMOVABLE = (XOG_3X3_RES_COL, XOG_3X3_RES_COL)
 
 NO_RESULT = -1337
-NO_RESULT_PRECISE = "-1337.0000000"
 MSG = "Отсутствует стратегия"
-OUTPUT_PARAMS = (NO_RESULT, MSG, NO_RESULT_PRECISE)
+OUTPUT_PARAMS = (NO_RESULT, MSG)
 
 POS_CHANGE = ("🔺", "🔻")
+STRG_RESULT = ("✅", "❌")
 
 
 def create_page(project, title, content):
@@ -102,9 +102,12 @@ def form_table(results, removable, sort_keys, output_params, game):
         new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
 
         for rec in new:
-            rec[sort_keys[0]] = f"{str(rec[sort_keys[0]])}/1"
+            if rec[sort_keys[0]] == 0:
+                rec[sort_keys[0]] = STRG_RESULT[0]
+            else:
+                rec[sort_keys[0]] = STRG_RESULT[1]
 
-            if rec[sort_keys[1]] == f"{output_params[2]}±{output_params[2]}":
+            if rec[sort_keys[1]] == output_params[0]:
                 rec[sort_keys[1]] = output_params[1]
 
     if game == "XOgame":
@@ -171,21 +174,18 @@ def update_wiki(project, game, results):
     if game == "STRgame":
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
-        split_head = "|**№**|**ФИ Студента**|**GitLab ID**|**SPLIT Тесты**|"\
-            "**SPLIT Время**|**Последнее обновление**|\n"\
-            "|---|---|---|---|---|---|\n"
-        strtok_head = "|**№**|**ФИ Студента**|**GitLab ID**|**STRTOK Тесты**|"\
-            "**STRTOK Время**|**Последнее обновление**|\n"\
-            "|---|---|---|---|---|---|\n"
+        str_head = "|**№**|**ФИ Студента**|**GitLab ID**|**Тесты**|"\
+            "**SPLIT**|**Последнее обновление**|\n"\
+            "|---|---|---|:---:|---|---|\n"
 
         sorted_split = form_table(
             results, STRTOK_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, game)
         sorted_strtok = form_table(
             results, SPLIT_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, game)
 
-        res += print_table(split_head, split_theme,
+        res += print_table(str_head, split_theme,
                            STRG_TABLE_WIDTH, sorted_split, "split")
-        res += print_table(strtok_head, strtok_theme,
+        res += print_table(str_head, strtok_theme,
                            STRG_TABLE_WIDTH, sorted_strtok, "strtok")
 
         split_dump = open("tbdump_split.obj", "wb")
@@ -199,7 +199,7 @@ def update_wiki(project, game, results):
         div_5x5_theme = "\n# 5X5 DIVISION\n\n"
         xo_head = "|**№**|**ФИ Студента**|**GitLab ID**|"\
             "**Очки**|**Последнее обновление**|\n"\
-            "|---|---|---|---|---|\n"
+            "|---|---|---|:---:|---|\n"
 
         sorted_3x3 = form_table(
             results, XOG_3X3_REMOVABLE, XOG_SORT_KEYS, OUTPUT_PARAMS, game)
