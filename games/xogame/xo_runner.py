@@ -1,5 +1,5 @@
 """
-      ===== XO RUNNER v.1.0a =====
+      ===== XO RUNNER v.1.0b =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
@@ -30,6 +30,7 @@ PLAYER_TWO_WIN = 2
 ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
+NO_RESULT = -1337
 
 def check_win(c_strings, symbol, field_size):
     """
@@ -165,6 +166,22 @@ def scoring(points, player1_index, player2_index, result, pts_difference):
     return points
 
 
+def update_points(player_point):
+    """
+    Обновление результатов в результруещем массиве points.
+    Константа NO_RESULT отвечает за отсутствие библиотеки
+    в принципе.
+    """
+
+    if player_point == NO_RESULT:
+        return NO_RESULT
+
+    if player_point <= 0:
+        return 0
+
+    return player_point
+
+
 def start_xogame_competition(players_info, field_size):
     """
         Функция запускает каждую стратегию с каждой,
@@ -174,21 +191,29 @@ def start_xogame_competition(players_info, field_size):
     points = [0] * len(players_info)
 
     for i in range(len(players_info) - 1):
-        player_lib = ctypes.CDLL(players_info[i][0])
-        for j in range(i + 1, len(players_info)):
-            opponent_lib = ctypes.CDLL(players_info[j][0])
-            pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
-            points = scoring(points, i, j, xogame_round(player_lib, opponent_lib,
-                                                        field_size), pts_difference)
-            points = scoring(points, j, i, xogame_round(opponent_lib, player_lib,
-                                                        field_size), pts_difference)
+        if players_info[i][0] != "NULL":
+            player_lib = ctypes.CDLL(players_info[i][0])
 
-    points = list(map(lambda x: 0 if x <= 0 else x, points))
+            for j in range(i + 1, len(players_info)):
+                if players_info[j][0] != "NULL":
+                    opponent_lib = ctypes.CDLL(players_info[j][0])
+
+                    pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
+                    points = scoring(points, i, j, xogame_round(player_lib, opponent_lib,
+                                                                field_size), pts_difference)
+                    points = scoring(points, j, i, xogame_round(opponent_lib, player_lib,
+                                                                field_size), pts_difference)
+                else:
+                    points[j] = NO_RESULT
+        else:
+            points[i] = NO_RESULT
+
+    points = list(map(update_points, points))
     print(points)
     return points
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("./test1.so", 0),
+    start_xogame_competition([("NULL", NO_RESULT),
                               ("./test2.so", 0),
                               ("./test3.so", 0)], 3)
