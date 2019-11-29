@@ -1,5 +1,5 @@
 """
-      ===== SMART RUNNER v.1.1a =====
+      ===== SMART RUNNER v.1.2a =====
       Copyright (C) 2019 IU7Games Team.
 
     - В этом модуле расположена универсальная функция запуска
@@ -7,9 +7,6 @@
 """
 
 from functools import reduce
-
-TESTS_REPEATS = 1
-NUMBER_OF_TESTS = 1
 
 def concat_strings(file):
     """
@@ -26,18 +23,10 @@ def runner(tests_path, tests_runner):
         функцию, запускающую тесты для strtok или split.
     """
 
-    total_time = 0
-    total_tests = 0
+    file = open(tests_path + "/test_data.txt", "r")
+    test_data = concat_strings(file)
+    file.close()
 
-    for i in range(TESTS_REPEATS):
-        file = open(tests_path + "/test_" + str((i % NUMBER_OF_TESTS) + 1) + ".txt", "r")
-        test_data = concat_strings(file)
-        file.close()
+    time, error_code, dispersion = tests_runner(test_data)
 
-        time, error_code, dispersion = tests_runner(test_data)
-
-        if not error_code:
-            total_tests += 1
-        total_time += time
-
-    return total_tests, total_time, dispersion
+    return error_code, time, dispersion
