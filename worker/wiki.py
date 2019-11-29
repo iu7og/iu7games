@@ -3,6 +3,7 @@
 """
 
 
+import os
 import pickle
 import operator
 from datetime import datetime
@@ -121,11 +122,11 @@ def print_table(head, theme, columns, results, compet):
         Печать таблицы с предопределенной шапкой.
     """
 
-    try:
+    results_old = []
+
+    if os.path.exists(f"tbdump_{compet}.obj"):
         results_dump = open(f"tbdump_{compet}.obj", "rb")
         results_old = pickle.load(results_dump)
-    except FileNotFoundError:
-        results_old = []
 
     res = theme + head
 
