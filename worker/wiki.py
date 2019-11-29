@@ -170,7 +170,7 @@ def update_wiki(project, game, results):
         split_theme = "# SPLIT\n\n"
         strtok_theme = "\n# STRTOK\n\n"
         str_head = "|**№**|**ФИ Студента**|**GitLab ID**|**Тесты**|"\
-            "**SPLIT**|**Последнее обновление**|\n"\
+            "**Результат**|**Последнее обновление**|\n"\
             "|---|---|---|:---:|---|---|\n"
 
         sorted_split = form_table(
