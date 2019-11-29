@@ -99,7 +99,7 @@ def form_table(results, removable, sort_keys, output_params, game):
 
     if game == "STRgame":
         new = sorted(new, key=operator.itemgetter(sort_keys[1]))
-        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
+        new = sorted(new, key=operator.itemgetter(sort_keys[0]))
 
         for rec in new:
             if rec[sort_keys[1]] == str(output_params[0]):
