@@ -47,7 +47,7 @@ def start_competition(instance, game, group_name):
                 data.extend([sign, f"{split_res[1]:.7f}±{split_res[2]:.7f}"])
             else:
                 data.extend(
-                    [worker.wiki.STRG_RESULT[1], worker.wiki.NO_RESULT])
+                    [worker.wiki.STRG_RESULT[1], str(worker.wiki.NO_RESULT)])
 
             lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
             test_path = os.path.abspath("games/strgame/tests/strtok")
@@ -60,7 +60,7 @@ def start_competition(instance, game, group_name):
                 data.extend([sign, f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"])
             else:
                 data.extend(
-                    [worker.wiki.STRG_RESULT[1], worker.wiki.NO_RESULT])
+                    [worker.wiki.STRG_RESULT[1], str(worker.wiki.NO_RESULT)])
 
             print()
 
