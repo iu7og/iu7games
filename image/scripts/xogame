@@ -1,0 +1,26 @@
+#! /bin/bash
+
+COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
+-Wconversion -Wenum-compare -Wfloat-equal  -Wredundant-decls -Wsign-conversion -c -O3"
+GAME_PATH="XOgame/"
+
+if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c ]
+then
+    echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c FOUND\033[0m";
+    SPAM=$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c | sed -n 's/\(system(.*)\)/\1/p')y\
+    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c | sed -n 's/\(fork()\)/\1/p')y\
+    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')y\
+    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c | sed -n 's/\([_]\{0,2\}asm[_]\{0,2\}\)/\1/p')y\
+    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c | sed -n 's/\(volatile\)/\1/p')y;
+    if [[ "$SPAM" =~ y{1,} ]]
+    then
+        echo -e "\033[0;32mNO SPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c\033[0m";
+        gcc ${COMPILE_FLAGS} -fpic ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c;
+        gcc -shared -o ${GITLAB_USER_LOGIN}_xo_lib.so ${GITLAB_USER_LOGIN}_xo.o;
+    else
+        echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c\033[0m";
+        exit 1;
+    fi
+else
+    echo -e "\033[0;31m${GAME_PATH}${GITLAB_USER_LOGIN}_xo.c NOT FOUND\033[0m";
+fi
