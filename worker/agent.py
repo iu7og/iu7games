@@ -28,7 +28,8 @@ def start_competition(instance, game, group_name):
     results = worker.repo.get_group_artifacts(instance, game, group_name)
 
     deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    if deploy_job is not None:
+        worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "STRgame":
         print("STRGAME RESULTS\n")
