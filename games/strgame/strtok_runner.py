@@ -150,14 +150,18 @@ def start_strtok(player_lib, tests_path):
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
     libs = {"player": lib_player, "libary": libc}
 
-    total_tests, total_time, dispersion = runner(
+    tests_correctness, total_time, dispersion = runner(
         tests_path,
-        partial(run_strtok_test, DELIMITERS, libs),
-        STRING_MULTIPLIER
+        partial(run_strtok_test, DELIMITERS, libs)
     )
 
-    print("STRTOK TESTS:", total_tests, "/ 1 TIME:", total_time, "DISPERSION:", dispersion)
-    return total_tests, total_time, dispersion
+    print(
+        "STRTOK TESTS:", "FAIL" if tests_correctness else "OK",
+        "TIME:", total_time,
+        "DISPERSION: ", dispersion
+    )
+
+    return tests_correctness, total_time, dispersion
 
 
 if __name__ == "__main__":

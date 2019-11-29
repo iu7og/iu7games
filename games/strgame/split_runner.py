@@ -24,7 +24,6 @@ from functools import partial
 from time import process_time_ns
 from math import sqrt
 from timeit import Timer
-from psutil import virtual_memory
 from games.strgame.runner import runner
 
 
@@ -36,7 +35,7 @@ ENCODING = "utf-8"
 DELIMITER = ' '
 
 STRING_MULTIPLIER = 20000
-WORDS_COUNT = 5400 * STRING_MULTIPLIER
+WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
 MEMORY_RATIO = 100
@@ -68,23 +67,21 @@ def create_c_objects(bytes_string, delimiter):
     return c_string, c_array_strings, c_array_pointer, c_delimiter
 
 
-def check_split_correctness(delimiter, player_string_array, correct_string_array):
+def check_split_correctness(player_size, player_string_array, correct_string_array):
     """
         Проверка корректности разбиения и возвращаемого
         значения тестируемой функции split.
     """
 
-    #split по определеному проценту от свободной памяти на данный момент
-    split_size = virtual_memory()[1] // MEMORY_RATIO
-    correct_string_array = correct_string_array.split(delimiter, split_size)
+    correct_string_array.pop()
+    correct_size = len(correct_string_array)
 
-    for i in range(WORDS_COUNT // split_size):
-        for j in range(split_size):
-            if player_string_array[split_size * i + j].decode(ENCODING) != correct_string_array[j]:
-                return INCORRECT_TEST
+    if correct_size * STRING_MULTIPLIER != player_size:
+        return INCORRECT_TEST
 
-        del correct_string_array[:split_size]
-        correct_string_array = correct_string_array[0].split(delimiter, split_size)
+    for i in range(correct_size * STRING_MULTIPLIER):
+        if player_string_array[i].decode(ENCODING) != correct_string_array[i % correct_size]:
+            return INCORRECT_TEST
 
     return OK
 
@@ -120,16 +117,21 @@ def run_split_test(lib_player, delimiter, test_data):
         Замеры времени.
     """
 
+    correct_split = test_data.split(delimiter)
+    test_data *= STRING_MULTIPLIER
+    test_data = test_data[:len(test_data) - 1]
     bytes_string = test_data.encode(ENCODING)
 
     c_string, _, c_array_pointer, c_delim = \
         create_c_objects(bytes_string, delimiter)
 
-    lib_player.split(c_string, c_array_pointer, c_delim)
+    test_data *= STRING_MULTIPLIER
+
+    player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(
-        delimiter,
+        player_size,
         c_array_pointer,
-        test_data
+        correct_split
     )
 
     if error_code == OK:
@@ -140,21 +142,25 @@ def run_split_test(lib_player, delimiter, test_data):
     return run_time, error_code, dispersion
 
 
-def start_split(player_lib, tests_dir):
+def start_split(player_lib, tests_path):
     """
         Открытие файлов с тестами и запуск split.
         Печать количество успешных тестов и время ранинга.
     """
 
     lib_player = ctypes.CDLL(player_lib)
-    total_tests, total_time, dispersion = runner(
-        tests_dir,
-        partial(run_split_test, lib_player, DELIMITER),
-        STRING_MULTIPLIER
+    tests_correctness, total_time, dispersion = runner(
+        tests_path,
+        partial(run_split_test, lib_player, DELIMITER)
     )
 
-    print("SPLIT TESTS:", total_tests, "/ 1 TIME:", total_time, "DISPERSION:", dispersion)
-    return total_tests, total_time, dispersion
+    print(
+        "SPLIT TESTS:", "FAIL" if tests_correctness else "OK",
+        "TIME:", total_time,
+        "DISPERSION:", dispersion
+    )
+
+    return tests_correctness, total_time, dispersion
 
 
 if __name__ == "__main__":
