@@ -23,17 +23,10 @@ def runner(tests_path, tests_runner, string_repetition):
         функцию, запускающую тесты для strtok или split.
     """
 
-    total_time = 0
-    total_tests = 0
-
-    file = open(tests_path + "/test_1.txt", "r")
+    file = open(tests_path + "/test_data.txt", "r")
     test_data = concat_strings(file, string_repetition)
     file.close()
 
     time, error_code, dispersion = tests_runner(test_data)
 
-    if not error_code:
-        total_tests += 1
-    total_time += time
-
-    return total_tests, total_time, dispersion
+    return error_code, time, dispersion
