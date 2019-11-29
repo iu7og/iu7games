@@ -22,6 +22,7 @@ RUN python -m pip install -r requirements.txt \
     && rm -f requirements.txt
 
 COPY ./scripts /scripts
+COPY ./libs/* /usr/lib
 
 RUN adduser -D -h /deathstar imperialclone \
     && chmod -R o+x /scripts
