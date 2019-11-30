@@ -24,8 +24,8 @@ from functools import partial
 from time import process_time_ns
 from math import sqrt
 from timeit import Timer
+from psutil import virtual_memory
 from games.strgame.runner import runner
-
 
 OK = 0
 INCORRECT_LEN = 1
@@ -34,7 +34,7 @@ INCORRECT_TEST = 2
 ENCODING = "utf-8"
 DELIMITER = ' '
 
-STRING_MULTIPLIER = 20000
+STRING_MULTIPLIER = 40000
 WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
@@ -122,8 +122,8 @@ def run_split_test(lib_player, delimiter, test_data):
     test_data = test_data[:len(test_data) - 1]
     bytes_string = test_data.encode(ENCODING)
 
-    c_string, _, c_array_pointer, c_delim = \
-        create_c_objects(bytes_string, delimiter)
+    c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
+    print("MEMORY USAGE: ", virtual_memory())
 
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(
