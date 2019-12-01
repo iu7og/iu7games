@@ -10,7 +10,7 @@ int check_correctness(char **player_matrix, char **correct_matrix, const int siz
     {
         if (strcmp(player_matrix[i], correct_matrix[i % size]))
         {
-            sum_errors = 0;
+            sum_errors++;
         }
     }
 
