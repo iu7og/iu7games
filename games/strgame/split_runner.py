@@ -79,7 +79,7 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
     if correct_size * STRING_MULTIPLIER != player_size:
         return INCORRECT_TEST
 
-    split_comparator = ctypes.CDLL("./split_comparator.so")
+    split_comparator = ctypes.CDLL("split_comparator.so")
     split_string_array = (ctypes.c_char_p * correct_size)()
     split_string_array[:] = list(map(lambda str: str.encode(ENCODING), correct_string_array))
 
