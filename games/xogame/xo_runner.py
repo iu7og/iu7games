@@ -188,7 +188,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
 
             return PLAYER_TWO_WIN
 
-    print("DRAW\n", sep="")
+    print("DRAW\n", "=" * N, sep="")
     return DRAW
 
 
