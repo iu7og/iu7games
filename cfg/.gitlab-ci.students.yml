@@ -14,3 +14,17 @@ strgame:
   only:
     refs:
       - STRgame
+
+xogame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - xogame
+  after_script:
+    - rm -f *.o
+  artifacts:
+    paths:
+      - ./*.so
+  only:
+    refs:
+      - XOgame

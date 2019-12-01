@@ -15,7 +15,6 @@
     - Возвращаемое значение: длина массива строк (кол-во строк в matrix)
     - Функция должна полностью повторяет поведение одноименной функции в Python 3.X,
       за исключением того, что делителей не может быть несколько.
-    - Функция НЕ должна ставить терминальный нуль в конце каждого разбитого слова.
 """
 
 
@@ -24,8 +23,8 @@ from functools import partial
 from time import process_time_ns
 from math import sqrt
 from timeit import Timer
+from psutil import virtual_memory
 from games.strgame.runner import runner
-
 
 OK = 0
 INCORRECT_LEN = 1
@@ -122,8 +121,8 @@ def run_split_test(lib_player, delimiter, test_data):
     test_data = test_data[:len(test_data) - 1]
     bytes_string = test_data.encode(ENCODING)
 
-    c_string, _, c_array_pointer, c_delim = \
-        create_c_objects(bytes_string, delimiter)
+    c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
+    print("MEMORY USAGE AT END: ", virtual_memory())
 
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(
@@ -146,6 +145,7 @@ def start_split(player_lib, tests_path):
         Печать количество успешных тестов и время ранинга.
     """
 
+    print("MEMORY USAGE AT START:", virtual_memory())
     lib_player = ctypes.CDLL(player_lib)
     tests_correctness, total_time, dispersion = runner(
         tests_path,
