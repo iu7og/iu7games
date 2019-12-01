@@ -1,5 +1,5 @@
 """
-      ===== XO RUNNER v.1.0b =====
+      ===== XO RUNNER v.1.1a =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
@@ -30,7 +30,42 @@ PLAYER_TWO_WIN = 2
 ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
+
 NO_RESULT = -1337
+ENCODING = "utf-8"
+N = 30
+
+def parsing_name(player_name):
+    """
+        Преобразование полного пути к файлу с библиотекой игрока
+        к gitlab логину игрока.
+    """
+    return player_name[player_name.rindex('/') + 1: len(player_name) - 3]
+
+
+def print_results(points, players_info, players_amount):
+    """
+        Печать результатов в виде:
+        ИГРОК ОЧКИ
+    """
+
+    for i in range(players_amount):
+        if players_info[i][0] != "NULL":
+            print("PLAYER", parsing_name(players_info[i][0]), "POINTS:", points[i])
+
+
+def print_field(c_strings, field_size, player_name):
+    """
+        Печать игрового поля.
+    """
+
+    print(parsing_name(player_name), "player move: ")
+
+    print("┏", "━" * field_size, "┓", sep="")
+    for i in range(field_size):
+        print("┃", c_strings[i].value.decode(ENCODING), "┃", sep="")
+    print("┗", "━" * field_size, "┛", sep="")
+
 
 def check_win(c_strings, symbol, field_size):
     """
@@ -107,7 +142,7 @@ def make_move(c_strings, move, symb, field_size):
     return c_strings
 
 
-def xogame_round(player1_lib, player2_lib, field_size):
+def xogame_round(player1_lib, player2_lib, field_size, players_names):
     """
         Запуск одного раунда игры для двух игроков.
     """
@@ -123,7 +158,14 @@ def xogame_round(player1_lib, player2_lib, field_size):
 
         c_strings = make_move(c_strings, move, ASCII_X, field_size)
         c_strings_copy = make_move(c_strings_copy, move, ASCII_X, field_size)
+        print_field(c_strings, field_size, players_names[0])
         if check_win(c_strings, ASCII_X, field_size):
+            print(
+                parsing_name(players_names[0]), " WIN, ",
+                parsing_name(players_names[1]), " LOSE\n",
+                "=" * N, sep=""
+            )
+
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
@@ -136,9 +178,17 @@ def xogame_round(player1_lib, player2_lib, field_size):
 
         c_strings = make_move(c_strings, move, ASCII_O, field_size)
         c_strings_copy = make_move(c_strings_copy, move, ASCII_O, field_size)
+        print_field(c_strings, field_size, players_names[1])
         if check_win(c_strings, ASCII_O, field_size):
+            print(
+                parsing_name(players_names[1]), " WIN, ",
+                parsing_name(players_names[0]), " LOSE\n",
+                "=" * N, sep=""
+            )
+
             return PLAYER_TWO_WIN
 
+    print("DRAW\n", "=" * N, sep="")
     return DRAW
 
 
@@ -197,19 +247,31 @@ def start_xogame_competition(players_info, field_size):
             for j in range(i + 1, len(players_info)):
                 if players_info[j][0] != "NULL":
                     opponent_lib = ctypes.CDLL(players_info[j][0])
-
                     pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
-                    points = scoring(points, i, j, xogame_round(player_lib, opponent_lib,
-                                                                field_size), pts_difference)
-                    points = scoring(points, j, i, xogame_round(opponent_lib, player_lib,
-                                                                field_size), pts_difference)
+
+                    round_info = xogame_round(
+                        player_lib,
+                        opponent_lib,
+                        field_size,
+                        (players_info[i][0], players_info[j][0])
+                    )
+                    points = scoring(points, i, j, round_info, pts_difference)
+
+                    round_info = xogame_round(
+                        opponent_lib,
+                        player_lib,
+                        field_size,
+                        (players_info[j][0], players_info[i][0])
+                    )
+                    points = scoring(points, j, i, round_info, pts_difference)
+
                 else:
                     points[j] = NO_RESULT
         else:
             points[i] = NO_RESULT
 
     points = list(map(update_points, points))
-    print(points)
+    print_results(points, players_info, len(players_info))
     return points
 
 
