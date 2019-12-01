@@ -25,7 +25,6 @@ from math import sqrt
 from timeit import Timer
 from psutil import virtual_memory
 from games.strgame.runner import runner
-#from runner import runner
 
 
 OK = 0
@@ -35,7 +34,7 @@ INCORRECT_TEST = 2
 ENCODING = "utf-8"
 DELIMITER = ' '
 
-STRING_MULTIPLIER = 1000
+STRING_MULTIPLIER = 25000
 WORDS_COUNT = 5400 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
