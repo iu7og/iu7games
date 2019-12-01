@@ -26,6 +26,7 @@ from timeit import Timer
 from psutil import virtual_memory
 from games.strgame.runner import runner
 
+
 OK = 0
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
@@ -33,8 +34,8 @@ INCORRECT_TEST = 2
 ENCODING = "utf-8"
 DELIMITER = ' '
 
-STRING_MULTIPLIER = 25000
-WORDS_COUNT = 5400 * STRING_MULTIPLIER
+STRING_MULTIPLIER = 20000
+WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
 MEMORY_RATIO = 100
@@ -78,9 +79,19 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
     if correct_size * STRING_MULTIPLIER != player_size:
         return INCORRECT_TEST
 
-    for i in range(correct_size * STRING_MULTIPLIER):
-        if player_string_array[i].decode(ENCODING) != correct_string_array[i % correct_size]:
-            return INCORRECT_TEST
+    split_comparator = ctypes.CDLL("split_comparator.so")
+    split_string_array = (ctypes.c_char_p * correct_size)()
+    split_string_array[:] = list(map(lambda str: str.encode(ENCODING), correct_string_array))
+
+    error_code = split_comparator.check_correctness(
+        player_string_array,
+        split_string_array,
+        ctypes.c_int(correct_size),
+        ctypes.c_int(STRING_MULTIPLIER)
+    )
+
+    if error_code != OK:
+        return INCORRECT_TEST
 
     return OK
 
