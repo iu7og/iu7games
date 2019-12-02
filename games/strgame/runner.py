@@ -7,6 +7,20 @@
 """
 
 from functools import reduce
+from psutil import virtual_memory
+
+def print_memory_usage(stage):
+    """
+        Печать текущего состояния использования памяти
+    """
+
+    memory_usage = virtual_memory()
+    print(
+        "STAGE:", stage,
+        "AVAILABLE MEMORY:", memory_usage[1],
+        "USAGE PERCENTAGE:", memory_usage[2]
+    )
+
 
 def concat_strings(file):
     """

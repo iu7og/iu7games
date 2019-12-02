@@ -1,5 +1,5 @@
 """
-      ===== SPLIT RUNNER v.1.3a =====
+      ===== SPLIT RUNNER v.1.3b =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции split,
@@ -23,8 +23,8 @@ from functools import partial
 from time import process_time_ns
 from math import sqrt
 from timeit import Timer
-from psutil import virtual_memory
 from games.strgame.runner import runner
+from games.strgame.runner import print_memory_usage
 
 
 OK = 0
@@ -38,19 +38,6 @@ STRING_MULTIPLIER = 24000
 WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
-
-
-def print_memory_usage(stage):
-    """
-        Печать текущего состояния использования памяти
-    """
-
-    memory_usage = virtual_memory()
-    print(
-        "STAGE:", stage,
-        "AVAILABLE MEMORY:", memory_usage[1],
-        "USAGE PERCENTAGE:", memory_usage[2]
-    )
 
 
 def create_c_objects(bytes_string, delimiter):
@@ -145,7 +132,7 @@ def run_split_test(lib_player, delimiter, test_data):
     bytes_string = test_data.encode(ENCODING)
 
     c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
-    print_memory_usage("final")
+    print_memory_usage("FINAL [split]")
 
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(
@@ -162,14 +149,14 @@ def run_split_test(lib_player, delimiter, test_data):
     return run_time, error_code, dispersion
 
 
-def start_split(player_lib, tests_path):
+def start_split(player_lib_name, tests_path):
     """
         Открытие файлов с тестами и запуск split.
         Печать количество успешных тестов и время ранинга.
     """
 
-    print_memory_usage("start")
-    lib_player = ctypes.CDLL(player_lib)
+    print_memory_usage("START [split]")
+    lib_player = ctypes.CDLL(player_lib_name)
     tests_correctness, total_time, dispersion = runner(
         tests_path,
         partial(run_split_test, lib_player, DELIMITER)
