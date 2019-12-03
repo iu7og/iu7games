@@ -133,7 +133,12 @@ def run_split_test(lib_player, delimiter, test_data):
     c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
     print_memory_usage("FINAL [split]")
 
-    player_size = lib_player.split(c_string, c_array_pointer, c_delim)
+    try:
+        player_size = lib_player.split(c_string, c_array_pointer, c_delim)
+    except:
+        print("no split function")
+        return 0.0, 0, 0.0
+
     error_code = check_split_correctness(
         player_size,
         c_array_pointer,
