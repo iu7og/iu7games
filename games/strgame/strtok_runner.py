@@ -21,8 +21,7 @@ from timeit import Timer
 from time import process_time_ns
 from functools import partial
 from math import sqrt
-from games.strgame.runner import runner
-from games.strgame.runner import print_memory_usage
+from games.strgame.runner import runner, print_memory_usage
 
 OK = 0
 INVALID_PTR = 1
@@ -161,18 +160,18 @@ def start_strtok(player_lib_name, tests_path):
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
     libs = {"player": lib_player, "libary": libc}
 
-    tests_correctness, total_time, dispersion = runner(
+    incorrect_test, total_time, dispersion = runner(
         tests_path,
         partial(run_strtok_test, DELIMITERS, libs, player_lib_name)
     )
 
     print(
-        "STRTOK TESTS:", "FAIL" if tests_correctness else "OK",
+        "STRTOK TESTS:", "FAIL" if incorrect_test else "OK",
         "TIME:", total_time,
         "DISPERSION:", dispersion
     )
 
-    return tests_correctness, total_time, dispersion
+    return incorrect_test, total_time, dispersion
 
 
 if __name__ == "__main__":

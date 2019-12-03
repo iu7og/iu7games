@@ -23,8 +23,7 @@ from functools import partial
 from time import process_time_ns
 from math import sqrt
 from timeit import Timer
-from games.strgame.runner import runner
-from games.strgame.runner import print_memory_usage
+from games.strgame.runner import runner, print_memory_usage
 
 
 OK = 0
@@ -157,18 +156,18 @@ def start_split(player_lib_name, tests_path):
 
     print_memory_usage("START [split]")
     lib_player = ctypes.CDLL(player_lib_name)
-    tests_correctness, total_time, dispersion = runner(
+    incorrect_test, total_time, dispersion = runner(
         tests_path,
         partial(run_split_test, lib_player, DELIMITER)
     )
 
     print(
-        "SPLIT TESTS:", "FAIL" if tests_correctness else "OK",
+        "SPLIT TESTS:", "FAIL" if incorrect_test else "OK",
         "TIME:", total_time,
         "DISPERSION:", dispersion
     )
 
-    return tests_correctness, total_time, dispersion
+    return incorrect_test, total_time, dispersion
 
 
 if __name__ == "__main__":
