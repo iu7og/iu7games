@@ -26,10 +26,10 @@ def run_strgame(results):
     """
 
     print("STRGAME RESULTS\n")
-    for data in results:
-        print(f"{data[0]}:")
+    for rec in results:
+        print(f"{rec[0]}:")
 
-        lib_path = os.path.abspath(f"{data[1][1:]}_split_lib.so")
+        lib_path = os.path.abspath(f"{rec[1][1:]}_split_lib.so")
         test_path = os.path.abspath("games/strgame/tests/split")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -37,12 +37,23 @@ def run_strgame(results):
             sign = worker.wiki.STRG_RESULT[0]
             if split_res[0] != 0:
                 sign = worker.wiki.STRG_RESULT[1]
-            data.extend([sign, f"{split_res[1]:.7f}±{split_res[2]:.7f}"])
+            rec.extend(
+                [
+                    sign,
+                    f"{split_res[1]:.7f}±{split_res[2]:.7f}",
+                    (split_res[1], split_res[2])
+                ]
+            )
         else:
-            data.extend(
-                [worker.wiki.STRG_RESULT[1], str(worker.wiki.NO_RESULT)[1:]])
+            rec.extend(
+                [
+                    worker.wiki.STRG_RESULT[1],
+                    str(worker.wiki.NO_RESULT)[1:],
+                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                ]
+            )
 
-        lib_path = os.path.abspath(f"{data[1][1:]}_strtok_lib.so")
+        lib_path = os.path.abspath(f"{rec[1][1:]}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -50,10 +61,21 @@ def run_strgame(results):
             sign = worker.wiki.STRG_RESULT[0]
             if strtok_res[0] != 0:
                 sign = worker.wiki.STRG_RESULT[1]
-            data.extend([sign, f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"])
+            rec.extend(
+                [
+                    sign,
+                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}",
+                    (strtok_res[1], strtok_res[2])
+                ]
+            )
         else:
-            data.extend(
-                [worker.wiki.STRG_RESULT[1], str(worker.wiki.NO_RESULT)[1:]])
+            rec.extend(
+                [
+                    worker.wiki.STRG_RESULT[1],
+                    str(worker.wiki.NO_RESULT)[1:],
+                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                ]
+            )
 
         print()
 
@@ -76,19 +98,19 @@ def run_xogame(results):
         results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
         results_5x5_old = pickle.load(results_5x5_dump)
 
-    for data in results:
+    for rec in results:
         rating_3x3 = 0
         rating_5x5 = 0
 
-        for data_old in results_3x3_old:
-            if data[0] == data_old[0]:
-                rating_3x3 = data_old[2]
+        for rec_old in results_3x3_old:
+            if rec[0] == rec_old[0]:
+                rating_3x3 = rec_old[2]
 
-        for data_old in results_5x5_old:
-            if data[0] == data_old[0]:
-                rating_5x5 = data_old[2]
+        for rec_old in results_5x5_old:
+            if rec[0] == rec_old[0]:
+                rating_5x5 = rec_old[2]
 
-        lib_path = os.path.abspath(f"{data[1][1:]}_xo.so")
+        lib_path = os.path.abspath(f"{rec[1][1:]}_xo_lib.so")
 
         if os.path.exists(lib_path):
             libs_3x3.append((lib_path, rating_3x3))
@@ -104,8 +126,8 @@ def run_xogame(results):
     results_5x5 = xo_runner.start_xogame_competition(libs_5x5, 5)
 
     i = 0
-    for data in results:
-        data.extend([results_3x3[i], results_5x5[i]])
+    for rec in results:
+        rec.extend([results_3x3[i], results_5x5[i]])
         i += 1
 
 
