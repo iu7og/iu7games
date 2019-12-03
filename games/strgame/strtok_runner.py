@@ -94,7 +94,7 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
     bytes_string = test_data.encode(ENCODING)
     iterations *= STRING_MULTIPLIER
 
-    c_strtok_timer = ctypes.CDLL("./strtok_timer.so")
+    c_strtok_timer = ctypes.CDLL("strtok_timer.so")
     player_name = ctypes.create_string_buffer(player_lib_name.encode(ENCODING))
     run_time_info = []
 
