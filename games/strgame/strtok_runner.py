@@ -1,5 +1,5 @@
 """
-      ===== STRTOK RUNNER v.1.3a =====
+      ===== STRTOK RUNNER v.1.3b =====
       Copyright (C) 2019 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции strtok,
@@ -42,7 +42,7 @@ def check_strtok_correctness(player_ptr, correct_ptr):
         функции в СИ.
     """
 
-    if not player_ptr and correct_ptr:
+    if (player_ptr.value is None) != (correct_ptr.value is None):
         return INVALID_PTR
 
     if player_ptr.value is not None:
@@ -125,10 +125,12 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
     return median, dispersion
 
 
-def run_strtok_test(delimiters, libs, player_lib_name, test_data):
+def run_strtok_test(delimiters, libs, player_name, test_data):
     """
-        Запуск функций strtok, пока исходная строка не будет
+        Запуск функции strtok, пока исходная строка не будет
         полностью уничтожена (функция strtok вернёт NULL).
+        Сначала тестируется корректность работы функции, далее
+        замеряется время работы.
     """
 
     bytes_string = test_data.encode(ENCODING)
@@ -143,7 +145,10 @@ def run_strtok_test(delimiters, libs, player_lib_name, test_data):
         error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
         iterations += 1
 
-    run_time, dispersion = strtok_time_counter(test_data, delimiters, iterations, player_lib_name)
+    if error_code == OK:
+        run_time, dispersion = strtok_time_counter(test_data, delimiters, iterations, player_name)
+    else:
+        run_time, dispersion = 0.0, 0.0
 
     return run_time, error_code, dispersion
 
@@ -176,3 +181,4 @@ def start_strtok(player_lib_name, tests_path):
 
 if __name__ == "__main__":
     start_strtok("./strtok_lib.so", "tests/strtok")
+
