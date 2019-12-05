@@ -1,3 +1,4 @@
 #! /bin/bash
-check STRgame/ split
-check STRgame/ strtok
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check STRgame/ split "int split(const char \*string, char \*\*matrix, const char symbol)"
+check STRgame/ strtok "char \*strtok(char \*string, const char \*delim)"

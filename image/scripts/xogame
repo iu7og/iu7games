@@ -1,2 +1,3 @@
 #! /bin/bash
-check XOgame/ xo
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check XOgame/ xo "int xogame(char \*\*bf, const int field_size, const char symb)"
