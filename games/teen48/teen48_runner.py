@@ -266,14 +266,14 @@ def scoring(game_field):
     return score
 
 
-def print_field(game_field, player_name, score):
+def print_field(game_field, player_name, score, field_size):
     """
         Печать итогового состояния игрового поля и количество набранных очков.
     """
 
     print("PLAYER:", player_name, "SCORE:", score)
-    for i in range(4):
-        for j in range(4):
+    for i in range(field_size):
+        for j in range(field_size):
             print(game_field.matrix[i][j], end="\t")
 
         print("")
@@ -294,19 +294,17 @@ def start_teen48game_competition(players_info, field_size):
         player_lib.teen48game.restype = ctypes.c_char
 
         game_field = matrix_t(field_size, field_size)
-        matrix_field_copy = matrix_t(field_size, field_size)
+        game_field_copy = matrix_t(field_size, field_size)
 
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
         game_is_end = False
 
         while not game_is_end:
-            copy_field(game_field, matrix_field_copy)
-            move = player_lib.teen48game(game_field)
-            if not is_fields_identical(game_field, matrix_field_copy):
-                break
-
+            copy_field(game_field, game_field_copy)
+            move = player_lib.teen48game(game_field_copy)
             game_field, is_done = make_move(move, game_field)
+            
             if is_done:
                 rand_numb = get_random_numb()
                 fill_random_cell(game_field.matrix, rand_numb, game_field.rows, game_field.columns)
@@ -315,7 +313,7 @@ def start_teen48game_competition(players_info, field_size):
 
         score = scoring(game_field)
         results.append(score if score > player[1] else player[1])
-        print_field(game_field, parsing_name(player[0]), score)
+        print_field(game_field, parsing_name(player[0]), score, field_size)
 
     print(results)
     return results
