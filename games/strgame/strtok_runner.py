@@ -181,4 +181,3 @@ def start_strtok(player_lib_name, tests_path):
 
 if __name__ == "__main__":
     start_strtok("./strtok_lib.so", "tests/strtok")
-

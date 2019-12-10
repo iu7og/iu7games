@@ -304,7 +304,7 @@ def start_teen48game_competition(players_info, field_size):
             copy_field(game_field, game_field_copy)
             move = player_lib.teen48game(game_field_copy)
             game_field, is_done = make_move(move, game_field)
-            
+
             if is_done:
                 rand_numb = get_random_numb()
                 fill_random_cell(game_field.matrix, rand_numb, game_field.rows, game_field.columns)
