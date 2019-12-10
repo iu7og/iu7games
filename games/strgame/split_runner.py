@@ -172,4 +172,3 @@ def start_split(player_lib_name, tests_path):
 
 if __name__ == "__main__":
     start_split("./split_lib.so", "tests/split")
-
