@@ -4,7 +4,6 @@
 
       Данный ранер запускает функцию strtok игрока на определенных тестовых данных,
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.
-
 """
 
 import ctypes
@@ -27,7 +26,7 @@ def create_c_objects(bytes_string):
 
 def light_strtok_runner(player_lib_path, tests_path):
     """
-        Чтение строки для strtok из файла, запуск strtok функции игрока
+        Чтение строки из файла, запуск strtok функции игрока
     """
 
     player_lib = ctypes.CDLL(player_lib_path)

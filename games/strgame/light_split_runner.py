@@ -4,7 +4,6 @@
 
       Данный ранер запускает функцию split игрока на определенных тестовых данных,
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.
-
 """
 
 import ctypes
@@ -29,7 +28,7 @@ def create_c_objects(bytes_string):
 
 def light_split_runner(player_lib_path, tests_path):
     """
-        Чтение строки для split из файла, запуск split функции игрока
+        Чтение строки из файла, запуск split функции игрока
     """
 
     player_lib = ctypes.CDLL(player_lib_path)
