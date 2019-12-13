@@ -6,7 +6,7 @@
       segmentation fault и бесконечный цикл в стратегии игрока.
 """
 
-from game.teen48.teen48_runner import start_teen48game_competition
+from games.teen48.teen48_runner import start_teen48game_competition
 
 def light_teen48_runner(player_lib_path):
     """
