@@ -35,6 +35,19 @@ NO_RESULT = -1337
 ENCODING = "utf-8"
 N = 30
 
+
+def end_game_print(player1, player2):
+    """
+        Печать результатов раунда.
+    """
+
+    print(
+        parsing_name(player1), " WIN, ",
+        parsing_name(player2), " LOSE\n",
+        "=" * N, sep=""
+    )
+
+
 def parsing_name(player_name):
     """
         Преобразование полного пути к файлу с библиотекой игрока
@@ -154,18 +167,16 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
         move = player1_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('X'))
         if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
+            print(parsing_name(players_names[0]), "CHEATING ")
+            end_game_print(players_names[1], players_names[0])
+
             return PLAYER_TWO_WIN
 
         c_strings = make_move(c_strings, move, ASCII_X, field_size)
         c_strings_copy = make_move(c_strings_copy, move, ASCII_X, field_size)
         print_field(c_strings, field_size, players_names[0])
         if check_win(c_strings, ASCII_X, field_size):
-            print(
-                parsing_name(players_names[0]), " WIN, ",
-                parsing_name(players_names[1]), " LOSE\n",
-                "=" * N, sep=""
-            )
-
+            end_game_print(players_names[0], players_names[1])
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
@@ -174,18 +185,15 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
         move = player2_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('O'))
         if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
+            print(parsing_name(players_names[1]), "CHEATING ")
+            end_game_print(players_names[0], players_names[1])
             return PLAYER_ONE_WIN
 
         c_strings = make_move(c_strings, move, ASCII_O, field_size)
         c_strings_copy = make_move(c_strings_copy, move, ASCII_O, field_size)
         print_field(c_strings, field_size, players_names[1])
         if check_win(c_strings, ASCII_O, field_size):
-            print(
-                parsing_name(players_names[1]), " WIN, ",
-                parsing_name(players_names[0]), " LOSE\n",
-                "=" * N, sep=""
-            )
-
+            end_game_print(players_names[1], players_names[0])
             return PLAYER_TWO_WIN
 
     print("DRAW\n", "=" * N, sep="")
