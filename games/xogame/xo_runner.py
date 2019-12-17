@@ -151,6 +151,7 @@ def make_move(c_strings, move, symb, field_size):
     replacement_string = list(c_strings[move // field_size].value)
     replacement_string[move % field_size] = symb
     c_strings[move // field_size].value = bytes(replacement_string)
+
     return c_strings
 
 
@@ -199,15 +200,15 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     return DRAW
 
 
-def calculate_coefficient(rating):
+def calculate_coefficient(pts):
     """
         Подсчёт коэффициента, который отвечает за балансировку набора очков.
     """
 
-    if rating > 2400:
+    if pts > 2400:
         return 10
 
-    if rating > 1800:
+    if pts > 1800:
         return 20
 
     return 40
@@ -228,7 +229,7 @@ def calculate_elo_rating(pts1, pts2, result):
 
     expected_value = calculate_expectation(pts1, pts2)
     coefficient = calculate_coefficient(pts1)
-    pts1 = pts1 + coefficient * (result - expected_value)
+    pts1 += coefficient * (result - expected_value)
 
     return pts1
 
@@ -236,7 +237,7 @@ def calculate_elo_rating(pts1, pts2, result):
 def scoring(points, player1_index, player2_index, round_info):
     """
         Запись и подсчёт очков в результирующий массив points.
-        Система подсчёта очков по системе рейтинга Эло.
+        Система подсчёта очков по рейтинговой системе Эло.
     """
 
     if round_info == DRAW:
@@ -258,26 +259,13 @@ def scoring(points, player1_index, player2_index, round_info):
     return points
 
 
-def update_points(player_point):
-    """
-        Обновление результатов в результруещем массиве points.
-        Константа NO_RESULT отвечает за отсутствие библиотеки
-        в принципе.
-    """
-
-    if player_point == NO_RESULT:
-        return NO_RESULT
-
-    return player_point
-
-
 def start_xogame_competition(players_info, field_size):
     """
         Функция запускает каждую стратегию с каждой,
         результаты для каждого игрока записываются в массив points.
     """
 
-    points = [0] * len(players_info)
+    points = [players_info[i][1] for i in range(len(players_info))]
 
     for i in range(len(players_info) - 1):
         if players_info[i][0] != "NULL":
@@ -308,12 +296,12 @@ def start_xogame_competition(players_info, field_size):
         else:
             points[i] = NO_RESULT
 
-    points = list(map(update_points, points))
     print_results(points, players_info, len(players_info))
+
     return points
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("NULL", NO_RESULT),
-                              ("./test2.so", 0),
-                              ("./test3.so", 0)], 3)
+    start_xogame_competition([("NULL", 1400),
+                              ("./test3.so", 1000),
+                              ("./test3.so", 1200)], 3)
