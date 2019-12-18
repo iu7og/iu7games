@@ -18,7 +18,6 @@
 """
 
 import ctypes
-from math import fabs
 
 OK = 0
 INVALID_MOVE = 1
@@ -152,6 +151,7 @@ def make_move(c_strings, move, symb, field_size):
     replacement_string = list(c_strings[move // field_size].value)
     replacement_string[move % field_size] = symb
     c_strings[move // field_size].value = bytes(replacement_string)
+
     return c_strings
 
 
@@ -200,44 +200,63 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     return DRAW
 
 
-def scoring(points, player1_index, player2_index, result, pts_difference):
+def calculate_coefficient(pts):
+    """
+        Подсчёт коэффициента, который отвечает за балансировку набора очков.
+    """
+
+    if pts > 2400:
+        return 10
+
+    if pts > 1800:
+        return 20
+
+    return 40
+
+
+def calculate_expectation(pts1, pts2):
+    """
+        Подсчёт математического ожидания.
+    """
+
+    return 1 / (1 + 10 ** ((pts2 - pts1) / 400))
+
+
+def calculate_elo_rating(pts1, pts2, result):
+    """
+        Подсчёт рейтинга Эло.
+    """
+
+    expected_value = calculate_expectation(pts1, pts2)
+    coefficient = calculate_coefficient(pts1)
+    pts1 += coefficient * (result - expected_value)
+
+    return pts1
+
+
+def scoring(points, player1_index, player2_index, round_info):
     """
         Запись и подсчёт очков в результирующий массив points.
-
-        Система подсчёта очков:
-        - Победивший получает abs(p1 - p2) + 1 очков
-        - Проигравший теряет abs(p1 - p2) + 1 очков
-        - В случае ничьи обра игрока получают по (abs(p1 - p2) + 1) / 2 очков
-        - Минимальное количество очков - 0, то есть в минус уйти нельзя.
+        Система подсчёта очков по рейтинговой системе Эло.
     """
 
-    if result == PLAYER_ONE_WIN:
-        points[player1_index] += pts_difference
-        points[player2_index] -= pts_difference
-    elif result == PLAYER_TWO_WIN:
-        points[player2_index] += pts_difference
-        points[player1_index] -= pts_difference
+    if round_info == DRAW:
+        player1_round_result = 0.5
+        player2_round_result = 0.5
+    elif round_info == PLAYER_ONE_WIN:
+        player1_round_result = 1
+        player2_round_result = 0
     else:
-        points[player1_index] += pts_difference / 2
-        points[player2_index] += pts_difference / 2
+        player1_round_result = 0
+        player2_round_result = 1
+
+
+    pts1 = points[player1_index]
+    pts2 = points[player2_index]
+    points[player1_index] = calculate_elo_rating(pts1, pts2, player1_round_result)
+    points[player2_index] = calculate_elo_rating(pts2, pts1, player2_round_result)
 
     return points
-
-
-def update_points(player_point):
-    """
-    Обновление результатов в результруещем массиве points.
-    Константа NO_RESULT отвечает за отсутствие библиотеки
-    в принципе.
-    """
-
-    if player_point == NO_RESULT:
-        return NO_RESULT
-
-    if player_point <= 0:
-        return 0
-
-    return player_point
 
 
 def start_xogame_competition(players_info, field_size):
@@ -246,7 +265,7 @@ def start_xogame_competition(players_info, field_size):
         результаты для каждого игрока записываются в массив points.
     """
 
-    points = [0] * len(players_info)
+    points = [players_info[i][1] for i in range(len(players_info))]
 
     for i in range(len(players_info) - 1):
         if players_info[i][0] != "NULL":
@@ -255,7 +274,6 @@ def start_xogame_competition(players_info, field_size):
             for j in range(i + 1, len(players_info)):
                 if players_info[j][0] != "NULL":
                     opponent_lib = ctypes.CDLL(players_info[j][0])
-                    pts_difference = fabs(players_info[i][1] - players_info[j][1]) + 1
 
                     round_info = xogame_round(
                         player_lib,
@@ -263,7 +281,7 @@ def start_xogame_competition(players_info, field_size):
                         field_size,
                         (players_info[i][0], players_info[j][0])
                     )
-                    points = scoring(points, i, j, round_info, pts_difference)
+                    points = scoring(points, i, j, round_info)
 
                     round_info = xogame_round(
                         opponent_lib,
@@ -271,19 +289,19 @@ def start_xogame_competition(players_info, field_size):
                         field_size,
                         (players_info[j][0], players_info[i][0])
                     )
-                    points = scoring(points, j, i, round_info, pts_difference)
+                    points = scoring(points, j, i, round_info)
 
                 else:
                     points[j] = NO_RESULT
         else:
             points[i] = NO_RESULT
 
-    points = list(map(update_points, points))
     print_results(points, players_info, len(players_info))
+
     return points
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("NULL", NO_RESULT),
-                              ("./test2.so", 0),
-                              ("./test3.so", 0)], 3)
+    start_xogame_competition([("NULL", 1400),
+                              ("./test3.so", 1000),
+                              ("./test3.so", 1200)], 3)
