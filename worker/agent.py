@@ -91,12 +91,12 @@ def run_xogame(results):
     results_3x3_old = []
     results_5x5_old = []
 
-    # if os.path.exists("tbdump_xogame_3x3.obj"):
-    #     results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
-    #     results_3x3_old = pickle.load(results_3x3_dump)
-    # if os.path.exists("tbdump_xogame_5x5.obj"):
-    #     results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
-    #     results_5x5_old = pickle.load(results_5x5_dump)
+    if os.path.exists("tbdump_xogame_3x3.obj"):
+        results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
+        results_3x3_old = pickle.load(results_3x3_dump)
+    if os.path.exists("tbdump_xogame_5x5.obj"):
+        results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
+        results_5x5_old = pickle.load(results_5x5_dump)
 
     for rec in results:
         rating_3x3 = 1000
