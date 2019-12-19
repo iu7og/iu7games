@@ -34,6 +34,17 @@ NO_RESULT = -1337
 ENCODING = "utf-8"
 N = 30
 
+def start_game_print(player1, player2):
+    """
+        Информаиця о начале раунда.
+    """
+
+    print(
+        "GAME",
+        parsing_name(player1), "VS",
+        parsing_name(player2)
+    )
+
 
 def end_game_print(player1, player2):
     """
@@ -160,6 +171,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         Запуск одного раунда игры для двух игроков.
     """
 
+    start_game_print(*players_names)
     c_strings, c_strings_copy, c_battlefield = create_c_objects(field_size)
     shot_count = 0
 
@@ -180,6 +192,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
+            print("DRAW\n", "=" * N, sep="")
             return DRAW
 
         shot_count += 1
@@ -195,9 +208,6 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         if check_win(c_strings, ASCII_O, field_size):
             end_game_print(players_names[1], players_names[0])
             return PLAYER_TWO_WIN
-
-    print("DRAW\n", "=" * N, sep="")
-    return DRAW
 
 
 def calculate_coefficient(pts):
@@ -253,8 +263,8 @@ def scoring(points, player1_index, player2_index, round_info):
 
     pts1 = points[player1_index]
     pts2 = points[player2_index]
-    points[player1_index] = calculate_elo_rating(pts1, pts2, player1_round_result)
-    points[player2_index] = calculate_elo_rating(pts2, pts1, player2_round_result)
+    points[player1_index] = int(calculate_elo_rating(pts1, pts2, player1_round_result))
+    points[player2_index] = int(calculate_elo_rating(pts2, pts1, player2_round_result))
 
     return points
 
@@ -303,5 +313,5 @@ def start_xogame_competition(players_info, field_size):
 
 if __name__ == "__main__":
     start_xogame_competition([("NULL", 1400),
-                              ("./test3.so", 1000),
-                              ("./test3.so", 1200)], 3)
+                              ("./lyuba.so", 1000),
+                              ("./lyuba.so", 1200)], 5)
