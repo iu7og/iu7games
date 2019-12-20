@@ -18,6 +18,7 @@
 """
 
 import ctypes
+import sys
 
 OK = 0
 INVALID_MOVE = 1
@@ -34,6 +35,9 @@ NO_RESULT = -1337
 ENCODING = "utf-8"
 N = 30
 
+STDOUT = sys.stdout
+log = open("deploy_xogame.txt", "a")
+
 def start_game_print(player1, player2):
     """
         Информаиця о начале раунда.
@@ -41,19 +45,18 @@ def start_game_print(player1, player2):
 
     print(
         "GAME",
-        parsing_name(player1), "VS",
-        parsing_name(player2)
+        parsing_name(player1), "(X) VS",
+        parsing_name(player2), "(O)"
     )
 
 
-def end_game_print(player1, player2):
+def end_game_print(player, info):
     """
         Печать результатов раунда.
     """
 
     print(
-        parsing_name(player1), " WIN, ",
-        parsing_name(player2), " LOSE\n",
+        parsing_name(player), info, "\n",
         "=" * N, sep=""
     )
 
@@ -172,6 +175,9 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     """
 
     start_game_print(*players_names)
+    sys.stdout = log
+    start_game_print(*players_names)
+
     c_strings, c_strings_copy, c_battlefield = create_c_objects(field_size)
     shot_count = 0
 
@@ -179,8 +185,9 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
         move = player1_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('X'))
         if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
-            print(parsing_name(players_names[0]), "CHEATING ")
-            end_game_print(players_names[1], players_names[0])
+            end_game_print(players_names[0], " CHEATING")
+            sys.stdout = STDOUT
+            end_game_print(players_names[0], " CHEATING ")
 
             return PLAYER_TWO_WIN
 
@@ -188,25 +195,39 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         c_strings_copy = make_move(c_strings_copy, move, ASCII_X, field_size)
         print_field(c_strings, field_size, players_names[0])
         if check_win(c_strings, ASCII_X, field_size):
-            end_game_print(players_names[0], players_names[1])
+            end_game_print(players_names[0], " WIN")
+            sys.stdout = STDOUT
+            print_field(c_strings, field_size, players_names[0])
+            end_game_print(players_names[0], " WIN ")
+
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
             print("DRAW\n", "=" * N, sep="")
+            sys.stdout = STDOUT
+            print_field(c_strings, field_size, players_names[0])
+            print("DRAW\n", "=" * N, sep="")
+
             return DRAW
 
         shot_count += 1
         move = player2_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('O'))
         if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
-            print(parsing_name(players_names[1]), "CHEATING ")
-            end_game_print(players_names[0], players_names[1])
+            end_game_print(players_names[1], " CHEATING")
+            sys.stdout = STDOUT
+            end_game_print(players_names[1], " CHEATING")
+
             return PLAYER_ONE_WIN
 
         c_strings = make_move(c_strings, move, ASCII_O, field_size)
         c_strings_copy = make_move(c_strings_copy, move, ASCII_O, field_size)
         print_field(c_strings, field_size, players_names[1])
         if check_win(c_strings, ASCII_O, field_size):
-            end_game_print(players_names[1], players_names[0])
+            end_game_print(players_names[1], " WIN")
+            sys.stdout = STDOUT
+            print_field(c_strings, field_size, players_names[1])
+            end_game_print(players_names[1], " WIN")
+
             return PLAYER_TWO_WIN
 
 
@@ -307,11 +328,14 @@ def start_xogame_competition(players_info, field_size):
             points[i] = NO_RESULT
 
     print_results(points, players_info, len(players_info))
+    sys.stdout = log
+    print_results(points, players_info, len(players_info))
+    log.close()
 
     return points
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("NULL", 1400),
+    start_xogame_competition([("./test2.so", 1400),
                               ("./lyuba.so", 1000),
-                              ("./lyuba.so", 1200)], 5)
+                              ("./test3.so", 1200)], 5)
