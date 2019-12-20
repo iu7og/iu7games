@@ -46,6 +46,7 @@ deploy_strgame:
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
     - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa > deploylog_strgame.txt
+    - cat deploylog_strgame.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
@@ -62,12 +63,14 @@ deploy_xogame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa > deploylog_xogame.txt
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa > deploylog_xogame_light.txt
+    - cat deploylog_xogame_light.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
     paths:
       - deploylog_xogame.txt
+      - deploylog_xogame_light.txt
       - ./*.obj
     when: always
     expire_in: 30 days
