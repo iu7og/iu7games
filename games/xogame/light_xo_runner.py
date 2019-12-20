@@ -6,7 +6,9 @@
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.
 """
 
+import os
 from games.xogame.xo_runner import start_xogame_competition
+
 
 def light_xo_runner(player_lib_path):
     """
@@ -14,12 +16,14 @@ def light_xo_runner(player_lib_path):
         Вывод итогового поля игрока.
     """
 
-    start_xogame_competition([(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 3)
-    print("XO GAME: 3x3 FIELD OKAY")
+    start_xogame_competition(
+        [(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 3)
+    print("\033[0;32mXO GAME: 3x3 FIELD OKAY\033[0m\n")
 
-    start_xogame_competition([(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 5)
-    print("XO GAME: 5x5 FIELD OKAY")
+    start_xogame_competition(
+        [(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 5)
+    print("\033[0;32mXO GAME: 5x5 FIELD OKAY\033[0m\n")
 
 
 if __name__ == "__main__":
-    light_xo_runner("./test3.so")
+    light_xo_runner(f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_xo_lib.so")

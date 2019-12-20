@@ -6,6 +6,7 @@
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.
 """
 
+import os
 import ctypes
 from games.strgame.runner import concat_strings
 
@@ -19,8 +20,10 @@ def create_c_objects(bytes_string):
     """
 
     c_string = ctypes.create_string_buffer(bytes_string)
-    c_split_strings = [ctypes.create_string_buffer(b' ' * MAX_LEN_WORD) for i in range(WORDS_COUNT)]
-    c_split_matrix = (ctypes.c_char_p * WORDS_COUNT)(*map(ctypes.addressof, c_split_strings))
+    c_split_strings = [ctypes.create_string_buffer(
+        b' ' * MAX_LEN_WORD) for i in range(WORDS_COUNT)]
+    c_split_matrix = (ctypes.c_char_p * WORDS_COUNT)(*
+                                                     map(ctypes.addressof, c_split_strings))
     delim = ctypes.c_wchar(' ')
 
     return c_string, c_split_strings, c_split_matrix, delim
@@ -36,11 +39,13 @@ def light_split_runner(player_lib_path, tests_path):
     test_split_string = concat_strings(file)
     file.close()
 
-    c_string, _, c_matrix, delim = create_c_objects(test_split_string.encode("utf-8"))
+    c_string, _, c_matrix, delim = create_c_objects(
+        test_split_string.encode("utf-8"))
     _ = player_lib.split(c_string, c_matrix, delim)
 
-    print("SPLIT OK")
+    print("\033[0;32mSPLIT OK\033[0m\n")
 
 
 if __name__ == "__main__":
-    light_split_runner("./split_lib.so", "tests/split")
+    light_split_runner(
+        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_split_lib.so", "/games/strgame/tests/split")

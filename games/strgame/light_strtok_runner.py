@@ -6,6 +6,7 @@
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.
 """
 
+import os
 import ctypes
 from games.strgame.runner import concat_strings
 
@@ -36,14 +37,18 @@ def light_strtok_runner(player_lib_path, tests_path):
     test_strtok_string = concat_strings(file)
     file.close()
 
-    c_string, c_delimiters = create_c_objects(test_strtok_string.encode("utf-8"))
-    ptr = ctypes.cast(player_lib.strtok(c_string, c_delimiters), ctypes.c_char_p)
+    c_string, c_delimiters = create_c_objects(
+        test_strtok_string.encode("utf-8"))
+    ptr = ctypes.cast(player_lib.strtok(
+        c_string, c_delimiters), ctypes.c_char_p)
 
     while ptr.value is not None:
-        ptr = ctypes.cast(player_lib.strtok(NULL, c_delimiters), ctypes.c_char_p)
+        ptr = ctypes.cast(player_lib.strtok(
+            NULL, c_delimiters), ctypes.c_char_p)
 
-    print("STRTOK OK")
+    print("\033[0;32mSTRTOK OK\033[0m\n")
 
 
 if __name__ == "__main__":
-    light_strtok_runner("./strtok_lib.so", "tests/strtok")
+    light_strtok_runner(
+        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_strtok_lib.so", "/games/strgame/tests/split")
