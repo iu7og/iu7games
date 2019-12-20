@@ -36,7 +36,7 @@ ENCODING = "utf-8"
 N = 30
 
 STDOUT = sys.stdout
-log = open("deploy_xogame.txt", "a")
+LOG = open("deploy_xogame.txt", "a")
 
 def start_game_print(player1, player2):
     """
@@ -175,7 +175,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     """
 
     start_game_print(*players_names)
-    sys.stdout = log
+    sys.stdout = LOG
     start_game_print(*players_names)
 
     c_strings, c_strings_copy, c_battlefield = create_c_objects(field_size)
@@ -328,9 +328,9 @@ def start_xogame_competition(players_info, field_size):
             points[i] = NO_RESULT
 
     print_results(points, players_info, len(players_info))
-    sys.stdout = log
+    sys.stdout = LOG
     print_results(points, players_info, len(players_info))
-    log.close()
+    LOG.close()
 
     return points
 
