@@ -131,7 +131,7 @@ def run_xogame(results):
         i += 1
 
 
-def start_competition(instance, game, group_name):
+def start_competition(instance, game, group_name, stage):
     """
         Старт соревнования с собранными стратегиями.
     """
@@ -151,7 +151,10 @@ def start_competition(instance, game, group_name):
     else:
         pass
 
-    worker.wiki.update_wiki(IU7GAMES, game, results)
+    if stage == "release":
+        worker.wiki.update_wiki(IU7GAMES, game, results)
+    elif stage == "build":
+        print("BUILD PASSED")
 
 
 def add_args():
@@ -162,6 +165,7 @@ def add_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("game", help="Select a game")
     parser.add_argument("group_name", help="Select a GitLab group")
+    parser.add_argument("stage", help="Select a stage for run")
     args = parser.parse_args()
 
     return args
@@ -170,4 +174,4 @@ def add_args():
 if __name__ == "__main__":
     ARGS = add_args()
 
-    start_competition(GIT_INST, ARGS.game, ARGS.group_name)
+    start_competition(GIT_INST, ARGS.game, ARGS.group_name, ARGS.stage)
