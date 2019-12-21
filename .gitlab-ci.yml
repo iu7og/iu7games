@@ -34,6 +34,8 @@ build_strgame:
       - deploylog_strgame.txt
     when: always
     expire_in: 30 days
+  only:
+    - merge_requests
 
 build_xogame:
   stage: deploy
@@ -50,6 +52,8 @@ build_xogame:
       - deploylog_xogame_light.txt
     when: always
     expire_in: 30 days
+  only:
+    - merge_requests
 
 codestyle:
   stage: test
