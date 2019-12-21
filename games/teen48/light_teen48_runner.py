@@ -17,8 +17,8 @@ def light_teen48_runner(player_lib_path):
     start_teen48game_competition([(player_lib_path, 0)], 4)
     print("TEEN48 GAME: 4x4 FIELD OKAY")
 
-    start_teen48game_competition([(player_lib_path, 0)], 8)
-    print("TEEN48 GAME: 8x8 FIELD OKAY")
+    start_teen48game_competition([(player_lib_path, 0)], 5)
+    print("TEEN48 GAME: 5x5 FIELD OKAY")
 
 
 if __name__ == "__main__":
