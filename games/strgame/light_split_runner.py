@@ -43,7 +43,7 @@ def light_split_runner(player_lib_path, tests_path):
         test_split_string.encode("utf-8"))
     _ = player_lib.split(c_string, c_matrix, delim)
 
-    print("\033[0;32mSPLIT OK\033[0m\n")
+    print("\033[0;32mSPLIT OK\033[0m")
 
 
 if __name__ == "__main__":

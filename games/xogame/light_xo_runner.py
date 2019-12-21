@@ -18,11 +18,11 @@ def light_xo_runner(player_lib_path):
 
     start_xogame_competition(
         [(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 3)
-    print("\033[0;32mXO GAME: 3x3 FIELD OKAY\033[0m\n")
+    print("\033[0;32mXO GAME: 3x3 FIELD OKAY\033[0m")
 
     start_xogame_competition(
         [(player_lib_path, 0), ("/usr/lib/test_xo_lib.so", 0)], 5)
-    print("\033[0;32mXO GAME: 5x5 FIELD OKAY\033[0m\n")
+    print("\033[0;32mXO GAME: 5x5 FIELD OKAY\033[0m")
 
 
 if __name__ == "__main__":

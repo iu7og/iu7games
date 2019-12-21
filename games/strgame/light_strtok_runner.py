@@ -46,7 +46,7 @@ def light_strtok_runner(player_lib_path, tests_path):
         ptr = ctypes.cast(player_lib.strtok(
             NULL, c_delimiters), ctypes.c_char_p)
 
-    print("\033[0;32mSTRTOK OK\033[0m\n")
+    print("\033[0;32mSTRTOK OK\033[0m")
 
 
 if __name__ == "__main__":
