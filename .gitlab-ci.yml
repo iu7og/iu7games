@@ -21,7 +21,7 @@ badges:
     expire_in: 30 days
 
 build_strgame:
-  stage: test
+  stage: build
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
@@ -38,7 +38,7 @@ build_strgame:
     - merge_requests
 
 build_xogame:
-  stage: deploy
+  stage: build
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
