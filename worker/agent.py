@@ -40,16 +40,14 @@ def run_strgame(results):
             rec.extend(
                 [
                     sign,
-                    f"{split_res[1]:.7f}±{split_res[2]:.7f}",
-                    (split_res[1], split_res[2])
+                    f"{split_res[1]:.7f}±{split_res[2]:.7f}"
                 ]
             )
         else:
             rec.extend(
                 [
                     worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:],
-                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                    str(worker.wiki.NO_RESULT)[1:]
                 ]
             )
 
@@ -64,16 +62,14 @@ def run_strgame(results):
             rec.extend(
                 [
                     sign,
-                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}",
-                    (strtok_res[1], strtok_res[2])
+                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"
                 ]
             )
         else:
             rec.extend(
                 [
                     worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:],
-                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                    str(worker.wiki.NO_RESULT)[1:]
                 ]
             )
 
