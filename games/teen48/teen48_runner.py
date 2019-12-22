@@ -22,6 +22,7 @@
 import ctypes
 from random import randint, random
 
+NO_LIBARY = -1337
 
 class matrix_t(ctypes.Structure):
     """
@@ -289,6 +290,10 @@ def start_teen48game_competition(players_info, field_size):
     results = []
 
     for player in players_info:
+        if player[0] == "NULL":
+            results.append(NO_LIBARY)
+            continue
+
         player_lib = ctypes.CDLL(player[0])
         player_lib.teen48game.argtypes = [matrix_t]
         player_lib.teen48game.restype = ctypes.c_char
@@ -319,4 +324,4 @@ def start_teen48game_competition(players_info, field_size):
     return results
 
 if __name__ == "__main__":
-    start_teen48game_competition([("./teen48lib.so", 0)], 4)
+    start_teen48game_competition([("./teen48lib.so", 0), ("NULL", 1000)], 6)
