@@ -17,15 +17,20 @@ RUN apk add --no-cache \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
 
-COPY ./requirements.txt /requirements.txt
+COPY image/requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt \
     && rm -f requirements.txt
 
-COPY ./scripts /scripts
-COPY ./libs/* /usr/lib/
+COPY image/scripts /scripts
+COPY image/libs/* /usr/lib/
+COPY games/ /games
+
+RUN mkdir /sandbox \
+    && chmod -R o+w /sandbox
 
 RUN adduser -D -h /deathstar imperialclone \
-    && chmod -R o+x /scripts
+    && chmod -R o+x /scripts \
+    && chmod -R o+x /games
 
 WORKDIR /deathstar
 USER imperialclone

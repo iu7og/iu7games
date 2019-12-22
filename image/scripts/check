@@ -34,7 +34,19 @@ then
         echo -e "\033[0;31mCHECK FAILED\033[0m\n"
         exit 1
     fi
-    echo -e "\033[0;32mCHECK PASSED\033[0m\n"
+    cp ${GITLAB_USER_LOGIN}_$2_lib.so /sandbox
+    echo -e "\033[0;34mCHECK STRATEGY SAFETY\033[0m"
+    PYTHONPATH='/' python /games/$4/$5 > temp.txt |:
+    SEGFMSG="$(cat temp.txt)y"
+    if [ "$SEGFMSG" = 'y' ]
+    then
+        echo -e "\033[0;31mCHECK FAILED. SEGMENTATION FAULT OCCURED\033[0m\n"
+        rm -f temp.txt
+        exit 1
+    else
+        echo -e "\033[0;32mCHECK PASSED\033[0m\n"
+        rm -f temp.txt
+    fi 
 else
     echo -e "\033[0;31m${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c NOT FOUND\033[0m\n"
 fi

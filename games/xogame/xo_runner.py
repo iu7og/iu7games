@@ -35,8 +35,8 @@ NO_RESULT = -1337
 ENCODING = "utf-8"
 N = 30
 
-STDOUT = sys.stdout
-LOG = open("deploy_xogame.txt", "a")
+STDOUT = sys.__stdout__
+LOG = open("deploylog_xogame.txt", "w")
 
 def start_game_print(player1, player2):
     """
@@ -330,7 +330,7 @@ def start_xogame_competition(players_info, field_size):
     print_results(points, players_info, len(players_info))
     sys.stdout = LOG
     print_results(points, players_info, len(players_info))
-    LOG.close()
+    sys.stdout = STDOUT
 
     return points
 

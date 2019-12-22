@@ -40,16 +40,14 @@ def run_strgame(results):
             rec.extend(
                 [
                     sign,
-                    f"{split_res[1]:.7f}±{split_res[2]:.7f}",
-                    (split_res[1], split_res[2])
+                    f"{split_res[1]:.7f}±{split_res[2]:.7f}"
                 ]
             )
         else:
             rec.extend(
                 [
                     worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:],
-                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                    str(worker.wiki.NO_RESULT)[1:]
                 ]
             )
 
@@ -64,16 +62,14 @@ def run_strgame(results):
             rec.extend(
                 [
                     sign,
-                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}",
-                    (strtok_res[1], strtok_res[2])
+                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"
                 ]
             )
         else:
             rec.extend(
                 [
                     worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:],
-                    (worker.wiki.NO_RESULT, worker.wiki.NO_RESULT)
+                    str(worker.wiki.NO_RESULT)[1:]
                 ]
             )
 
@@ -131,7 +127,7 @@ def run_xogame(results):
         i += 1
 
 
-def start_competition(instance, game, group_name):
+def start_competition(instance, game, group_name, stage):
     """
         Старт соревнования с собранными стратегиями.
     """
@@ -151,7 +147,10 @@ def start_competition(instance, game, group_name):
     else:
         pass
 
-    worker.wiki.update_wiki(IU7GAMES, game, results)
+    if stage == "release":
+        worker.wiki.update_wiki(IU7GAMES, game, results)
+    elif stage == "build":
+        print("BUILD PASSED")
 
 
 def add_args():
@@ -162,6 +161,7 @@ def add_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("game", help="Select a game")
     parser.add_argument("group_name", help="Select a GitLab group")
+    parser.add_argument("stage", help="Select a stage for run")
     args = parser.parse_args()
 
     return args
@@ -170,4 +170,4 @@ def add_args():
 if __name__ == "__main__":
     ARGS = add_args()
 
-    start_competition(GIT_INST, ARGS.game, ARGS.group_name)
+    start_competition(GIT_INST, ARGS.game, ARGS.group_name, ARGS.stage)

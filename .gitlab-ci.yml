@@ -20,11 +20,38 @@ badges:
     when: always
     expire_in: 30 days
 
-build:
+build_strgame:
   stage: build
   image: hackfeed/iu7games
   script:
-    - pylint -E $(find ./ -name \*.py)
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa build | tee deploylog_strgame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - deploylog_strgame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
+
+build_xogame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa build | tee deploylog_xogame_light.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - deploylog_xogame.txt
+      - deploylog_xogame_light.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 codestyle:
   stage: test
@@ -45,7 +72,7 @@ deploy_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa > deploylog_strgame.txt
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa release | tee deploylog_strgame.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
@@ -62,12 +89,13 @@ deploy_xogame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa > deploylog_xogame.txt
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa release | tee deploylog_xogame_light.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
     paths:
       - deploylog_xogame.txt
+      - deploylog_xogame_light.txt
       - ./*.obj
     when: always
     expire_in: 30 days
