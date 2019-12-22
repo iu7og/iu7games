@@ -25,8 +25,7 @@ build_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa build > deploylog_strgame.txt
-    - cat deploylog_strgame.txt
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa build | tee deploylog_strgame.txt
   after_script:
     - rm -f *.so *.zip *.obj
   artifacts:
@@ -42,8 +41,7 @@ build_xogame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa build > deploylog_xogame_light.txt
-    - cat deploylog_xogame_light.txt
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa build | tee deploylog_xogame_light.txt
   after_script:
     - rm -f *.so *.zip *.obj
   artifacts:
@@ -74,8 +72,7 @@ deploy_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa release > deploylog_strgame.txt
-    - cat deploylog_strgame.txt
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-qa release | tee deploylog_strgame.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
@@ -92,8 +89,7 @@ deploy_xogame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa release > deploylog_xogame_light.txt
-    - cat deploylog_xogame_light.txt
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-qa release | tee deploylog_xogame_light.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
