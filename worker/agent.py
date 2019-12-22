@@ -11,6 +11,7 @@ import worker.wiki
 import worker.repo
 from games.strgame import split_runner, strtok_runner
 from games.xogame import xo_runner
+from games.teen48 import teen48_runner
 
 
 GIT_INST = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
@@ -127,6 +128,57 @@ def run_xogame(results):
         i += 1
 
 
+def run_teen48game(results):
+    """
+        Старт TEEN48game.
+    """
+
+    libs_4x4 = []
+    libs_6x6 = []
+
+    results_4x4_old = []
+    results_6x6_old = []
+
+    if os.path.exists("tbdump_teen48game_4x4.obj"):
+        results_4x4_dump = open("tbdump_teen48game_4x4.obj", "rb")
+        results_4x4_old = pickle.load(results_4x4_dump)
+    if os.path.exists("tbdump_teen48game_6x6.obj"):
+        results_6x6_dump = open("tbdump_teen48game_6x6.obj", "rb")
+        results_6x6_old = pickle.load(results_6x6_dump)
+
+    for rec in results:
+        rating_4x4 = 0
+        rating_6x6 = 0
+
+        for rec_old in results_4x4_old:
+            if rec[0] == rec_old[0]:
+                rating_4x4 = rec_old[2]
+
+        for rec_old in results_6x6_old:
+            if rec[0] == rec_old[0]:
+                rating_6x6 = rec_old[2]
+
+        lib_path = os.path.abspath(f"{rec[1][1:]}_teen48_lib.so")
+
+        if os.path.exists(lib_path):
+            libs_4x4.append((lib_path, rating_4x4))
+            libs_6x6.append((lib_path, rating_6x6))
+        else:
+            libs_4x4.append(("NULL", rating_4x4))
+            libs_6x6.append(("NULL", rating_6x6))
+
+    print("TEEN48GAME RESULTS\n")
+    print("\n4X4 DIV\n")
+    results_4x4 = teen48_runner.start_teen48game_competition(libs_4x4, 4)
+    print("\n6X6 DIV\n")
+    results_6x6 = teen48_runner.start_teen48game_competition(libs_6x6, 6)
+
+    i = 0
+    for rec in results:
+        rec.extend([results_4x4[i], results_6x6[i]])
+        i += 1
+
+
 def start_competition(instance, game, group_name, stage):
     """
         Старт соревнования с собранными стратегиями.
@@ -143,9 +195,7 @@ def start_competition(instance, game, group_name, stage):
     elif game == "XOgame":
         run_xogame(results)
     elif game == "TEEN48game":
-        pass
-    else:
-        pass
+        run_teen48game(results)
 
     if stage == "release":
         worker.wiki.update_wiki(IU7GAMES, game, results)
