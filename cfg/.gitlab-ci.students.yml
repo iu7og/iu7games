@@ -28,3 +28,17 @@ xogame:
   only:
     refs:
       - XOgame
+
+teen48game:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - teen48game
+  after_script:
+    - rm -f *.o
+  artifacts:
+    paths:
+      - ./*.so
+  only:
+    refs:
+      - TEEN48game
