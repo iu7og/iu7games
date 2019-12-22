@@ -110,7 +110,7 @@ def form_table(results, removable, sort_keys, output_params, game):
 
         for rec in new:
             if rec[sort_keys[0]] == output_params[0]:
-                rec[sort_keys[0]] = 0
+                rec[sort_keys[0]] = 1000
 
     return new
 
