@@ -37,10 +37,10 @@ then
     cp ${GITLAB_USER_LOGIN}_$2_lib.so /sandbox
     echo -e "\033[0;34mCHECK STRATEGY SAFETY\033[0m"
     PYTHONPATH='/' python /games/$4/$5 > temp.txt |:
-    SEGFAULT="$(cat temp.txt)n"
-    if [ "$SEGFAULT" = 'n' ]
+    SEGFMSG="$(cat temp.txt)y"
+    if [ "$SEGFMSG" = 'y' ]
     then
-        echo -e "\033[0;31mCHECK FAILED. SEGFAULT OCCURED\033[0m\n"
+        echo -e "\033[0;31mCHECK FAILED. SEGMENTATION FAULT OCCURED\033[0m\n"
         rm -f temp.txt
         exit 1
     else
