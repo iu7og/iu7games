@@ -34,6 +34,17 @@ XOG_5X5_RES_COL = 3
 XOG_3X3_REMOVABLE = (XOG_5X5_RES_COL, XOG_5X5_RES_COL)
 XOG_5X5_REMOVABLE = (XOG_3X3_RES_COL, XOG_3X3_RES_COL)
 
+T48G_TABLE_WIDTH = 5
+
+T48G_RES_COL = 2
+T48G_SORT_KEYS = (T48G_RES_COL, )
+
+T48G_4X4_RES_COL = 2
+T48G_6X6_RES_COL = 3
+
+T48G_4X4_REMOVABLE = (T48G_6X6_RES_COL, T48G_6X6_RES_COL)
+T48G_6X6_REMOVABLE = (T48G_4X4_RES_COL, T48G_4X4_RES_COL)
+
 NO_RESULT = -1337
 MSG = "Отсутствует стратегия"
 OUTPUT_PARAMS = (NO_RESULT, MSG)
@@ -111,6 +122,13 @@ def form_table(results, removable, sort_keys, output_params, game):
         for rec in new:
             if rec[sort_keys[0]] == output_params[0]:
                 rec[sort_keys[0]] = 1000
+
+    if game == "TEEN48game":
+        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
+
+        for rec in new:
+            if rec[sort_keys[0]] == output_params[0]:
+                rec[sort_keys[0]] = 0
 
     return new
 
@@ -212,6 +230,38 @@ def handle_xogame(results):
     return res
 
 
+def handle_teen48game(results):
+    """
+        Обновление таблицы для TEEN48game.
+    """
+
+    res = ""
+
+    div_4x4_theme = "# 4X4 DIVISION\n\n"
+    div_6x6_theme = "\n# 6X6 DIVISION\n\n"
+    teen48_head = "|**№**|**ФИ Студента**|**GitLab ID**|"\
+        "**Очки**|**Последнее обновление**|\n"\
+        "|---|---|---|:---:|---|\n"
+
+    sorted_4x4 = form_table(
+        results, T48G_4X4_REMOVABLE, T48G_SORT_KEYS, OUTPUT_PARAMS, "TEEN48game")
+    sorted_6x6 = form_table(
+        results, T48G_6X6_REMOVABLE, T48G_SORT_KEYS, OUTPUT_PARAMS, "TEEN48game")
+
+    res += print_table(teen48_head, div_4x4_theme,
+                       T48G_TABLE_WIDTH, sorted_4x4, "teen48game_4x4")
+    res += print_table(teen48_head, div_6x6_theme,
+                       T48G_TABLE_WIDTH, sorted_6x6, "teen48game_6x6")
+
+    results_4x4_dump = open("tbdump_teen48game_4x4.obj", "wb")
+    pickle.dump(sorted_4x4, results_4x4_dump)
+
+    results_6x6_dump = open("tbdump_teen48game_6x6.obj", "wb")
+    pickle.dump(sorted_6x6, results_6x6_dump)
+
+    return res
+
+
 def update_wiki(project, game, results):
     """
         Обновление Wiki-страницы с обновленными результатами.
@@ -231,6 +281,8 @@ def update_wiki(project, game, results):
         res = handle_strgame(results)
     elif game == "XOgame":
         res = handle_xogame(results)
+    elif game == "TEEN48game":
+        res = handle_teen48game(results)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")

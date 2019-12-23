@@ -53,6 +53,22 @@ build_xogame:
   only:
     - merge_requests
 
+build_teen48game:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-qa build | tee deploylog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - deploylog_teen48game.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
+
 codestyle:
   stage: test
   image: hackfeed/iu7games
@@ -96,6 +112,23 @@ deploy_xogame:
     paths:
       - deploylog_xogame.txt
       - deploylog_xogame_light.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_teen48game:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-qa release | tee deploylog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_teen48game.txt
       - ./*.obj
     when: always
     expire_in: 30 days

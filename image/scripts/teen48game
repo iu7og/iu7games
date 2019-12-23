@@ -1,0 +1,3 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check TEEN48game/ teen48 "char teen48game(matrix_t matrix)" teen48 "light_teen48_runner.py"
