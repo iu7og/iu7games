@@ -153,7 +153,7 @@ def get_group_artifacts(instance, game, group_name):
 
     print("START ARTIFACTS COLLECTION")
 
-    for prj in projects:
+    for ind, prj in enumerate(projects):
         project = get_project(instance, group, prj.name)
         job = get_success_job(project, game)
 
@@ -171,20 +171,20 @@ def get_group_artifacts(instance, game, group_name):
                 break
 
         if developer is not None:
-            user_result = [developer.name, "@" +
+            user_result = [str(ind), developer.name, "@" +
                            developer.username, get_job_date(job)]
             results.append(user_result)
             if check_md5(os.path.abspath("cfg/.gitlab-ci.students.yml"),
                          project, game, ".gitlab-ci.yml") is False:
-                print(f"CORRUPTED CI FOUND FOR {user_result[1]}")
+                print(f"CORRUPTED CI FOUND FOR {user_result[2]}")
                 continue
-            print(f"CORRECT CI FOUND FOR {user_result[1]}")
+            print(f"CORRECT CI FOUND FOR {user_result[2]}")
             status = get_artifacts(project, job)
 
             if status == COLLECTED:
-                print(f"ARTIFACTS FOR {user_result[1]} ARE COLLECTED")
+                print(f"ARTIFACTS FOR {user_result[2]} ARE COLLECTED")
             elif status == BAD_CALL:
-                print(f"THERE ARE NO ARTIFACTS FOR {user_result[1]}")
+                print(f"THERE ARE NO ARTIFACTS FOR {user_result[2]}")
         else:
             print(f"THERE IS NO DEVELOPER FOR {project.name}")
 

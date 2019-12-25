@@ -1,6 +1,6 @@
 #! /bin/bash
 COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
--Wconversion -Wenum-compare -Wfloat-equal  -Wredundant-decls -Wsign-conversion -c -O3"
+-Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion -c -O3"
 GAME_PATH="$1"
 
 echo -e "\033[0;34mCHECK SOURCE EXISTANCE\033[0m"
@@ -40,10 +40,12 @@ then
     SEGFMSG="$(cat temp.txt)y"
     if [ "$SEGFMSG" = 'y' ]
     then
+        cat temp.txt
         echo -e "\033[0;31mCHECK FAILED. SEGMENTATION FAULT OCCURED\033[0m\n"
         rm -f temp.txt
         exit 1
     else
+        cat temp.txt
         echo -e "\033[0;32mCHECK PASSED\033[0m\n"
         rm -f temp.txt
     fi 
