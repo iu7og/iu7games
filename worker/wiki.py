@@ -9,48 +9,21 @@ import operator
 from datetime import datetime
 from copy import deepcopy
 
-STRG_TABLE_WIDTH = 6
+import markdown_table
 
-STRG_TESTS_COL = 2
-STRG_RES_COL = 3
-STRG_SORT_KEYS = (STRG_TESTS_COL, STRG_RES_COL)
+DOUBLE_TESTS_COL = 3
+DOUBLE_RES_COL = 4
+DOUBLE_SORT_KEYS = (DOUBLE_TESTS_COL, DOUBLE_RES_COL)
 
-SPLIT_TESTS_COL = 2
-SPLIT_STRG_RES_COL = 3
-SPLIT_REMOVABLE = (SPLIT_TESTS_COL, SPLIT_STRG_RES_COL)
-
-STRTOK_TESTS_COL = 4
-STRTOK_STRG_RES_COL = 5
-STRTOK_REMOVABLE = (STRTOK_TESTS_COL, STRTOK_STRG_RES_COL)
-
-XOG_TABLE_WIDTH = 5
-
-XOG_RES_COL = 2
-XOG_SORT_KEYS = (XOG_RES_COL, )
-
-XOG_3X3_RES_COL = 2
-XOG_5X5_RES_COL = 3
-
-XOG_3X3_REMOVABLE = (XOG_5X5_RES_COL, XOG_5X5_RES_COL)
-XOG_5X5_REMOVABLE = (XOG_3X3_RES_COL, XOG_3X3_RES_COL)
-
-T48G_TABLE_WIDTH = 5
-
-T48G_RES_COL = 2
-T48G_SORT_KEYS = (T48G_RES_COL, )
-
-T48G_4X4_RES_COL = 2
-T48G_6X6_RES_COL = 3
-
-T48G_4X4_REMOVABLE = (T48G_6X6_RES_COL, T48G_6X6_RES_COL)
-T48G_6X6_REMOVABLE = (T48G_4X4_RES_COL, T48G_4X4_RES_COL)
+SINGLE_RES_COL = 3
+SINGLE_SORT_KEYS = (SINGLE_RES_COL, )
 
 NO_RESULT = -1337
 MSG = "Отсутствует стратегия"
 OUTPUT_PARAMS = (NO_RESULT, MSG)
 
 POS_CHANGE = ("🔺", "🔻")
-STRG_RESULT = ("✅", "❌")
+SIGN = ("✅", "❌")
 
 
 def create_page(project, title, content):
@@ -86,183 +59,125 @@ def delete_page(project, page_slug):
     page.delete()
 
 
-def fix_date(results):
+def params_sort(results, sort_keys, output_params, game):
     """
-        Перемещение даты завершения job'ы в последний столбец таблицы.
+        Сортировка результатов в зависимости от игры.
     """
 
-    for rec in results:
-        job_date = rec.pop(2)
-        rec.append(job_date)
+    if game == "STRgame":
+        results = sorted(results, key=operator.itemgetter(sort_keys[1]))
+        results = sorted(results, key=operator.itemgetter(sort_keys[0]))
+
+        for rec in results:
+            if rec[sort_keys[1]] == str(output_params[0])[1:]:
+                results[sort_keys[1]] = output_params[1]
+
+    if game == "XOgame" or game == "TEEN48game":
+        results = sorted(results, key=operator.itemgetter(
+            sort_keys[0]), reverse=True)
+
+        for rec in results:
+            if rec[sort_keys[0]] == output_params[0]:
+                if game == "XOgame":
+                    rec[sort_keys[0]] = 1000
+                if game == "TEEN48game":
+                    rec[sort_keys[0]] = 0
 
     return results
 
 
-def form_table(results, removable, sort_keys, output_params, game):
+def form_table(results, sort_keys, output_params, game, compet, theme, head):
     """
-        Предварительное формирование таблицы.
+        Формирование таблицы.
     """
 
-    new = deepcopy(results)
-
-    for rec in new:
-        del rec[removable[0]:removable[1] + 1]
-
-    if game == "STRgame":
-        new = sorted(new, key=operator.itemgetter(sort_keys[1]))
-        new = sorted(new, key=operator.itemgetter(sort_keys[0]))
-
-        for rec in new:
-            if rec[sort_keys[1]] == str(output_params[0])[1:]:
-                rec[sort_keys[1]] = output_params[1]
-
-    if game == "XOgame":
-        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
-
-        for rec in new:
-            if rec[sort_keys[0]] == output_params[0]:
-                rec[sort_keys[0]] = 1000
-
-    if game == "TEEN48game":
-        new = sorted(new, key=operator.itemgetter(sort_keys[0]), reverse=True)
-
-        for rec in new:
-            if rec[sort_keys[0]] == output_params[0]:
-                rec[sort_keys[0]] = 0
-
-    return new
-
-
-def print_table(head, theme, columns, results, compet):
-    """
-        Печать таблицы с предопределенной шапкой.
-    """
+    results_new = deepcopy(results)
+    results_new = params_sort(results_new, sort_keys, output_params, game)
 
     results_old = []
 
-    if os.path.exists(f"tbdump_{compet}.obj"):
-        results_dump = open(f"tbdump_{compet}.obj", "rb")
+    if os.path.exists(f"tbdump_{game.lower()}_{compet}.obj"):
+        results_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "rb")
         results_old = pickle.load(results_dump)
-
-    res = theme + head
 
     prize = {1: "🥇", 2: "🥈", 3: "🥉"}
 
-    for ind_new, new in enumerate(results):
+    for ind_new, new_rec in enumerate(results_new):
         place = prize.setdefault(ind_new + 1, str(ind_new + 1))
 
-        for ind_old, old in enumerate(results_old):
-            if new[0] == old[0]:
+        for ind_old, old_rec in enumerate(results_old):
+            if new_rec[1] == old_rec[1]:
                 if ind_new > ind_old:
                     place += f"{POS_CHANGE[1]}-{ind_new - ind_old}"
                 elif ind_new < ind_old:
                     place += f"{POS_CHANGE[0]}+{ind_old - ind_new}"
 
-        res += f"|{place}|"
-        for field in range(columns - 1):
-            res += f"{new[field]}|"
-        res += "\n"
+        new_rec[0] = place
 
-    return res
+    compet_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "wb")
+    pickle.dump(results_new, compet_dump)
+
+    results_new = [list(map(str, rec)) for rec in results_new]
+    table = theme + str(markdown_table.Table(head, results_new)) + "\n"
+
+    return table
 
 
-def handle_strgame(results):
+def handle_strgame(fresults, sresults):
     """
         Обновление таблицы для STRgame.
     """
 
-    res = ""
-
     split_theme = "# SPLIT\n\n"
-    strtok_theme = "\n# STRTOK\n\n"
-    str_head = "|**№**|**ФИ Студента**|**GitLab ID**|**Тесты**|"\
-        "**Результат**|**Последнее обновление**|\n"\
-        "|---|---|---|:---:|---|---|\n"
+    strtok_theme = "# STRTOK\n\n"
+    str_head = ["**№**", "**ФИ Студента**", "**GitLab ID**", "**Тесты**",
+                "**Результат**", "**Последнее обновление**"]
 
-    sorted_split = form_table(
-        results, STRTOK_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, "STRgame")
-    sorted_strtok = form_table(
-        results, SPLIT_REMOVABLE, STRG_SORT_KEYS, OUTPUT_PARAMS, "STRgame")
-
-    res += print_table(str_head, split_theme,
-                       STRG_TABLE_WIDTH, sorted_split, "split")
-    res += print_table(str_head, strtok_theme,
-                       STRG_TABLE_WIDTH, sorted_strtok, "strtok")
-
-    split_dump = open("tbdump_split.obj", "wb")
-    pickle.dump(sorted_split, split_dump)
-
-    strtok_dump = open("tbdump_strtok.obj", "wb")
-    pickle.dump(sorted_strtok, strtok_dump)
+    res = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                     "STRgame", "split", split_theme, str_head) + \
+        form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                   "STRgame", "strtok", strtok_theme, str_head)
 
     return res
 
 
-def handle_xogame(results):
+def handle_xogame(fresults, sresults):
     """
         Обновление таблицы для XOgame.
     """
 
-    res = ""
-
     div_3x3_theme = "# 3X3 DIVISION\n\n"
-    div_5x5_theme = "\n# 5X5 DIVISION\n\n"
-    xo_head = "|**№**|**ФИ Студента**|**GitLab ID**|"\
-        "**Очки**|**Последнее обновление**|\n"\
-        "|---|---|---|:---:|---|\n"
+    div_5x5_theme = "# 5X5 DIVISION\n\n"
+    xo_head = ["**№**", "**ФИ Студента**", "**GitLab ID**",
+               "**Очки**", "**Последнее обновление**"]
 
-    sorted_3x3 = form_table(
-        results, XOG_3X3_REMOVABLE, XOG_SORT_KEYS, OUTPUT_PARAMS, "XOgame")
-    sorted_5x5 = form_table(
-        results, XOG_5X5_REMOVABLE, XOG_SORT_KEYS, OUTPUT_PARAMS, "XOgame")
-
-    res += print_table(xo_head, div_3x3_theme,
-                       XOG_TABLE_WIDTH, sorted_3x3, "xogame_3x3")
-    res += print_table(xo_head, div_5x5_theme,
-                       XOG_TABLE_WIDTH, sorted_5x5, "xogame_5x5")
-
-    results_3x3_dump = open("tbdump_xogame_3x3.obj", "wb")
-    pickle.dump(sorted_3x3, results_3x3_dump)
-
-    results_5x5_dump = open("tbdump_xogame_5x5.obj", "wb")
-    pickle.dump(sorted_5x5, results_5x5_dump)
+    res = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                     "XOgame", "3x3", div_3x3_theme, xo_head) + \
+        form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                   "XOgame", "5x5", div_5x5_theme, xo_head)
 
     return res
 
 
-def handle_teen48game(results):
+def handle_teen48game(fresults, sresults):
     """
         Обновление таблицы для TEEN48game.
     """
 
-    res = ""
-
     div_4x4_theme = "# 4X4 DIVISION\n\n"
-    div_6x6_theme = "\n# 6X6 DIVISION\n\n"
-    teen48_head = "|**№**|**ФИ Студента**|**GitLab ID**|"\
-        "**Очки**|**Последнее обновление**|\n"\
-        "|---|---|---|:---:|---|\n"
+    div_6x6_theme = "# 6X6 DIVISION\n\n"
+    teen48_head = ["**№**", "**ФИ Студента**", "**GitLab ID**",
+                   "**Очки**", "**Последнее обновление**"]
 
-    sorted_4x4 = form_table(
-        results, T48G_4X4_REMOVABLE, T48G_SORT_KEYS, OUTPUT_PARAMS, "TEEN48game")
-    sorted_6x6 = form_table(
-        results, T48G_6X6_REMOVABLE, T48G_SORT_KEYS, OUTPUT_PARAMS, "TEEN48game")
-
-    res += print_table(teen48_head, div_4x4_theme,
-                       T48G_TABLE_WIDTH, sorted_4x4, "teen48game_4x4")
-    res += print_table(teen48_head, div_6x6_theme,
-                       T48G_TABLE_WIDTH, sorted_6x6, "teen48game_6x6")
-
-    results_4x4_dump = open("tbdump_teen48game_4x4.obj", "wb")
-    pickle.dump(sorted_4x4, results_4x4_dump)
-
-    results_6x6_dump = open("tbdump_teen48game_6x6.obj", "wb")
-    pickle.dump(sorted_6x6, results_6x6_dump)
+    res = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                     "TEEN48game", "4x4", div_4x4_theme, teen48_head) + \
+        form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                   "TEEN48game", "6x6", div_6x6_theme, teen48_head)
 
     return res
 
 
-def update_wiki(project, game, results):
+def update_wiki(project, game, fresults, sresults):
     """
         Обновление Wiki-страницы с обновленными результатами.
     """
@@ -275,14 +190,12 @@ def update_wiki(project, game, results):
 
     res = ""
 
-    results = fix_date(results)
-
     if game == "STRgame":
-        res = handle_strgame(results)
+        res = handle_strgame(fresults, sresults)
     elif game == "XOgame":
-        res = handle_xogame(results)
+        res = handle_xogame(fresults, sresults)
     elif game == "TEEN48game":
-        res = handle_teen48game(results)
+        res = handle_teen48game(fresults, sresults)
 
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")

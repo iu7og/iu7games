@@ -5,6 +5,7 @@
 import os
 import argparse
 import pickle
+from copy import deepcopy
 
 import gitlab
 import worker.wiki
@@ -26,61 +27,54 @@ def run_strgame(results):
         Старт STRgame.
     """
 
-    print("STRGAME RESULTS\n")
-    for rec in results:
-        print(f"{rec[0]}:")
+    data_split = deepcopy(results)
+    data_strtok = deepcopy(results)
 
-        lib_path = os.path.abspath(f"{rec[1][1:]}_split_lib.so")
+    print("STRGAME RESULTS\n")
+    for rec_split, rec_strtok in zip(data_split, data_strtok):
+
+        print(f"{rec_split[1]}:")
+
+        lib_path = os.path.abspath(f"{rec_split[2][1:]}_split_lib.so")
         test_path = os.path.abspath("games/strgame/tests/split")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
             split_res = split_runner.start_split(lib_path, test_path)
-            sign = worker.wiki.STRG_RESULT[0]
+            sign = worker.wiki.SIGN[0]
             if split_res[0] != 0:
-                sign = worker.wiki.STRG_RESULT[1]
-            rec.extend(
-                [
-                    sign,
-                    f"{split_res[1]:.7f}±{split_res[2]:.7f}"
-                ]
-            )
+                sign = worker.wiki.SIGN[1]
+            rec_split[3:3] = [sign,
+                              f"{split_res[1]:.7f}±{split_res[2]:.7f}"]
         else:
-            rec.extend(
-                [
-                    worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:]
-                ]
-            )
+            rec_split[3:3] = [worker.wiki.SIGN[1],
+                              str(worker.wiki.NO_RESULT)[1:]]
 
-        lib_path = os.path.abspath(f"{rec[1][1:]}_strtok_lib.so")
+        lib_path = os.path.abspath(f"{rec_strtok[2][1:]}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
             strtok_res = strtok_runner.start_strtok(lib_path, test_path)
-            sign = worker.wiki.STRG_RESULT[0]
+            sign = worker.wiki.SIGN[0]
             if strtok_res[0] != 0:
-                sign = worker.wiki.STRG_RESULT[1]
-            rec.extend(
-                [
-                    sign,
-                    f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"
-                ]
-            )
+                sign = worker.wiki.SIGN[1]
+            rec_strtok[3:3] = [sign,
+                               f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"]
         else:
-            rec.extend(
-                [
-                    worker.wiki.STRG_RESULT[1],
-                    str(worker.wiki.NO_RESULT)[1:]
-                ]
-            )
+            rec_strtok[3:3] = [worker.wiki.SIGN[1],
+                               str(worker.wiki.NO_RESULT)[1:]]
 
         print()
+
+    return (data_split, data_strtok)
 
 
 def run_xogame(results):
     """
         Старт XOgame.
     """
+
+    data_3x3 = deepcopy(results)
+    data_5x5 = deepcopy(results)
 
     libs_3x3 = []
     libs_5x5 = []
@@ -95,19 +89,17 @@ def run_xogame(results):
         results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
         results_5x5_old = pickle.load(results_5x5_dump)
 
-    for rec in results:
+    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
         rating_3x3 = 1000
         rating_5x5 = 1000
 
-        for rec_old in results_3x3_old:
-            if rec[0] == rec_old[0]:
-                rating_3x3 = rec_old[2]
+        for rec_3x3_old, rec_5x5_old in zip(results_3x3_old, results_5x5_old):
+            if rec_3x3[1] == rec_3x3_old[1]:
+                rating_3x3 = rec_3x3_old[3]
+            if rec_5x5[1] == rec_5x5_old[1]:
+                rating_5x5 = rec_5x5_old[3]
 
-        for rec_old in results_5x5_old:
-            if rec[0] == rec_old[0]:
-                rating_5x5 = rec_old[2]
-
-        lib_path = os.path.abspath(f"{rec[1][1:]}_xo_lib.so")
+        lib_path = os.path.abspath(f"{rec_3x3[2][1:]}_xo_lib.so")
 
         if os.path.exists(lib_path):
             libs_3x3.append((lib_path, rating_3x3))
@@ -123,15 +115,21 @@ def run_xogame(results):
     results_5x5 = xo_runner.start_xogame_competition(libs_5x5, 5)
 
     i = 0
-    for rec in results:
-        rec.extend([results_3x3[i], results_5x5[i]])
+    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
+        rec_3x3.insert(3, results_3x3[i])
+        rec_5x5.insert(3, results_5x5[i])
         i += 1
+
+    return (data_3x3, data_5x5)
 
 
 def run_teen48game(results):
     """
         Старт TEEN48game.
     """
+
+    data_4x4 = deepcopy(results)
+    data_6x6 = deepcopy(results)
 
     libs_4x4 = []
     libs_6x6 = []
@@ -146,19 +144,17 @@ def run_teen48game(results):
         results_6x6_dump = open("tbdump_teen48game_6x6.obj", "rb")
         results_6x6_old = pickle.load(results_6x6_dump)
 
-    for rec in results:
+    for rec_4x4, rec_6x6 in zip(data_4x4, data_6x6):
         rating_4x4 = 0
         rating_6x6 = 0
 
-        for rec_old in results_4x4_old:
-            if rec[0] == rec_old[0]:
-                rating_4x4 = rec_old[2]
+        for rec_4x4_old, rec_6x6_old in zip(results_4x4_old, results_6x6_old):
+            if rec_4x4[1] == rec_4x4_old[1]:
+                rating_4x4 = rec_4x4_old[3]
+            if rec_6x6[1] == rec_6x6_old[1]:
+                rating_6x6 = rec_6x6_old[3]
 
-        for rec_old in results_6x6_old:
-            if rec[0] == rec_old[0]:
-                rating_6x6 = rec_old[2]
-
-        lib_path = os.path.abspath(f"{rec[1][1:]}_teen48_lib.so")
+        lib_path = os.path.abspath(f"{rec_4x4[2][1:]}_teen48_lib.so")
 
         if os.path.exists(lib_path):
             libs_4x4.append((lib_path, rating_4x4))
@@ -174,9 +170,12 @@ def run_teen48game(results):
     results_6x6 = teen48_runner.start_teen48game_competition(libs_6x6, 6)
 
     i = 0
-    for rec in results:
-        rec.extend([results_4x4[i], results_6x6[i]])
+    for rec_4x4, rec_6x6 in zip(data_4x4, data_6x6):
+        rec_4x4.insert(3, results_4x4[i])
+        rec_6x6.insert(3, results_6x6[i])
         i += 1
+
+    return (data_4x4, data_6x6)
 
 
 def start_competition(instance, game, group_name, stage):
@@ -185,20 +184,22 @@ def start_competition(instance, game, group_name, stage):
     """
 
     results = worker.repo.get_group_artifacts(instance, game, group_name)
+    fresults = []
+    sresults = []
 
-    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    if deploy_job is not None:
-        worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    # deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    # if deploy_job is not None:
+    #     worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "STRgame":
-        run_strgame(results)
+        fresults, sresults = run_strgame(results)
     elif game == "XOgame":
-        run_xogame(results)
+        fresults, sresults = run_xogame(results)
     elif game == "TEEN48game":
-        run_teen48game(results)
+        fresults, sresults = run_teen48game(results)
 
     if stage == "release":
-        worker.wiki.update_wiki(IU7GAMES, game, results)
+        worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
     elif stage == "build":
         print("BUILD PASSED")
 
