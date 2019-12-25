@@ -187,9 +187,9 @@ def start_competition(instance, game, group_name, stage):
     fresults = []
     sresults = []
 
-    # deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    # if deploy_job is not None:
-    #     worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    if deploy_job is not None:
+        worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "STRgame":
         fresults, sresults = run_strgame(results)

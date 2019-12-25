@@ -70,7 +70,7 @@ def params_sort(results, sort_keys, output_params, game):
 
         for rec in results:
             if rec[sort_keys[1]] == str(output_params[0])[1:]:
-                results[sort_keys[1]] = output_params[1]
+                rec[sort_keys[1]] = output_params[1]
 
     if game == "XOgame" or game == "TEEN48game":
         results = sorted(results, key=operator.itemgetter(
