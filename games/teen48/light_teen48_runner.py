@@ -20,7 +20,7 @@ def light_teen48_runner(player_lib_path):
     print("\033[0;32mTEEN48 GAME: 4x4 FIELD OKAY\033[0m")
 
     start_teen48game_competition([(player_lib_path, 0)], 6)
-    print("\033[0;32mTEEN48 GAME: 8x8 FIELD OKAY\033[0m")
+    print("\033[0;32mTEEN48 GAME: 6x6 FIELD OKAY\033[0m")
 
 
 if __name__ == "__main__":

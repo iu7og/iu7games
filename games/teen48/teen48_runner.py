@@ -320,7 +320,6 @@ def start_teen48game_competition(players_info, field_size):
         results.append(score if score > player[1] else player[1])
         print_field(game_field, parsing_name(player[0]), score, field_size)
 
-    print(results)
     return results
 
 if __name__ == "__main__":
