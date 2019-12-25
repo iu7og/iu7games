@@ -114,8 +114,8 @@ def form_table(results, sort_keys, output_params, game, compet, theme, head):
 
         new_rec[0] = place
 
-    compet_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "wb")
-    pickle.dump(results_new, compet_dump)
+    results_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "wb")
+    pickle.dump(results_new, results_dump)
 
     results_new = [list(map(str, rec)) for rec in results_new]
     table = theme + str(markdown_table.Table(head, results_new)) + "\n"
