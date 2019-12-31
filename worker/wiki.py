@@ -9,7 +9,7 @@ import operator
 from datetime import datetime
 from copy import deepcopy
 
-import markdown_table
+from jinja2 import Template
 
 DOUBLE_TESTS_COL = 3
 DOUBLE_RES_COL = 4
@@ -59,6 +59,17 @@ def delete_page(project, page_slug):
     page.delete()
 
 
+def get_date():
+    """ 
+        Получение текущей даты.
+    """
+
+    now = datetime.now()
+    date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+    return date
+
+
 def params_sort(results, sort_keys, output_params, game):
     """
         Сортировка результатов в зависимости от игры.
@@ -86,7 +97,7 @@ def params_sort(results, sort_keys, output_params, game):
     return results
 
 
-def form_table(results, sort_keys, output_params, game, compet, theme, head):
+def form_table(results, sort_keys, output_params, game, compet):
     """
         Формирование таблицы.
     """
@@ -117,10 +128,7 @@ def form_table(results, sort_keys, output_params, game, compet, theme, head):
     results_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "wb")
     pickle.dump(results_new, results_dump)
 
-    results_new = [list(map(str, rec)) for rec in results_new]
-    table = theme + str(markdown_table.Table(head, results_new)) + "\n"
-
-    return table
+    return results_new
 
 
 def handle_strgame(fresults, sresults):
@@ -128,17 +136,15 @@ def handle_strgame(fresults, sresults):
         Обновление таблицы для STRgame.
     """
 
-    split_theme = "# SPLIT\n\n"
-    strtok_theme = "# STRTOK\n\n"
-    str_head = ["**№**", "**ФИ Студента**", "**GitLab ID**", "**Тесты**",
-                "**Результат**", "**Последнее обновление**"]
+    results_split = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                               "STRgame", "split")
+    results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                                "STRgame", "strtok")
+    tmp = open(os.path.abspath("templates/strgame.template")).read()
+    page = Template(tmp).render(results_split=results_split,
+                                results_strtok=results_strtok, date=get_date())
 
-    res = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                     "STRgame", "split", split_theme, str_head) + \
-        form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                   "STRgame", "strtok", strtok_theme, str_head)
-
-    return res
+    return page
 
 
 def handle_xogame(fresults, sresults):
@@ -146,17 +152,16 @@ def handle_xogame(fresults, sresults):
         Обновление таблицы для XOgame.
     """
 
-    div_3x3_theme = "# 3X3 DIVISION\n\n"
-    div_5x5_theme = "# 5X5 DIVISION\n\n"
-    xo_head = ["**№**", "**ФИ Студента**", "**GitLab ID**",
-               "**Очки**", "**Последнее обновление**"]
+    results_3x3 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                             "XOgame", "3x3")
+    results_5x5 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                             "XOgame", "5x5")
 
-    res = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                     "XOgame", "3x3", div_3x3_theme, xo_head) + \
-        form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                   "XOgame", "5x5", div_5x5_theme, xo_head)
+    tmp = open(os.path.abspath("templates/xogame.template")).read()
+    page = Template(tmp).render(results_3x3=results_3x3,
+                                results_5x5=results_5x5, date=get_date())
 
-    return res
+    return page
 
 
 def handle_teen48game(fresults, sresults):
@@ -164,17 +169,16 @@ def handle_teen48game(fresults, sresults):
         Обновление таблицы для TEEN48game.
     """
 
-    div_4x4_theme = "# 4X4 DIVISION\n\n"
-    div_6x6_theme = "# 6X6 DIVISION\n\n"
-    teen48_head = ["**№**", "**ФИ Студента**", "**GitLab ID**",
-                   "**Очки**", "**Последнее обновление**"]
+    results_4x4 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                             "TEEN48game", "4x4")
+    results_6x6 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+                             "TEEN48game", "6x6")
 
-    res = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                     "TEEN48game", "4x4", div_4x4_theme, teen48_head) + \
-        form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                   "TEEN48game", "6x6", div_6x6_theme, teen48_head)
+    tmp = open(os.path.abspath("templates/teen48game.template")).read()
+    page = Template(tmp).render(results_4x4=results_4x4,
+                                results_6x6=results_6x6, date=get_date())
 
-    return res
+    return page
 
 
 def update_wiki(project, game, fresults, sresults):
@@ -188,20 +192,15 @@ def update_wiki(project, game, fresults, sresults):
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard"
     }
 
-    res = ""
+    page = ""
 
     if game == "STRgame":
-        res = handle_strgame(fresults, sresults)
+        page = handle_strgame(fresults, sresults)
     elif game == "XOgame":
-        res = handle_xogame(fresults, sresults)
+        page = handle_xogame(fresults, sresults)
     elif game == "TEEN48game":
-        res = handle_teen48game(fresults, sresults)
-
-    now = datetime.now()
-    date = now.strftime("%d/%m/%Y %H:%M:%S")
-
-    res += f"\n**Обновлено:** {date} **МСК**"
+        page = handle_teen48game(fresults, sresults)
 
     for key in games:
         if game in key:
-            update_page(project, games.get(key), key, res)
+            update_page(project, games.get(key), key, page)
