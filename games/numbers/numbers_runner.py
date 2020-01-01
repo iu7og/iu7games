@@ -15,6 +15,7 @@
 """
 
 import ctypes
+from worker.wiki import NO_RESULT
 from random import randint
 from timeit import Timer
 from time import process_time_ns
@@ -24,7 +25,6 @@ MAX_LBORDER = 1
 MAX_RBORDER = 22
 
 TIMEIT_REPEATS = 10001
-NO_RESULT = -1337
 
 
 def parsing_name(lib_path):

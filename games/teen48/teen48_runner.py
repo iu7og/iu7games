@@ -21,8 +21,8 @@
 
 import ctypes
 from random import randint, random
+from worker.wiki import NO_RESULT
 
-NO_LIBARY = -1337
 
 class matrix_t(ctypes.Structure):
     """
@@ -291,7 +291,7 @@ def start_teen48game_competition(players_info, field_size):
 
     for player in players_info:
         if player[0] == "NULL":
-            results.append(NO_LIBARY)
+            results.append(NO_RESULT)
             continue
 
         player_lib = ctypes.CDLL(player[0])
