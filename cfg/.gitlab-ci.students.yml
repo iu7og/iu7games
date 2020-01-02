@@ -1,44 +1,9 @@
-stages:
-  - build
-
-strgame:
-  stage: build
-  image: hackfeed/iu7games
+image: hackfeed/iu7games
+build:
   script:
-    - strgame
+    - $CI_COMMIT_REF_NAME
   after_script:
     - rm -f *.o
   artifacts:
     paths:
       - ./*.so
-  only:
-    refs:
-      - STRgame
-
-xogame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - xogame
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - XOgame
-
-teen48game:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - teen48game
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - TEEN48game
