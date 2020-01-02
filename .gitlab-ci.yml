@@ -22,6 +22,7 @@ badges:
   only:
     - pushes
     - merge_requests
+    - schedules
 
 build_strgame:
   stage: build
@@ -88,6 +89,7 @@ codestyle:
   only:
     - pushes
     - merge_requests
+    - schedules
 
 deploy_strgame:
   stage: deploy
