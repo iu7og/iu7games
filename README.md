@@ -15,78 +15,15 @@
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
-stages:
-  - build
-
-numb63rsgame:
-  stage: build
-  image: hackfeed/iu7games
+image: hackfeed/iu7games
+build:
   script:
-    - numb63rsgame
+    - $CI_COMMIT_REF_NAME
   after_script:
     - rm -f *.o
   artifacts:
     paths:
       - ./*.so
-  only:
-    refs:
-      - NUMB63RSgame
-
-7equeencegame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - 7equeencegame
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - 7EQUEENCEgame
-
-xogame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - xogame
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - XOgame
-
-strgame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - strgame
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - STRgame
-
-teen48game:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - teen48game
-  after_script:
-    - rm -f *.o
-  artifacts:
-    paths:
-      - ./*.so
-  only:
-    refs:
-      - TEEN48game
 ```
 
 После изменения `.gitlab-ci.yml`, ознакомиться с правилами игры:
