@@ -89,6 +89,7 @@ codestyle:
   only:
     - pushes
     - merge_requests
+    - schedules
 
 deploy_strgame:
   stage: deploy
