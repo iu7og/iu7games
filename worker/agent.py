@@ -52,7 +52,13 @@ def run_strgame(results):
                 )
             ]
         else:
-            rec_split[3:3] = [worker.wiki.SIGN[1], worker.wiki.NO_RESULT]
+            rec_split[3:3] = [
+                worker.wiki.SIGN[1],
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
 
         lib_path = os.path.abspath(f"{rec_strtok[2][1:]}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
@@ -70,8 +76,13 @@ def run_strgame(results):
                 )
             ]
         else:
-            rec_strtok[3:3] = [worker.wiki.SIGN[1], worker.wiki.NO_RESULT]
-
+            rec_strtok[3:3] = [
+                worker.wiki.SIGN[1],
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
         print()
 
     return (data_split, data_strtok)

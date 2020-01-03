@@ -8,6 +8,7 @@ import pickle
 import operator
 from datetime import datetime
 from copy import deepcopy
+from functools import cmp_to_key
 
 from jinja2 import Template
 import intervals
@@ -78,16 +79,15 @@ def dispersion_sort(frec, srec):
         Сортировка результатов игры с учетом временного отклонения.
     """
 
-    if isinstance(frec, intervals.Interval) and isinstance(srec, intervals.Interval):
-        if frec[DOUBLE_RES_COL] < srec[DOUBLE_RES_COL]:
+    if frec[DOUBLE_RES_COL] < srec[DOUBLE_RES_COL]:
+        return frec
+    if frec[DOUBLE_RES_COL] > srec[DOUBLE_RES_COL]:
+        return srec
+    if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
+        if frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]:
             return frec
-        if frec[DOUBLE_RES_COL] > srec[DOUBLE_RES_COL]:
+        else:
             return srec
-        if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
-            if (frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]):
-                return frec
-            else:
-                return srec
 
     return frec
 
@@ -99,7 +99,7 @@ def params_sort(results, sort_keys, output_params, game):
 
     if game == "STRgame":
         results = sorted(results, key=operator.itemgetter(sort_keys[0]))
-        results = sorted(results, key=dispersion_sort)
+        results = sorted(results, key=cmp_to_key(dispersion_sort))
 
         for rec in results:
             if rec[sort_keys[1]] == output_params[0]:
