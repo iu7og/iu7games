@@ -8,6 +8,8 @@ import subprocess
 import hashlib
 import gitlab
 
+from dateutil import parser
+
 COLLECTED = 1
 BAD_CALL = 2
 
@@ -100,7 +102,7 @@ def get_job_date(job):
 
     job_status = f"{job_time} {job_date}"
 
-    return job_status
+    return parser.parse(job_status, dayfirst=True)
 
 
 def check_md5(master, project, ref, user):

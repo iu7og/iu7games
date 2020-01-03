@@ -8,6 +8,7 @@ import pickle
 from copy import deepcopy
 
 import gitlab
+import intervals
 import worker.wiki
 import worker.repo
 from games.strgame import split_runner, strtok_runner
@@ -43,11 +44,15 @@ def run_strgame(results):
             sign = worker.wiki.SIGN[0]
             if split_res[0] != 0:
                 sign = worker.wiki.SIGN[1]
-            rec_split[3:3] = [sign,
-                              f"{split_res[1]:.7f}±{split_res[2]:.7f}"]
+            rec_split[3:3] = [
+                sign,
+                intervals.closed(
+                    split_res[1] - 2 * split_res[2],
+                    split_res[1] + 2 * split_res[2]
+                )
+            ]
         else:
-            rec_split[3:3] = [worker.wiki.SIGN[1],
-                              str(worker.wiki.NO_RESULT)[1:]]
+            rec_split[3:3] = [worker.wiki.SIGN[1], worker.wiki.NO_RESULT]
 
         lib_path = os.path.abspath(f"{rec_strtok[2][1:]}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
@@ -57,11 +62,15 @@ def run_strgame(results):
             sign = worker.wiki.SIGN[0]
             if strtok_res[0] != 0:
                 sign = worker.wiki.SIGN[1]
-            rec_strtok[3:3] = [sign,
-                               f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"]
+            rec_strtok[3:3] = [
+                sign,
+                intervals.closed(
+                    strtok_res[1] - 2 * strtok_res[2],
+                    strtok_res[1] + 2 * strtok_res[2]
+                )
+            ]
         else:
-            rec_strtok[3:3] = [worker.wiki.SIGN[1],
-                               str(worker.wiki.NO_RESULT)[1:]]
+            rec_strtok[3:3] = [worker.wiki.SIGN[1], worker.wiki.NO_RESULT]
 
         print()
 
@@ -187,9 +196,9 @@ def start_competition(instance, game, group_name, stage):
     fresults = []
     sresults = []
 
-    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    if deploy_job is not None:
-        worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    # deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    # if deploy_job is not None:
+    #     worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "STRgame":
         fresults, sresults = run_strgame(results)
