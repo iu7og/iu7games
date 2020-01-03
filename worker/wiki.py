@@ -22,6 +22,9 @@ SINGLE_RES_COL = 3
 SINGLE_TIME_COL = 4
 SINGLE_SORT_KEYS = (SINGLE_RES_COL, )
 
+GT = 1
+LT = -1
+
 NO_RESULT = -1337
 MSG = "Отсутствует стратегия"
 OUTPUT_PARAMS = (NO_RESULT, MSG)
@@ -74,22 +77,20 @@ def get_date():
     return date
 
 
-def dispersion_sort(frec, srec):
+def dispcmp(frec, srec):
     """
-        Сортировка результатов игры с учетом временного отклонения.
+        Компаратор, учитывающий временное отклонение выполнения.
     """
 
     if frec[DOUBLE_RES_COL] < srec[DOUBLE_RES_COL]:
-        return frec
+        return GT
     if frec[DOUBLE_RES_COL] > srec[DOUBLE_RES_COL]:
-        return srec
+        return LT
     if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
         if frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]:
-            return frec
+            return GT
         else:
-            return srec
-
-    return frec
+            return LT
 
 
 def params_sort(results, sort_keys, output_params, game):
@@ -98,11 +99,11 @@ def params_sort(results, sort_keys, output_params, game):
     """
 
     if game == "STRgame":
+        results = sorted(results, key=cmp_to_key(dispcmp), reverse=True)
         results = sorted(results, key=operator.itemgetter(sort_keys[0]))
-        results = sorted(results, key=cmp_to_key(dispersion_sort))
 
         for rec in results:
-            if rec[sort_keys[1]] == output_params[0]:
+            if rec[sort_keys[1]] == intervals.closed(1337, intervals.inf):
                 rec[sort_keys[1]] = output_params[1]
             rec[DOUBLE_TIME_COL] = rec[DOUBLE_TIME_COL].strftime(
                 "%H:%M:%S %d.%m.%Y")

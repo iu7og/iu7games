@@ -47,8 +47,8 @@ def run_strgame(results):
             rec_split[3:3] = [
                 sign,
                 intervals.closed(
-                    split_res[1] - 2 * split_res[2],
-                    split_res[1] + 2 * split_res[2]
+                    round(split_res[1] - 2 * split_res[2], 7),
+                    round(split_res[1] + 2 * split_res[2], 7)
                 )
             ]
         else:
@@ -71,8 +71,8 @@ def run_strgame(results):
             rec_strtok[3:3] = [
                 sign,
                 intervals.closed(
-                    strtok_res[1] - 2 * strtok_res[2],
-                    strtok_res[1] + 2 * strtok_res[2]
+                    round(strtok_res[1] - 2 * strtok_res[2], 7),
+                    round(strtok_res[1] + 2 * strtok_res[2], 7)
                 )
             ]
         else:
@@ -207,9 +207,9 @@ def start_competition(instance, game, group_name, stage):
     fresults = []
     sresults = []
 
-    # deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    # if deploy_job is not None:
-    #     worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    if deploy_job is not None:
+        worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "STRgame":
         fresults, sresults = run_strgame(results)
