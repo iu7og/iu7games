@@ -15,11 +15,13 @@
 """
 
 import ctypes
-from worker.wiki import NO_RESULT
+#NO_RESULT = -1337
 from random import randint
 from timeit import Timer
 from time import process_time_ns
-from math import sqrt
+from math import sqrt, gcd
+from functools import reduce
+from worker.wiki import NO_RESULT
 
 MAX_LBORDER = 1
 MAX_RBORDER = 22
@@ -50,19 +52,21 @@ def print_results(results, players_info):
             )
 
 
+def lcm(interval):
+    """
+        Функция вычисляющая НОК на заданном интервале
+    """
+    return reduce(lambda x, y: (x * y) // gcd(x, y), interval, 1)
+
+
 def round_intervals():
     """
         Генерация левой, правой границы интервала и решения для текущего раунда.
     """
 
-    lib = ctypes.CDLL("solution_hs.so")
-
     left_border = randint(MAX_LBORDER, MAX_RBORDER)
     right_border = randint(left_border, MAX_RBORDER)
-
-    lib.hs_init(0, 0)
-    solution = lib.solution_hs(left_border, right_border)
-    lib.hs_exit()
+    solution = lcm(range(left_border, right_border + 1))
 
     return {"l_border": right_border, "r_border": left_border, "solution": solution}
 
