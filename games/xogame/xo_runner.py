@@ -19,6 +19,7 @@
 
 import ctypes
 import sys
+from worker.wiki import NO_RESULT
 
 OK = 0
 INVALID_MOVE = 1
@@ -31,7 +32,6 @@ ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
 
-NO_RESULT = -1337
 ENCODING = "utf-8"
 N = 30
 
@@ -336,6 +336,5 @@ def start_xogame_competition(players_info, field_size):
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("./test2.so", 1400),
-                              ("./lyuba.so", 1000),
-                              ("./test3.so", 1200)], 5)
+    start_xogame_competition([("./dima.so", 1400),
+                              ("./misha.so", 1000)], 5)
