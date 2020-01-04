@@ -67,9 +67,7 @@ def round_intervals():
     """
 
     left_border = randint(MAX_LBORDER, MAX_RBORDER)
-    left_border = 1
     right_border = randint(left_border, MAX_RBORDER)
-    right_border = 10
     solution = lcm(range(left_border, right_border + 1))
 
     return {"l_border": left_border, "r_border": right_border, "solution": solution}
