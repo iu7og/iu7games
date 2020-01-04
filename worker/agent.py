@@ -33,30 +33,44 @@ def run_num63rsgame(results):
 
     data = deepcopy(results)
 
-    print("NUM63RSGAME RESULTS\n")
+    libs = []
+
     for rec in data:
         lib_path = os.path.abspath(f"{rec[2][1:]}_num63rs_lib.so")
 
         if os.path.exists(lib_path):
-            res = numbers_runner.start_numbers_game(lib_path)
-            sign = worker.wiki.SIGN[0]
-            if res[0] != 0:
-                sign = worker.wiki.SIGN[1]
+            libs.append(lib_path)
+        else:
+            libs.append("NULL")
+
+    print("NUM63RSGAME RESULTS\n")
+    results_def = numbers_runner.start_numbers_game(libs)
+
+    i = 0
+    for rec in data:
+        sign = worker.wiki.SIGN[0]
+        if results_def[i][0] == worker.wiki.NO_RESULT:
+            sign = worker.wiki.SIGN[1]
             rec[3:3] = [
                 sign,
-                intervals.closed(
-                    round(res[1] - SIGMA_COEF * res[2], 7),
-                    round(res[1] + SIGMA_COEF * res[2], 7)
-                )
-            ]
-        else:
-            rec[3:3] = [
-                worker.wiki.SIGN[1],
                 intervals.closed(
                     abs(worker.wiki.NO_RESULT),
                     intervals.inf
                 )
             ]
+        else:
+            if results_def[i][0] != 0:
+                sign = worker.wiki.SIGN[1]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    round(results_def[i][1] - SIGMA_COEF *
+                          results_def[i][2], 7),
+                    round(results_def[i][1] + SIGMA_COEF *
+                          results_def[i][2], 7)
+                )
+            ]
+        i += 1
 
     return data
 
@@ -245,9 +259,9 @@ def start_competition(instance, game, group_name, stage):
     fresults = []
     sresults = []
 
-    # deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    # if deploy_job is not None:
-    #     worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
+    if deploy_job is not None:
+        worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
     if game == "NUM63RSgame":
         fresults = run_num63rsgame(results)
