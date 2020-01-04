@@ -14,7 +14,7 @@ def light_numbers_runner(player_lib_path):
         Запуск стратегии игрока на тестовых значениях.
     """
 
-    start_numbers_game(player_lib_path)
+    start_numbers_game([player_lib_path])
     print("\033[0;32mNUMBERS GAME: OKAY\033[0m")
 
 
