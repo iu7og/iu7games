@@ -28,7 +28,7 @@ NO_RESULT = -1337
 MAX_LBORDER = 1
 MAX_RBORDER = 22
 
-TIMEIT_REPEATS = 10001
+TIMEIT_REPEATS = 1001
 
 
 def parsing_name(lib_path):
@@ -39,18 +39,19 @@ def parsing_name(lib_path):
     return lib_path[lib_path.rindex('/') + 1: len(lib_path) - 3]
 
 
-def print_results(results, player_info):
+def print_results(results, players_info):
     """
-        Печать финальных результатов.
+        Печать финальных результатов для каждого игрока.
     """
 
-    if player_info != "NULL":
-        print(
-            "PLAYER:", parsing_name(player_info),
-            "SOLUTION:", "OK" if not results["solution"] else "FAIL",
-            "MEDIAN:", results["median"],
-            "DISPERSON:", results["dispersion"]
-        )
+    for i in range(len(players_info)):
+        if players_info[i] != "NULL":
+            print(
+                "PLAYER:", parsing_name(players_info[i]),
+                "SOLUTION:", results[i][0],
+                "MEDIAN:", results[i][1],
+                "DISPERSON:", results[i][2]
+            )
 
 
 def lcm(interval):
@@ -66,18 +67,12 @@ def round_intervals():
     """
 
     left_border = randint(MAX_LBORDER, MAX_RBORDER)
+    left_border = 1
     right_border = randint(left_border, MAX_RBORDER)
+    right_border = 10
     solution = lcm(range(left_border, right_border + 1))
 
     return {"l_border": left_border, "r_border": right_border, "solution": solution}
-
-
-def pack_results(solution, median, dispersion):
-    """
-        Упаковка результатов в словарь.
-    """
-
-    return {"solution": solution, "median": median, "dispersion": dispersion}
 
 
 def player_results(player_lib, intervals):
@@ -87,7 +82,7 @@ def player_results(player_lib, intervals):
 
     player_solution = player_lib.numbers_game(intervals["l_border"], intervals["r_border"])
     if player_solution != intervals["solution"]:
-        return pack_results(SOLUTION_FAIL, 0, 0)
+        return (SOLUTION_FAIL, 0, 0)
 
     def timeit_wrapper():
         """
@@ -104,25 +99,27 @@ def player_results(player_lib, intervals):
     time_results = list(map(lambda x: (x - avg_time) * (x - avg_time), time_results))
     dispersion = sqrt(sum(time_results) / len(time_results))
 
-    return pack_results(OK, median, dispersion)
+    return (OK, median, dispersion)
 
 
-def start_numbers_game(player_lib):
+def start_numbers_game(players_info):
     """
-        Открытие библиотеки с функцией игрока, подсчёт времени исполнения его функции,
+        Открытие библиотеки с функциями игроков, подсчёт времени исполнения их функций,
         печать результатов.
     """
 
     intervals = round_intervals()
+    results = []
 
-    if player_lib != "NULL":
-        lib = ctypes.CDLL(player_lib)
-        results = player_results(lib, intervals)
-    else:
-        results = pack_results(NO_RESULT, 0, 0)
+    for player_lib in players_info:
+        if player_lib != "NULL":
+            lib = ctypes.CDLL(player_lib)
+            results.append(player_results(lib, intervals))
+        else:
+            results.append((NO_RESULT, 0, 0))
 
-    print_results(results, player_lib)
-    return results["solution"], results["median"], results["dispersion"]
+    print_results(results, players_info)
+    return results
 
 if __name__ == "__main__":
-    start_numbers_game("./test.so")
+    start_numbers_game(["./test.so", "NULL", "./test.so"])
