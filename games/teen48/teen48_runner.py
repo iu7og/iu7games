@@ -21,7 +21,8 @@
 
 import ctypes
 from random import randint, random
-from worker.wiki import NO_RESULT
+
+NO_RESULT = -1337
 
 
 class matrix_t(ctypes.Structure):
