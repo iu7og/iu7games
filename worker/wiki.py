@@ -8,15 +8,22 @@ import pickle
 import operator
 from datetime import datetime
 from copy import deepcopy
+from functools import cmp_to_key
 
 from jinja2 import Template
+import intervals
 
 DOUBLE_TESTS_COL = 3
 DOUBLE_RES_COL = 4
+DOUBLE_TIME_COL = 5
 DOUBLE_SORT_KEYS = (DOUBLE_TESTS_COL, DOUBLE_RES_COL)
 
 SINGLE_RES_COL = 3
+SINGLE_TIME_COL = 4
 SINGLE_SORT_KEYS = (SINGLE_RES_COL, )
+
+GT = 1
+LT = -1
 
 NO_RESULT = -1337
 MSG = "Отсутствует стратегия"
@@ -65,9 +72,25 @@ def get_date():
     """
 
     now = datetime.now()
-    date = now.strftime("%d/%m/%Y %H:%M:%S")
+    date = now.strftime("%H:%M:%S %d.%m.%Y")
 
     return date
+
+
+def dispcmp(frec, srec):
+    """
+        Компаратор, учитывающий временное отклонение выполнения.
+    """
+
+    if frec[DOUBLE_RES_COL] < srec[DOUBLE_RES_COL]:
+        return GT
+    if frec[DOUBLE_RES_COL] > srec[DOUBLE_RES_COL]:
+        return LT
+    if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
+        if frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]:
+            return GT
+        else:
+            return LT
 
 
 def params_sort(results, sort_keys, output_params, game):
@@ -76,12 +99,14 @@ def params_sort(results, sort_keys, output_params, game):
     """
 
     if game == "STRgame":
-        results = sorted(results, key=operator.itemgetter(sort_keys[1]))
+        results = sorted(results, key=cmp_to_key(dispcmp), reverse=True)
         results = sorted(results, key=operator.itemgetter(sort_keys[0]))
 
         for rec in results:
-            if rec[sort_keys[1]] == str(output_params[0])[1:]:
+            if rec[sort_keys[1]] == intervals.closed(1337, intervals.inf):
                 rec[sort_keys[1]] = output_params[1]
+            rec[DOUBLE_TIME_COL] = rec[DOUBLE_TIME_COL].strftime(
+                "%H:%M:%S %d.%m.%Y")
 
     if game == "XOgame" or game == "TEEN48game":
         results = sorted(results, key=operator.itemgetter(
@@ -93,6 +118,8 @@ def params_sort(results, sort_keys, output_params, game):
                     rec[sort_keys[0]] = 1000
                 if game == "TEEN48game":
                     rec[sort_keys[0]] = 0
+            rec[SINGLE_TIME_COL] = rec[SINGLE_TIME_COL].strftime(
+                "%H:%M:%S %d.%m.%Y")
 
     return results
 

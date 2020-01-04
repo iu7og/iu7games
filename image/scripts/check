@@ -17,7 +17,7 @@ then
     else
         echo -e "\033[0;32mCORRECT SIGNATURE FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
     fi
-    SPAM="$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(snstem(.*)\)/\1/p')n
+    SPAM="$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(system(.*)\)/\1/p')n
     $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(fork()\)/\1/p')n
     $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')n
     $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\([_]\{0,2\}asm[_]\{0,2\}\)/\1/p')n

@@ -8,12 +8,15 @@ import pickle
 from copy import deepcopy
 
 import gitlab
+import intervals
 import worker.wiki
 import worker.repo
 from games.strgame import split_runner, strtok_runner
 from games.xogame import xo_runner
 from games.teen48 import teen48_runner
 
+
+SIGMA_COEF = 3
 
 GIT_INST = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
 GIT_INST.auth()
@@ -43,11 +46,21 @@ def run_strgame(results):
             sign = worker.wiki.SIGN[0]
             if split_res[0] != 0:
                 sign = worker.wiki.SIGN[1]
-            rec_split[3:3] = [sign,
-                              f"{split_res[1]:.7f}±{split_res[2]:.7f}"]
+            rec_split[3:3] = [
+                sign,
+                intervals.closed(
+                    round(split_res[1] - SIGMA_COEF * split_res[2], 7),
+                    round(split_res[1] + SIGMA_COEF * split_res[2], 7)
+                )
+            ]
         else:
-            rec_split[3:3] = [worker.wiki.SIGN[1],
-                              str(worker.wiki.NO_RESULT)[1:]]
+            rec_split[3:3] = [
+                worker.wiki.SIGN[1],
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
 
         lib_path = os.path.abspath(f"{rec_strtok[2][1:]}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
@@ -57,12 +70,21 @@ def run_strgame(results):
             sign = worker.wiki.SIGN[0]
             if strtok_res[0] != 0:
                 sign = worker.wiki.SIGN[1]
-            rec_strtok[3:3] = [sign,
-                               f"{strtok_res[1]:.7f}±{strtok_res[2]:.7f}"]
+            rec_strtok[3:3] = [
+                sign,
+                intervals.closed(
+                    round(strtok_res[1] - SIGMA_COEF * strtok_res[2], 7),
+                    round(strtok_res[1] + SIGMA_COEF * strtok_res[2], 7)
+                )
+            ]
         else:
-            rec_strtok[3:3] = [worker.wiki.SIGN[1],
-                               str(worker.wiki.NO_RESULT)[1:]]
-
+            rec_strtok[3:3] = [
+                worker.wiki.SIGN[1],
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
         print()
 
     return (data_split, data_strtok)
