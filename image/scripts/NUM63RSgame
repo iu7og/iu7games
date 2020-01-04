@@ -1,0 +1,3 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check NUM63RSgame/ num63rs "int numbers_game(int min, int max)" numbers "light_numbers_runner.py"

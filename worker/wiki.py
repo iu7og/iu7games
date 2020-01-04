@@ -98,7 +98,10 @@ def params_sort(results, sort_keys, output_params, game):
         Сортировка результатов в зависимости от игры.
     """
 
-    if game == "STRgame":
+    timedep_games = ["NUM63RSgame", "STRgame"]
+    timedepless_games = ["XOgame", "TEEN48game"]
+
+    if game in timedep_games:
         results = sorted(results, key=cmp_to_key(dispcmp), reverse=True)
         results = sorted(results, key=operator.itemgetter(sort_keys[0]))
 
@@ -108,7 +111,7 @@ def params_sort(results, sort_keys, output_params, game):
             rec[DOUBLE_TIME_COL] = rec[DOUBLE_TIME_COL].strftime(
                 "%H:%M:%S %d.%m.%Y")
 
-    if game == "XOgame" or game == "TEEN48game":
+    if game in timedepless_games:
         results = sorted(results, key=operator.itemgetter(
             sort_keys[0]), reverse=True)
 
@@ -158,18 +161,15 @@ def form_table(results, sort_keys, output_params, game, compet):
     return results_new
 
 
-def handle_strgame(fresults, sresults):
+def handle_num63rsgame(fresults):
     """
-        Обновление таблицы для STRgame.
+        Обновление таблицы для NUM63RSgame.
     """
 
-    results_split = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                               "STRgame", "split")
-    results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                                "STRgame", "strtok")
-    tmp = open(os.path.abspath("templates/strgame.template")).read()
-    page = Template(tmp).render(results_split=results_split,
-                                results_strtok=results_strtok, date=get_date())
+    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                         "NUM63RSgame", "")
+    tmp = open(os.path.abspath("templates/num63rsgame.template")).read()
+    page = Template(tmp).render(results=results, date=get_date())
 
     return page
 
@@ -187,6 +187,22 @@ def handle_xogame(fresults, sresults):
     tmp = open(os.path.abspath("templates/xogame.template")).read()
     page = Template(tmp).render(results_3x3=results_3x3,
                                 results_5x5=results_5x5, date=get_date())
+
+    return page
+
+
+def handle_strgame(fresults, sresults):
+    """
+        Обновление таблицы для STRgame.
+    """
+
+    results_split = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                               "STRgame", "split")
+    results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                                "STRgame", "strtok")
+    tmp = open(os.path.abspath("templates/strgame.template")).read()
+    page = Template(tmp).render(results_split=results_split,
+                                results_strtok=results_strtok, date=get_date())
 
     return page
 
@@ -214,6 +230,7 @@ def update_wiki(project, game, fresults, sresults):
     """
 
     games = {
+        "NUM63RSgame Leaderboard": "NUM63RSgame-Leaderboard",
         "XOgame Leaderboard": "XOgame-Leaderboard",
         "STRgame Leaderboard": "STRgame-Leaderboard",
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard"
@@ -221,10 +238,12 @@ def update_wiki(project, game, fresults, sresults):
 
     page = ""
 
-    if game == "STRgame":
-        page = handle_strgame(fresults, sresults)
+    if game == "NUM63RSgame":
+        page = handle_num63rsgame(fresults)
     elif game == "XOgame":
         page = handle_xogame(fresults, sresults)
+    elif game == "STRgame":
+        page = handle_strgame(fresults, sresults)
     elif game == "TEEN48game":
         page = handle_teen48game(fresults, sresults)
 
