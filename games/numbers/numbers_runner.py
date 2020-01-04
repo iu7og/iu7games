@@ -69,7 +69,7 @@ def round_intervals():
     right_border = randint(left_border, MAX_RBORDER)
     solution = lcm(range(left_border, right_border + 1))
 
-    return {"l_border": right_border, "r_border": left_border, "solution": solution}
+    return {"l_border": left_border, "r_border": right_border, "solution": solution}
 
 
 def pack_results(solution, median, dispersion):
