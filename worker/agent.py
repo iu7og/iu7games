@@ -35,7 +35,7 @@ def run_num63rsgame(results):
 
     print("NUM63RSGAME RESULTS\n")
     for rec in data:
-        lib_path = os.path.abspath(f"{rec[2][1:]}_num63rsgame_lib.so")
+        lib_path = os.path.abspath(f"{rec[2][1:]}_num63rs_lib.so")
 
         if os.path.exists(lib_path):
             res = numbers_runner.start_numbers_game(lib_path)
