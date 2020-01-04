@@ -20,4 +20,4 @@ def light_numbers_runner(player_lib_path):
 
 if __name__ == "__main__":
     light_numbers_runner(
-        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_numbers_lib.so")
+        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_num63rs_lib.so")
