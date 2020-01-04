@@ -16,6 +16,8 @@ from games.xogame import xo_runner
 from games.teen48 import teen48_runner
 
 
+SIGMA_COEF = 3
+
 GIT_INST = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
 GIT_INST.auth()
 
@@ -47,8 +49,8 @@ def run_strgame(results):
             rec_split[3:3] = [
                 sign,
                 intervals.closed(
-                    round(split_res[1] - 2 * split_res[2], 7),
-                    round(split_res[1] + 2 * split_res[2], 7)
+                    round(split_res[1] - SIGMA_COEF * split_res[2], 7),
+                    round(split_res[1] + SIGMA_COEF * split_res[2], 7)
                 )
             ]
         else:
@@ -71,8 +73,8 @@ def run_strgame(results):
             rec_strtok[3:3] = [
                 sign,
                 intervals.closed(
-                    round(strtok_res[1] - 2 * strtok_res[2], 7),
-                    round(strtok_res[1] + 2 * strtok_res[2], 7)
+                    round(strtok_res[1] - SIGMA_COEF * strtok_res[2], 7),
+                    round(strtok_res[1] + SIGMA_COEF * strtok_res[2], 7)
                 )
             ]
         else:
