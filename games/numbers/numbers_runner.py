@@ -20,10 +20,10 @@ from timeit import Timer
 from time import process_time_ns
 from math import sqrt, gcd
 from functools import reduce
-from worker.wiki import NO_RESULT
 
 OK = 0
 SOLUTION_FAIL = 1
+NO_RESULT = -1337
 
 MAX_LBORDER = 1
 MAX_RBORDER = 22

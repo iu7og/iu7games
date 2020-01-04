@@ -19,10 +19,10 @@
 
 import ctypes
 import sys
-from worker.wiki import NO_RESULT
 
 OK = 0
 INVALID_MOVE = 1
+NO_RESULT = -1337
 
 DRAW = 0
 PLAYER_ONE_WIN = 1
