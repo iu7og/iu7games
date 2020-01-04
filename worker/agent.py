@@ -11,8 +11,9 @@ import gitlab
 import intervals
 import worker.wiki
 import worker.repo
-from games.strgame import split_runner, strtok_runner
+from games.numbers import numbers_runner
 from games.xogame import xo_runner
+from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
 
 
@@ -23,6 +24,110 @@ GIT_INST.auth()
 
 IU7GAMES_ID = 2546
 IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
+
+
+def run_num63rsgame(results):
+    """
+        Старт NUM63RSgame.
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    for rec in data:
+        lib_path = os.path.abspath(f"{rec[2][1:]}_num63rs_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append(lib_path)
+        else:
+            libs.append("NULL")
+
+    print("NUM63RSGAME RESULTS\n")
+    results_def = numbers_runner.start_numbers_game(libs)
+
+    i = 0
+    for rec in data:
+        sign = worker.wiki.SIGN[0]
+        if results_def[i][0] == worker.wiki.NO_RESULT:
+            sign = worker.wiki.SIGN[1]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
+        else:
+            if results_def[i][0] != 0:
+                sign = worker.wiki.SIGN[1]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    round(results_def[i][1] - SIGMA_COEF *
+                          results_def[i][2], 7),
+                    round(results_def[i][1] + SIGMA_COEF *
+                          results_def[i][2], 7)
+                )
+            ]
+        i += 1
+
+    return data
+
+
+def run_xogame(results):
+    """
+        Старт XOgame.
+    """
+
+    data_3x3 = deepcopy(results)
+    data_5x5 = deepcopy(results)
+
+    libs_3x3 = []
+    libs_5x5 = []
+
+    results_3x3_old = []
+    results_5x5_old = []
+
+    if os.path.exists("tbdump_xogame_3x3.obj"):
+        results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
+        results_3x3_old = pickle.load(results_3x3_dump)
+    if os.path.exists("tbdump_xogame_5x5.obj"):
+        results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
+        results_5x5_old = pickle.load(results_5x5_dump)
+
+    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
+        rating_3x3 = 1000
+        rating_5x5 = 1000
+
+        for rec_3x3_old, rec_5x5_old in zip(results_3x3_old, results_5x5_old):
+            if rec_3x3[1] == rec_3x3_old[1]:
+                rating_3x3 = rec_3x3_old[3]
+            if rec_5x5[1] == rec_5x5_old[1]:
+                rating_5x5 = rec_5x5_old[3]
+
+        lib_path = os.path.abspath(f"{rec_3x3[2][1:]}_xo_lib.so")
+
+        if os.path.exists(lib_path):
+            libs_3x3.append((lib_path, rating_3x3))
+            libs_5x5.append((lib_path, rating_5x5))
+        else:
+            libs_3x3.append(("NULL", rating_3x3))
+            libs_5x5.append(("NULL", rating_5x5))
+
+    print("XOGAME RESULTS\n")
+    print("\n3X3 DIV\n")
+    results_3x3 = xo_runner.start_xogame_competition(libs_3x3, 3)
+    print("\n5X5 DIV\n")
+    results_5x5 = xo_runner.start_xogame_competition(libs_5x5, 5)
+
+    i = 0
+    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
+        rec_3x3.insert(3, results_3x3[i])
+        rec_5x5.insert(3, results_5x5[i])
+        i += 1
+
+    return (data_3x3, data_5x5)
 
 
 def run_strgame(results):
@@ -88,61 +193,6 @@ def run_strgame(results):
         print()
 
     return (data_split, data_strtok)
-
-
-def run_xogame(results):
-    """
-        Старт XOgame.
-    """
-
-    data_3x3 = deepcopy(results)
-    data_5x5 = deepcopy(results)
-
-    libs_3x3 = []
-    libs_5x5 = []
-
-    results_3x3_old = []
-    results_5x5_old = []
-
-    if os.path.exists("tbdump_xogame_3x3.obj"):
-        results_3x3_dump = open("tbdump_xogame_3x3.obj", "rb")
-        results_3x3_old = pickle.load(results_3x3_dump)
-    if os.path.exists("tbdump_xogame_5x5.obj"):
-        results_5x5_dump = open("tbdump_xogame_5x5.obj", "rb")
-        results_5x5_old = pickle.load(results_5x5_dump)
-
-    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
-        rating_3x3 = 1000
-        rating_5x5 = 1000
-
-        for rec_3x3_old, rec_5x5_old in zip(results_3x3_old, results_5x5_old):
-            if rec_3x3[1] == rec_3x3_old[1]:
-                rating_3x3 = rec_3x3_old[3]
-            if rec_5x5[1] == rec_5x5_old[1]:
-                rating_5x5 = rec_5x5_old[3]
-
-        lib_path = os.path.abspath(f"{rec_3x3[2][1:]}_xo_lib.so")
-
-        if os.path.exists(lib_path):
-            libs_3x3.append((lib_path, rating_3x3))
-            libs_5x5.append((lib_path, rating_5x5))
-        else:
-            libs_3x3.append(("NULL", rating_3x3))
-            libs_5x5.append(("NULL", rating_5x5))
-
-    print("XOGAME RESULTS\n")
-    print("\n3X3 DIV\n")
-    results_3x3 = xo_runner.start_xogame_competition(libs_3x3, 3)
-    print("\n5X5 DIV\n")
-    results_5x5 = xo_runner.start_xogame_competition(libs_5x5, 5)
-
-    i = 0
-    for rec_3x3, rec_5x5 in zip(data_3x3, data_5x5):
-        rec_3x3.insert(3, results_3x3[i])
-        rec_5x5.insert(3, results_5x5[i])
-        i += 1
-
-    return (data_3x3, data_5x5)
 
 
 def run_teen48game(results):
@@ -213,10 +263,12 @@ def start_competition(instance, game, group_name, stage):
     if deploy_job is not None:
         worker.repo.get_artifacts(IU7GAMES, deploy_job)
 
-    if game == "STRgame":
-        fresults, sresults = run_strgame(results)
+    if game == "NUM63RSgame":
+        fresults = run_num63rsgame(results)
     elif game == "XOgame":
         fresults, sresults = run_xogame(results)
+    elif game == "STRgame":
+        fresults, sresults = run_strgame(results)
     elif game == "TEEN48game":
         fresults, sresults = run_teen48game(results)
 
