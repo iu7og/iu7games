@@ -89,8 +89,22 @@ def dispcmp(frec, srec):
     if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
         if frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]:
             return GT
-        else:
-            return LT
+        return LT
+
+
+def equalcmp(frec, srec):
+    """
+        Компаратор, учитывающий равенство полученных очков.
+    """
+
+    if frec[SINGLE_RES_COL] < srec[SINGLE_RES_COL]:
+        return GT
+    if frec[SINGLE_RES_COL] > srec[SINGLE_RES_COL]:
+        return LT
+    if frec[SINGLE_RES_COL] == srec[SINGLE_RES_COL]:
+        if frec[SINGLE_TIME_COL] < srec[SINGLE_TIME_COL]:
+            return GT
+        return LT
 
 
 def params_sort(results, sort_keys, output_params, game):
@@ -112,8 +126,7 @@ def params_sort(results, sort_keys, output_params, game):
                 "%H:%M:%S %d.%m.%Y")
 
     if game in timedepless_games:
-        results = sorted(results, key=operator.itemgetter(
-            sort_keys[0]), reverse=True)
+        results = sorted(results, key=cmp_to_key(equalcmp))
 
         for rec in results:
             if rec[sort_keys[0]] == output_params[0]:
