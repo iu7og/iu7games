@@ -25,7 +25,7 @@ badges:
     - schedules
 
 build_num63rsgame:
-  stage: deploy
+  stage: build
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
