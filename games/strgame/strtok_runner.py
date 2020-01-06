@@ -1,5 +1,5 @@
 """
-      ===== STRTOK RUNNER v.1.3b =====
+      ===== STRTOK RUNNER v.1.3c =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции strtok,
@@ -180,4 +180,4 @@ def start_strtok(player_lib_name, tests_path):
 
 
 if __name__ == "__main__":
-    start_strtok("./strtok_lib.so", "tests/strtok")
+    start_strtok("games/strgame/strtok_lib.so", "games/strgame/tests/strtok")

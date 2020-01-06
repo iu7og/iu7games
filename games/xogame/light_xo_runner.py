@@ -1,5 +1,5 @@
 """
-      ===== LIGHT XOGAME RUNNER v.1.0a =====
+      ===== LIGHT XOGAME RUNNER v.1.0b =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
       Данный ранер запускает стратегию xogame игрока с тестовой стратегий,

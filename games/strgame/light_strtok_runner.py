@@ -1,5 +1,5 @@
 """
-      ===== LIGHT STRTOK RUNNER v.1.0a =====
+      ===== LIGHT STRTOK RUNNER v.1.0b =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
       Данный ранер запускает функцию strtok игрока на определенных тестовых данных,

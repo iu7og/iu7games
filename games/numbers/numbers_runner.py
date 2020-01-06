@@ -1,5 +1,5 @@
 """
-        ===== NUMBERS RUNNER v.1.0a =====
+        ===== NUMBERS RUNNER v.1.0b =====
         Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Ранер для игры NUM63RSGAME, суть которой заключается в получении
@@ -73,6 +73,20 @@ def round_intervals():
     return {"l_border": left_border, "r_border": right_border, "solution": solution}
 
 
+def process_time(time_results):
+    """
+        Обработка результатов (по времени) игрока. Подсчёт медианы и дисперсии.
+    """
+
+    time_results.sort()
+    median = time_results[len(time_results) // 2]
+    avg_time = sum(time_results) / len(time_results)
+    time_results = list(map(lambda x: (x - avg_time) * (x - avg_time), time_results))
+    dispersion = sqrt(sum(time_results) / len(time_results))
+
+    return median, dispersion
+
+
 def player_results(player_lib, intervals):
     """
         Получение и обработка результатов игрока. Подсчёт времени выполнения его функции.
@@ -90,12 +104,7 @@ def player_results(player_lib, intervals):
         player_lib.numbers_game(intervals["l_border"], intervals["r_border"])
 
     time_results = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
-    time_results.sort()
-
-    median = time_results[TIMEIT_REPEATS // 2]
-    avg_time = sum(time_results) / len(time_results)
-    time_results = list(map(lambda x: (x - avg_time) * (x - avg_time), time_results))
-    dispersion = sqrt(sum(time_results) / len(time_results))
+    median, dispersion = process_time(time_results)
 
     return (OK, median, dispersion)
 
@@ -120,4 +129,4 @@ def start_numbers_game(players_info):
     return results
 
 if __name__ == "__main__":
-    start_numbers_game(["./test.so", "NULL", "./test.so"])
+    start_numbers_game(["games/numbers/test.so", "NULL", "games/numbers/test.so"])

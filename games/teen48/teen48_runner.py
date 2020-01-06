@@ -1,5 +1,5 @@
 """
-        ===== TEEN48 RUNNER v.1.0a =====
+        ===== TEEN48 RUNNER v.1.0c =====
         Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Данный скрипт предназначен для проведения соревнований по игре teen48 (2048).
@@ -21,6 +21,7 @@
 
 import ctypes
 from random import randint, random
+from games.numbers.numbers_runner import parsing_name
 
 NO_RESULT = -1337
 
@@ -42,14 +43,6 @@ class matrix_t(ctypes.Structure):
         self.rows = rows
         self.columns = columns
         self.matrix = init_matrix(rows, columns)
-
-
-def parsing_name(player_name):
-    """
-        Преобразование полного пути к файлу с библиотекой игрока
-        к gitlab логину игрока.
-    """
-    return player_name[player_name.rindex('/') + 1: len(player_name) - 3]
 
 
 def fill_random_cell(game_field, number, rows, columns):
@@ -324,4 +317,4 @@ def start_teen48game_competition(players_info, field_size):
     return results
 
 if __name__ == "__main__":
-    start_teen48game_competition([("./teen48lib.so", 0), ("NULL", 1000)], 6)
+    start_teen48game_competition([("games/teen48/teen48lib.so", 0), ("NULL", 1000)], 6)
