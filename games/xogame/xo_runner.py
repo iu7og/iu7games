@@ -1,6 +1,6 @@
 """
       ===== XO RUNNER v.1.1a =====
-      Copyright (C) 2019 IU7Games Team.
+      Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
       по XOgame (крестики - нолики).

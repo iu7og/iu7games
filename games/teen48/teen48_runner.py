@@ -1,6 +1,6 @@
 """
-      ===== TEEN48 RUNNER v.1.0a =====
-      Copyright (C) 2019 IU7Games Team.
+        ===== TEEN48 RUNNER v.1.0a =====
+        Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Данный скрипт предназначен для проведения соревнований по игре teen48 (2048).
 

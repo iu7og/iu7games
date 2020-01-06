@@ -1,6 +1,6 @@
 """
       ===== LIGHT STRTOK RUNNER v.1.0a =====
-      Copyright (C) 2019 IU7Games Team.
+      Copyright (C) 2019 - 2020 IU7Games Team.
 
       Данный ранер запускает функцию strtok игрока на определенных тестовых данных,
       для проверки на отсутствие segmentation fault и бесконечный цикл в стратегии игрока.

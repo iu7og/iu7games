@@ -1,6 +1,6 @@
 """
-      ===== NUMBERS RUNNER v.1.0a =====
-      Copyright (C) 2019 IU7Games Team.
+        ===== NUMBERS RUNNER v.1.0a =====
+        Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Ранер для игры NUM63RSGAME, суть которой заключается в получении
         минимально возможного числа, который делится на все числа на интервале [a, b]
