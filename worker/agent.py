@@ -76,9 +76,9 @@ def run_num63rsgame(results):
     return data
 
 
-def run_7queencegame(results):
+def run_7equeencegame(results):
     """
-        Старт NUM63RSgame.
+        Старт 7EQUEENCEgame.
     """
 
     data = deepcopy(results)
@@ -316,7 +316,7 @@ def start_competition(instance, game, group_name, stage):
     if game == "NUM63RSgame":
         fresults = run_num63rsgame(results)
     elif game == "7EQUEENCEgame":
-        fresults = run_7queencegame(results)
+        fresults = run_7equeencegame(results)
     elif game == "XOgame":
         fresults, sresults = run_xogame(results)
     elif game == "STRgame":
