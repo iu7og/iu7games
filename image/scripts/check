@@ -12,6 +12,8 @@ then
     if [ "$SIGNATURE" = 'n' ]
     then
         echo -e "\033[0;31mWRONG SIGNATURE FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
+        EXPECTED="$(echo $3 | sed -n 's/\\//pg')"
+        echo -e "\033[0;34mEXPECTED\033[0m \033[1;33m${3}\033[0m"
         echo -e "\033[0;31mCHECK FAILED\033[0m\n"
         exit 1
     else
@@ -31,17 +33,19 @@ then
         gcc -shared -o ${GITLAB_USER_LOGIN}_$2_lib.so ${GITLAB_USER_LOGIN}_$2.o
     else
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
+        echo -e "\033[1;33mCHECK YOUR SOURCE FOR CALLS OF:"
+        echo -e "  system\n  fork\n  exec family\n  asm family\n  volatile\033[0m"
         echo -e "\033[0;31mCHECK FAILED\033[0m\n"
         exit 1
     fi
     cp ${GITLAB_USER_LOGIN}_$2_lib.so /sandbox
     echo -e "\033[0;34mCHECK STRATEGY SAFETY\033[0m"
     PYTHONPATH='/' python /games/$4/$5 > temp.txt |:
-    SEGFMSG="$(cat temp.txt)y"
-    if [ "$SEGFMSG" = 'y' ]
+    ERRMSG="$(cat temp.txt)y"
+    if [ "$ERRMSG" = 'y' ]
     then
         cat temp.txt
-        echo -e "\033[0;31mCHECK FAILED. SEGMENTATION FAULT OCCURED\033[0m\n"
+        echo -e "\033[0;31mCHECK FAILED. ERROR OCCURED\033[0m\n"
         rm -f temp.txt
         exit 1
     else
