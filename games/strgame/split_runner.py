@@ -1,6 +1,6 @@
 """
-      ===== SPLIT RUNNER v.1.3b =====
-      Copyright (C) 2019 IU7Games Team.
+      ===== SPLIT RUNNER v.1.3c =====
+      Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции split,
     - реализованной на СИ. Функция на СИ имеет сигнатуру:
@@ -21,9 +21,9 @@
 import ctypes
 from functools import partial
 from time import process_time_ns
-from math import sqrt
 from timeit import Timer
 from games.strgame.runner import runner, print_memory_usage
+from games.numbers.numbers_runner import process_time
 
 
 OK = 0
@@ -108,12 +108,7 @@ def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
         lib_player.split(c_string, c_array_pointer, c_delimiter)
 
     run_time_info = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
-    run_time_info.sort()
-
-    median = run_time_info[TIMEIT_REPEATS // 2]
-    avg_time = sum(run_time_info) / len(run_time_info)
-    run_time_info = list(map(lambda x: (x - avg_time) * (x - avg_time), run_time_info))
-    dispersion = sqrt(sum(run_time_info) / len(run_time_info))
+    median, dispersion = process_time(run_time_info)
 
     return median, dispersion
 
@@ -171,4 +166,4 @@ def start_split(player_lib_name, tests_path):
 
 
 if __name__ == "__main__":
-    start_split("./split_lib.so", "tests/split")
+    start_split("games/strgame/split_lib.so", "games/strgame/tests/split")

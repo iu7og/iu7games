@@ -1,6 +1,6 @@
 """
-      ===== XO RUNNER v.1.1a =====
-      Copyright (C) 2019 IU7Games Team.
+      ===== XO RUNNER v.1.1c =====
+      Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
       по XOgame (крестики - нолики).
@@ -19,6 +19,7 @@
 
 import ctypes
 import sys
+from games.numbers.numbers_runner import parsing_name
 
 OK = 0
 INVALID_MOVE = 1
@@ -59,14 +60,6 @@ def end_game_print(player, info):
         parsing_name(player), info, "\n",
         "=" * N, sep=""
     )
-
-
-def parsing_name(player_name):
-    """
-        Преобразование полного пути к файлу с библиотекой игрока
-        к gitlab логину игрока.
-    """
-    return player_name[player_name.rindex('/') + 1: len(player_name) - 3]
 
 
 def print_results(points, players_info, players_amount):
@@ -336,5 +329,5 @@ def start_xogame_competition(players_info, field_size):
 
 
 if __name__ == "__main__":
-    start_xogame_competition([("./dima.so", 1400),
-                              ("./misha.so", 1000)], 5)
+    start_xogame_competition([("games/xogame/dima.so", 1400),
+                              ("games/xogame/misha.so", 1000)], 5)

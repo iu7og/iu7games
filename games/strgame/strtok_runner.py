@@ -1,6 +1,6 @@
 """
-      ===== STRTOK RUNNER v.1.3b =====
-      Copyright (C) 2019 IU7Games Team.
+      ===== STRTOK RUNNER v.1.3c =====
+      Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для тестирования самописной функции strtok,
       реализованной на СИ. Функция на СИ имеет сигнатуру:
@@ -20,8 +20,8 @@ import ctypes
 from timeit import Timer
 from time import process_time_ns
 from functools import partial
-from math import sqrt
 from games.strgame.runner import runner, print_memory_usage
+from games.numbers.numbers_runner import process_time
 
 OK = 0
 INVALID_PTR = 1
@@ -113,15 +113,7 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
 
         run_time_info.append(Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS))
 
-    run_time_info.sort()
-    median = run_time_info[TIMEIT_REPEATS // 2]
-
-    avg_time = sum(run_time_info) / len(run_time_info)
-    run_time_info = list(map(lambda x: (x - avg_time) * (x - avg_time), run_time_info))
-    dispersion = sqrt(sum(run_time_info) / len(run_time_info))
-
-    print_memory_usage("FINAL [strtok]")
-
+    median, dispersion = process_time(run_time_info)
     return median, dispersion
 
 
@@ -180,4 +172,4 @@ def start_strtok(player_lib_name, tests_path):
 
 
 if __name__ == "__main__":
-    start_strtok("./strtok_lib.so", "tests/strtok")
+    start_strtok("games/strgame/strtok_lib.so", "games/strgame/tests/strtok")
