@@ -50,7 +50,7 @@ def print_results(results, players_info):
                 "PLAYER:", parsing_name(players_info[i]),
                 "SOLUTION:", results[i][0],
                 "MEDIAN:", results[i][1],
-                "DISPERSON:", results[i][2]
+                "DISPERSION:", results[i][2]
             )
 
 
