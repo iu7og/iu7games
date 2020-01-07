@@ -23,7 +23,7 @@ from time import process_time_ns
 from games.numbers.numbers_runner import print_results, process_time
 
 NO_RESULT = -1337
-TIMEIT_REPEATS = 10001
+TIMEIT_REPEATS = 100001
 
 ARRAY_LENGTH = 1000
 INTERVAL_LENGTH = 13
