@@ -12,6 +12,7 @@ import intervals
 import worker.wiki
 import worker.repo
 from games.numbers import numbers_runner
+from games.sequence import sequence_runner
 from games.xogame import xo_runner
 from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
@@ -45,6 +46,55 @@ def run_num63rsgame(results):
 
     print("NUM63RSGAME RESULTS\n")
     results_def = numbers_runner.start_numbers_game(libs)
+
+    i = 0
+    for rec in data:
+        sign = worker.wiki.SIGN[0]
+        if results_def[i][0] == worker.wiki.NO_RESULT:
+            sign = worker.wiki.SIGN[1]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
+        else:
+            if results_def[i][0] != 0:
+                sign = worker.wiki.SIGN[1]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    round(results_def[i][1] - SIGMA_COEF *
+                          results_def[i][2], 7),
+                    round(results_def[i][1] + SIGMA_COEF *
+                          results_def[i][2], 7)
+                )
+            ]
+        i += 1
+
+    return data
+
+
+def run_7equeencegame(results):
+    """
+        Старт 7EQUEENCEgame.
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    for rec in data:
+        lib_path = os.path.abspath(f"{rec[2][1:]}_7equeence_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append(lib_path)
+        else:
+            libs.append("NULL")
+
+    print("7EQUEENCEGAME RESULTS\n")
+    results_def = sequence_runner.start_sequence_game(libs)
 
     i = 0
     for rec in data:
@@ -265,6 +315,8 @@ def start_competition(instance, game, group_name, stage):
 
     if game == "NUM63RSgame":
         fresults = run_num63rsgame(results)
+    elif game == "7EQUEENCEgame":
+        fresults = run_7equeencegame(results)
     elif game == "XOgame":
         fresults, sresults = run_xogame(results)
     elif game == "STRgame":
