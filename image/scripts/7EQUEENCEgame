@@ -1,0 +1,3 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check 7EQUEENCEgame/ 7equeence "long long sequence_game(int array\[])" sequence "light_sequence_runner.py"

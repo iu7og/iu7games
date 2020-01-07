@@ -112,7 +112,7 @@ def params_sort(results, sort_keys, output_params, game):
         Сортировка результатов в зависимости от игры.
     """
 
-    timedep_games = ["NUM63RSgame", "STRgame"]
+    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame"]
     timedepless_games = ["XOgame", "TEEN48game"]
 
     if game in timedep_games:
@@ -187,6 +187,19 @@ def handle_num63rsgame(fresults):
     return page
 
 
+def handle_7equeencegame(fresults):
+    """
+        Обновление таблицы для 7EQUEENCEgame.
+    """
+
+    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                         "7EQUEENCEgame", "")
+    tmp = open(os.path.abspath("templates/7equeencegame.template")).read()
+    page = Template(tmp).render(results=results, date=get_date())
+
+    return page
+
+
 def handle_xogame(fresults, sresults):
     """
         Обновление таблицы для XOgame.
@@ -244,6 +257,7 @@ def update_wiki(project, game, fresults, sresults):
 
     games = {
         "NUM63RSgame Leaderboard": "NUM63RSgame-Leaderboard",
+        "7EQUEENCEgame Leaderboard": "7EQUEENCEgame-Leaderboard",
         "XOgame Leaderboard": "XOgame-Leaderboard",
         "STRgame Leaderboard": "STRgame-Leaderboard",
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard"
@@ -253,6 +267,8 @@ def update_wiki(project, game, fresults, sresults):
 
     if game == "NUM63RSgame":
         page = handle_num63rsgame(fresults)
+    elif game == "7EQUEENCEgame":
+        page = handle_7equeencegame(fresults)
     elif game == "XOgame":
         page = handle_xogame(fresults, sresults)
     elif game == "STRgame":
