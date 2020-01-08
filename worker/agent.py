@@ -309,9 +309,19 @@ def start_competition(instance, game, group_name, stage):
     fresults = []
     sresults = []
 
-    deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "develop")
-    if deploy_job is not None:
-        worker.repo.get_artifacts(IU7GAMES, deploy_job)
+    if stage == "release":
+        print(f"SEARCHING FOR {game.upper()}"
+              " DEPLOY JOB TO COMPARE NEW RESULTS WITH PREVIOUS ONES")
+        deploy_job = worker.repo.get_deploy_job(
+            IU7GAMES, game.lower(), "develop")
+        if deploy_job is not None:
+            print(f"{game.upper()} DEPLOY JOB FOUND."
+                  " NEW RESULTS WILL BE AFFECTED BY PREVIOUS ONES\n")
+            worker.repo.get_artifacts(IU7GAMES, deploy_job)
+        else:
+            print(f"{game.upper()} DEPLOY JOB NOT FOUND. FRESH START\n")
+    elif stage == "build":
+        print(f"START BUILD FOR {game.upper()}\n")
 
     if game == "NUM63RSgame":
         fresults = run_num63rsgame(results)
@@ -326,8 +336,9 @@ def start_competition(instance, game, group_name, stage):
 
     if stage == "release":
         worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
+        print(f"\nWIKI PAGE FOR {game.upper()} UPDATED SUCCESSFULLY")
     elif stage == "build":
-        print("BUILD PASSED")
+        print("\nBUILD PASSED")
 
 
 def add_args():
