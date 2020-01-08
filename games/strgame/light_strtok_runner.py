@@ -8,11 +8,7 @@
 
 import os
 import ctypes
-from games.strgame.runner import concat_strings
-
-DELIMITERS = " ,.;:"
-NULL = 0
-
+import games.utils.utils as utils
 
 def create_c_objects(bytes_string):
     """
@@ -20,7 +16,7 @@ def create_c_objects(bytes_string):
     """
 
     c_string = ctypes.create_string_buffer(bytes_string)
-    c_delimiters = ctypes.create_string_buffer(DELIMITERS.encode("utf-8"))
+    c_delimiters = ctypes.create_string_buffer(utils.STRTOK_DELIMITERS.encode(utils.ENCODING))
 
     return c_string, c_delimiters
 
@@ -30,21 +26,19 @@ def light_strtok_runner(player_lib_path, tests_path):
         Чтение строки из файла, запуск strtok функции игрока
     """
 
+    utils.redirect_ctypes_stdout()
     player_lib = ctypes.CDLL(player_lib_path)
     player_lib.strtok.restype = ctypes.POINTER(ctypes.c_char)
 
-    file = open(tests_path + "/test_data.txt", "r")
-    test_strtok_string = concat_strings(file)
+    file = open(tests_path + utils.TEST_FILE, "r")
+    test_strtok_string = utils.concat_strings(file)
     file.close()
 
-    c_string, c_delimiters = create_c_objects(
-        test_strtok_string.encode("utf-8"))
-    ptr = ctypes.cast(player_lib.strtok(
-        c_string, c_delimiters), ctypes.c_char_p)
+    c_string, c_delimiters = create_c_objects(test_strtok_string.encode(utils.ENCODING))
+    ptr = ctypes.cast(player_lib.strtok(c_string, c_delimiters), ctypes.c_char_p)
 
     while ptr.value is not None:
-        ptr = ctypes.cast(player_lib.strtok(
-            NULL, c_delimiters), ctypes.c_char_p)
+        ptr = ctypes.cast(player_lib.strtok(utils.NULL, c_delimiters), ctypes.c_char_p)
 
     print("\033[0;32mSTRTOK OK\033[0m")
 

@@ -1,5 +1,5 @@
 """
-        ===== TEEN48 RUNNER v.1.0c =====
+        ===== TEEN48 RUNNER v.1.0d =====
         Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Данный скрипт предназначен для проведения соревнований по игре teen48 (2048).
@@ -21,10 +21,7 @@
 
 import ctypes
 from random import randint, random
-from games.numbers.numbers_runner import parsing_name
-
-NO_RESULT = -1337
-
+import games.utils.utils as utils
 
 class matrix_t(ctypes.Structure):
     """
@@ -281,11 +278,12 @@ def start_teen48game_competition(players_info, field_size):
         было набрано в прошлый раз, то очки не обновляются.
     """
 
+    utils.redirect_ctypes_stdout()
     results = []
 
     for player in players_info:
         if player[0] == "NULL":
-            results.append(NO_RESULT)
+            results.append(utils.NO_RESULT)
             continue
 
         player_lib = ctypes.CDLL(player[0])
@@ -312,7 +310,7 @@ def start_teen48game_competition(players_info, field_size):
 
         score = scoring(game_field)
         results.append(score if score > player[1] else player[1])
-        print_field(game_field, parsing_name(player[0]), score, field_size)
+        print_field(game_field, utils.parsing_name(player[0]), score, field_size)
 
     return results
 

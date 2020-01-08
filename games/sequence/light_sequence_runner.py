@@ -1,5 +1,5 @@
 """
-      ===== LIGHT SEQUENCE RUNNER v.1.0a =====
+      ===== LIGHT SEQUENCE RUNNER v.1.0b =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
       Запуск стратегии 7EQUEENCEGAME игрока, для проверки на отсутствие segmentation fault,

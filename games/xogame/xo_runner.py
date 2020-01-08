@@ -1,5 +1,5 @@
 """
-      ===== XO RUNNER v.1.1c =====
+      ===== XO RUNNER v.1.1d =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
@@ -18,12 +18,7 @@
 """
 
 import ctypes
-import sys
-from games.numbers.numbers_runner import parsing_name
-
-OK = 0
-INVALID_MOVE = 1
-NO_RESULT = -1337
+import games.utils.utils as utils
 
 DRAW = 0
 PLAYER_ONE_WIN = 1
@@ -32,12 +27,7 @@ PLAYER_TWO_WIN = 2
 ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
-
-ENCODING = "utf-8"
 N = 30
-
-STDOUT = sys.__stdout__
-LOG = open("deploylog_xogame.txt", "w")
 
 def start_game_print(player1, player2):
     """
@@ -46,8 +36,8 @@ def start_game_print(player1, player2):
 
     print(
         "GAME",
-        parsing_name(player1), "(X) VS",
-        parsing_name(player2), "(O)"
+        utils.parsing_name(player1), "(X) VS",
+        utils.parsing_name(player2), "(O)"
     )
 
 
@@ -57,7 +47,7 @@ def end_game_print(player, info):
     """
 
     print(
-        parsing_name(player), info, "\n",
+        utils.parsing_name(player), info, "\n",
         "=" * N, sep=""
     )
 
@@ -65,12 +55,12 @@ def end_game_print(player, info):
 def print_results(points, players_info, players_amount):
     """
         Печать результатов в виде:
-        ИГРОК ОЧКИ
+        ИГРОК : ОЧКИ
     """
 
     for i in range(players_amount):
         if players_info[i][0] != "NULL":
-            print("PLAYER", parsing_name(players_info[i][0]), "POINTS:", points[i])
+            print("PLAYER", utils.parsing_name(players_info[i][0]), "POINTS:", points[i])
 
 
 def print_field(c_strings, field_size, player_name):
@@ -78,11 +68,11 @@ def print_field(c_strings, field_size, player_name):
         Печать игрового поля.
     """
 
-    print(parsing_name(player_name), "player move: ")
+    print(utils.parsing_name(player_name), "player move: ")
 
     print("┏", "━" * field_size, "┓", sep="")
     for i in range(field_size):
-        print("┃", c_strings[i].value.decode(ENCODING), "┃", sep="")
+        print("┃", c_strings[i].value.decode(utils.ENCODING), "┃", sep="")
     print("┗", "━" * field_size, "┛", sep="")
 
 
@@ -139,15 +129,15 @@ def check_move_correctness(c_strings, c_strings_copy, move, field_size):
 
     for i in range(field_size):
         if c_strings_copy[i].value != c_strings[i].value:
-            return INVALID_MOVE
+            return False
 
     if move >= field_size * field_size:
-        return INVALID_MOVE
+        return False
 
     if (c_strings[move // field_size].value)[move % field_size] != ASCII_SPACE:
-        return INVALID_MOVE
+        return False
 
-    return OK
+    return True
 
 
 def make_move(c_strings, move, symb, field_size):
@@ -168,8 +158,6 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     """
 
     start_game_print(*players_names)
-    sys.stdout = LOG
-    start_game_print(*players_names)
 
     c_strings, c_strings_copy, c_battlefield = create_c_objects(field_size)
     shot_count = 0
@@ -177,10 +165,8 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     while shot_count < field_size * field_size:
         shot_count += 1
         move = player1_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('X'))
-        if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
+        if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[0], " CHEATING")
-            sys.stdout = STDOUT
-            end_game_print(players_names[0], " CHEATING ")
 
             return PLAYER_TWO_WIN
 
@@ -189,25 +175,18 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         print_field(c_strings, field_size, players_names[0])
         if check_win(c_strings, ASCII_X, field_size):
             end_game_print(players_names[0], " WIN")
-            sys.stdout = STDOUT
-            print_field(c_strings, field_size, players_names[0])
-            end_game_print(players_names[0], " WIN ")
 
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
             print("DRAW\n", "=" * N, sep="")
-            sys.stdout = STDOUT
             print_field(c_strings, field_size, players_names[0])
-            print("DRAW\n", "=" * N, sep="")
 
             return DRAW
 
         shot_count += 1
         move = player2_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('O'))
-        if check_move_correctness(c_strings, c_strings_copy, move, field_size) == INVALID_MOVE:
-            end_game_print(players_names[1], " CHEATING")
-            sys.stdout = STDOUT
+        if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[1], " CHEATING")
 
             return PLAYER_ONE_WIN
@@ -216,9 +195,6 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         c_strings_copy = make_move(c_strings_copy, move, ASCII_O, field_size)
         print_field(c_strings, field_size, players_names[1])
         if check_win(c_strings, ASCII_O, field_size):
-            end_game_print(players_names[1], " WIN")
-            sys.stdout = STDOUT
-            print_field(c_strings, field_size, players_names[1])
             end_game_print(players_names[1], " WIN")
 
             return PLAYER_TWO_WIN
@@ -289,6 +265,7 @@ def start_xogame_competition(players_info, field_size):
         результаты для каждого игрока записываются в массив points.
     """
 
+    utils.redirect_ctypes_stdout()
     points = [players_info[i][1] for i in range(len(players_info))]
 
     for i in range(len(players_info) - 1):
@@ -316,14 +293,11 @@ def start_xogame_competition(players_info, field_size):
                     points = scoring(points, j, i, round_info)
 
                 else:
-                    points[j] = NO_RESULT
+                    points[j] = utils.NO_RESULT
         else:
-            points[i] = NO_RESULT
+            points[i] = utils.NO_RESULT
 
     print_results(points, players_info, len(players_info))
-    sys.stdout = LOG
-    print_results(points, players_info, len(players_info))
-    sys.stdout = STDOUT
 
     return points
 
