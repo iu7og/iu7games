@@ -43,13 +43,11 @@ def redirect_ctypes_stdout():
     """
 
     new_stdout = os.dup(1)
-    print(new_stdout, 'stdout')
-    if new_stdout == 3:
-        sys.stdout.flush()
-        devnull = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull, 1)
-        os.close(devnull)
-        sys.stdout = os.fdopen(new_stdout, 'w')
+    sys.stdout.flush()
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull, 1)
+    os.close(devnull)
+    sys.stdout = os.fdopen(new_stdout, 'w')
 
 
 def process_time(time_results):

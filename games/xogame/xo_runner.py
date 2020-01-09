@@ -265,7 +265,9 @@ def start_xogame_competition(players_info, field_size):
         результаты для каждого игрока записываются в массив points.
     """
 
-    utils.redirect_ctypes_stdout()
+    if field_size == 3:
+        utils.redirect_ctypes_stdout()
+
     points = [players_info[i][1] for i in range(len(players_info))]
 
     for i in range(len(players_info) - 1):

@@ -278,7 +278,9 @@ def start_teen48game_competition(players_info, field_size):
         было набрано в прошлый раз, то очки не обновляются.
     """
 
-    utils.redirect_ctypes_stdout()
+    if field_size == 4:
+        utils.redirect_ctypes_stdout()
+
     results = []
 
     for player in players_info:
