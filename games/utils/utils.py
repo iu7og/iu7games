@@ -1,5 +1,5 @@
 """
-          ===== RUNNERS UTILS v.1.0a =====
+          ===== RUNNERS UTILS v.1.0b =====
           Copyright (C) 2019 - 2020 IU7Games Team.
 
         - Модуль с функциями и константами, которые вызываются в нескольких ранерах.
@@ -42,12 +42,13 @@ def redirect_ctypes_stdout():
         Выключение принтов в стратегиях игроков.
     """
 
-    sys.stdout.flush()
     new_stdout = os.dup(1)
-    devnull = os.open(os.devnull, os.O_WRONLY)
-    os.dup2(devnull, 1)
-    os.close(devnull)
-    sys.stdout = os.fdopen(new_stdout, 'w')
+    if new_stdout == 3:
+        sys.stdout.flush()
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, 1)
+        os.close(devnull)
+        sys.stdout = os.fdopen(new_stdout, 'w')
 
 
 def process_time(time_results):
@@ -93,7 +94,7 @@ def print_results(results, players_info):
         if players_info[i] != "NULL":
             print(
                 "PLAYER:", parsing_name(players_info[i]),
-                "SOLUTION:", results[i][0],
+                "SOLUTION:", "FAIL" if results[i][0] else "OK",
                 "MEDIAN:", results[i][1],
                 "DISPERSION:", results[i][2]
             )
