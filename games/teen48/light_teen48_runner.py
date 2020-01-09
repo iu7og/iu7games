@@ -9,7 +9,6 @@
 import os
 from games.teen48.teen48_runner import start_teen48game_competition
 
-
 def light_teen48_runner(player_lib_path):
     """
         Запуск стратегии игрока с тестовой стратегией на игровых полях 4x4 и 8x8,

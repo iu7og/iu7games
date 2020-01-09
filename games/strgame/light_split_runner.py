@@ -8,11 +8,10 @@
 
 import os
 import ctypes
-from games.strgame.runner import concat_strings
+import games.utils.utils as utils
 
 WORDS_COUNT = 5200
 MAX_LEN_WORD = 17
-
 
 def create_c_objects(bytes_string):
     """
@@ -32,12 +31,14 @@ def light_split_runner(player_lib_path, tests_path):
         Чтение строки из файла, запуск split функции игрока
     """
 
+    utils.redirect_ctypes_stdout()
+
     player_lib = ctypes.CDLL(player_lib_path)
-    file = open(tests_path + "/test_data.txt", "r")
-    test_split_string = concat_strings(file)
+    file = open(tests_path + utils.TEST_FILE, "r")
+    test_split_string = utils.concat_strings(file)
     file.close()
 
-    c_string, _, c_matrix, delim = create_c_objects(test_split_string.encode("utf-8"))
+    c_string, _, c_matrix, delim = create_c_objects(test_split_string.encode(utils.ENCODING))
     _ = player_lib.split(c_string, c_matrix, delim)
 
     print("\033[0;32mSPLIT OK\033[0m")

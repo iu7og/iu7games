@@ -9,7 +9,6 @@
 import os
 from games.xogame.xo_runner import start_xogame_competition
 
-
 def light_xo_runner(player_lib_path):
     """
         Запуск стратегии игрока с тестовой стратегией на игровых полях 3х3 и 5х5.

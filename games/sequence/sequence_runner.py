@@ -1,5 +1,5 @@
 """
-        ===== SEQUENCE RUNNER v.1.0a =====
+        ===== SEQUENCE RUNNER v.1.0b =====
         Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Ранер для игры 7EQUEENCEGAME, суть которой заключается в нахождении максимально
@@ -17,20 +17,14 @@
 import ctypes
 from random import randint
 from functools import reduce
-from operator import __mul__
 from timeit import Timer
 from time import process_time_ns
-from games.numbers.numbers_runner import print_results, process_time
+import games.utils.utils as utils
 
-NO_RESULT = -1337
 TIMEIT_REPEATS = 100001
 
 ARRAY_LENGTH = 1000
 INTERVAL_LENGTH = 13
-
-OK = 0
-SOLUTION_FAIL = 1
-
 
 def generate_array():
     """
@@ -45,7 +39,7 @@ def solution_counting(array):
     """
 
     subarrays = [array[i : INTERVAL_LENGTH + i] for i in range(ARRAY_LENGTH - INTERVAL_LENGTH + 1)]
-    all_prods = [reduce(__mul__, arrays, 1) for arrays in subarrays]
+    all_prods = [reduce(lambda x, y: x * y, arrays, 1) for arrays in subarrays]
     return max(all_prods)
 
 
@@ -68,7 +62,7 @@ def player_results(game_conditions, player_lib):
     player_solution = player_lib.sequence_game(c_array)
 
     if player_solution != game_conditions["solution"]:
-        return (SOLUTION_FAIL, 0, 0)
+        return (utils.SOLUTION_FAIL, 0, 0)
 
     def timeit_wrapper():
         """
@@ -78,9 +72,9 @@ def player_results(game_conditions, player_lib):
         player_lib.sequence_game(c_array)
 
     time_results = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
-    median, dispersion = process_time(time_results)
+    median, dispersion = utils.process_time(time_results)
 
-    return (OK, median, dispersion)
+    return (utils.OK, median, dispersion)
 
 
 def start_sequence_game(players_libs):
@@ -88,6 +82,7 @@ def start_sequence_game(players_libs):
         Открытие функции с библиотеками игроков, запуск их функций, печать результатов.
     """
 
+    utils.redirect_ctypes_stdout()
     game_conditions = generate_game_conditions()
     results = []
 
@@ -97,11 +92,11 @@ def start_sequence_game(players_libs):
             player_lib.sequence_game.restype = ctypes.c_longlong
             results.append(player_results(game_conditions, player_lib))
         else:
-            results.append((NO_RESULT, 0, 0))
+            results.append((utils.NO_RESULT, 0, 0))
 
-    print_results(results, players_libs)
+    utils.print_results(results, players_libs)
     return results
 
 
 if __name__ == "__main__":
-    start_sequence_game(["games/sequence/test.so", "NULL"])
+    start_sequence_game(["games/sequence/test.so", "games/sequence/test.so", "NULL"])

@@ -20,20 +20,11 @@ import ctypes
 from timeit import Timer
 from time import process_time_ns
 from functools import partial
-from games.strgame.runner import runner, print_memory_usage
-from games.numbers.numbers_runner import process_time
-
-OK = 0
-INVALID_PTR = 1
-
-DELIMITERS = " ,.;:"
-ENCODING = "utf-8"
-NULL = 0
+import games.utils.utils as utils
 
 STRING_MULTIPLIER = 1500
 TIMEIT_REPEATS = 1
 TIME_COUNTER_REPEATS = 11
-
 
 def check_strtok_correctness(player_ptr, correct_ptr):
     """
@@ -43,13 +34,13 @@ def check_strtok_correctness(player_ptr, correct_ptr):
     """
 
     if (player_ptr.value is None) != (correct_ptr.value is None):
-        return INVALID_PTR
+        return utils.INVALID_PTR
 
     if player_ptr.value is not None:
-        if player_ptr.value.decode(ENCODING) != correct_ptr.value.decode(ENCODING):
-            return INVALID_PTR
+        if player_ptr.value.decode(utils.ENCODING) != correct_ptr.value.decode(utils.ENCODING):
+            return utils.INVALID_PTR
 
-    return OK
+    return utils.OK
 
 
 def create_c_objects(bytes_string, delimiters):
@@ -91,11 +82,11 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
     """
 
     test_data *= STRING_MULTIPLIER
-    bytes_string = test_data.encode(ENCODING)
+    bytes_string = test_data.encode(utils.ENCODING)
     iterations *= STRING_MULTIPLIER
 
     c_strtok_timer = ctypes.CDLL("strtok_timer.so")
-    player_name = ctypes.create_string_buffer(player_lib_name.encode(ENCODING))
+    player_name = ctypes.create_string_buffer(player_lib_name.encode(utils.ENCODING))
     run_time_info = []
 
     def timeit_wrapper():
@@ -109,11 +100,11 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
 
     for _ in range(TIME_COUNTER_REPEATS):
         c_delimiters_string, _, c_string_player = \
-            create_c_objects(bytes_string, delimiters.encode(ENCODING))
+            create_c_objects(bytes_string, delimiters.encode(utils.ENCODING))
 
         run_time_info.append(Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS))
 
-    median, dispersion = process_time(run_time_info)
+    median, dispersion = utils.process_time(run_time_info)
     return median, dispersion
 
 
@@ -125,19 +116,19 @@ def run_strtok_test(delimiters, libs, player_name, test_data):
         замеряется время работы.
     """
 
-    bytes_string = test_data.encode(ENCODING)
+    bytes_string = test_data.encode(utils.ENCODING)
     c_delimiters_string, c_string, c_string_player = \
-        create_c_objects(bytes_string, delimiters.encode(ENCODING))
+        create_c_objects(bytes_string, delimiters.encode(utils.ENCODING))
 
     error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
 
     iterations = 0
     while std_ptr.value is not None and not error_code:
-        error_code, std_ptr = strtok_iteration(c_delimiters_string, NULL, NULL, libs)
+        error_code, std_ptr = strtok_iteration(c_delimiters_string, utils.NULL, utils.NULL, libs)
         iterations += 1
 
-    if error_code == OK:
+    if error_code == utils.OK:
         run_time, dispersion = strtok_time_counter(test_data, delimiters, iterations, player_name)
     else:
         run_time, dispersion = 0.0, 0.0
@@ -150,23 +141,21 @@ def start_strtok(player_lib_name, tests_path):
         Открытие библиотек, запуск ранера, печать результатов.
     """
 
-    print_memory_usage("START [strtok]")
+    utils.redirect_ctypes_stdout()
+    utils.print_memory_usage("STRTOK START")
+
     lib_player = ctypes.CDLL(player_lib_name)
     libc = ctypes.CDLL("libc.so.6")
     libc.strtok.restype = ctypes.POINTER(ctypes.c_char)
     lib_player.strtok.restype = ctypes.POINTER(ctypes.c_char)
     libs = {"player": lib_player, "libary": libc}
 
-    incorrect_test, total_time, dispersion = runner(
+    incorrect_test, total_time, dispersion = utils.strgame_runner(
         tests_path,
-        partial(run_strtok_test, DELIMITERS, libs, player_lib_name)
+        partial(run_strtok_test, utils.STRTOK_DELIMITERS, libs, player_lib_name)
     )
 
-    print(
-        "STRTOK TESTS:", "FAIL" if incorrect_test else "OK",
-        "TIME:", total_time,
-        "DISPERSION:", dispersion
-    )
+    utils.print_strgame_results("STRTOK", incorrect_test, total_time, dispersion)
 
     return incorrect_test, total_time, dispersion
 
