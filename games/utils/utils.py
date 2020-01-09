@@ -43,6 +43,7 @@ def redirect_ctypes_stdout():
     """
 
     new_stdout = os.dup(1)
+    print(new_stdout, 'stdout')
     if new_stdout == 3:
         sys.stdout.flush()
         devnull = os.open(os.devnull, os.O_WRONLY)
