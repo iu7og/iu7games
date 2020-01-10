@@ -142,7 +142,7 @@ def start_split(player_lib_name, tests_path):
         Печать количество успешных тестов и время ранинга.
     """
 
-    utils.redirect_ctypes_stdout()
+    #utils.redirect_ctypes_stdout()
     utils.print_memory_usage("SPLIT START")
 
     lib_player = ctypes.CDLL(player_lib_name)

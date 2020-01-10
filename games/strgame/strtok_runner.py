@@ -141,7 +141,7 @@ def start_strtok(player_lib_name, tests_path):
         Открытие библиотек, запуск ранера, печать результатов.
     """
 
-    utils.redirect_ctypes_stdout()
+    #utils.redirect_ctypes_stdout()
     utils.print_memory_usage("STRTOK START")
 
     lib_player = ctypes.CDLL(player_lib_name)
