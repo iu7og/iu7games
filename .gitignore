@@ -123,3 +123,9 @@ dmypy.json
 .pyre/
 
 .idea
+
+# Admin utils
+utils/
+
+# API config
+cfg/api_config.cfg
