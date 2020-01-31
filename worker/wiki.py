@@ -91,6 +91,8 @@ def dispcmp(frec, srec):
             return GT
         return LT
 
+    return GT
+
 
 def equalcmp(frec, srec):
     """
@@ -105,6 +107,8 @@ def equalcmp(frec, srec):
         if frec[SINGLE_TIME_COL] < srec[SINGLE_TIME_COL]:
             return GT
         return LT
+
+    return GT
 
 
 def params_sort(results, sort_keys, output_params, game):
