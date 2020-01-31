@@ -1,28 +1,24 @@
 # IU7Games Environment
 
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 ENV PYTHONBUFFERED 1
 ENV PATH $PATH:/scripts
 
 RUN apk add --no-cache \
-    linux-headers \
-    git \
-    gcc \
-    musl-dev \
-    lcov --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     tzdata \
     python3-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
     \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
+RUN apk add --no-cache --virtual .tmp-build-deps \
+    linux-headers g++
 
-COPY image/requirements.txt /requirements.txt
-RUN python -m pip install -r requirements.txt \
-    && rm -f requirements.txt
+COPY cfg/image_cfg/requirements.txt /requirements.txt
+RUN python -m pip install -r requirements.txt
 
-COPY image/scripts /scripts
-COPY image/libs/* /usr/lib/
+COPY cfg/image_cfg/scripts /scripts
+COPY cfg/image_cfg/libs/* /usr/lib/
 COPY games/ /games
 
 RUN mkdir /sandbox \
@@ -34,5 +30,3 @@ RUN adduser -D -h /deathstar imperialclone \
 
 WORKDIR /deathstar
 USER imperialclone
-
-CMD ["bash"]
