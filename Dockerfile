@@ -6,11 +6,14 @@ LABEL maintainer="IU7OG"
 ENV PYTHONBUFFERED 1
 ENV PATH $PATH:/scripts
 
-RUN apk add --no-cache tzdata \
+RUN apk add --no-cache \
+    bash \
+    linux-headers \
+    g++ \
+    tzdata \
+    \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
-RUN apk add --no-cache --virtual .tmp-build-deps \
-    linux-headers g++
 
 COPY cfg/image_cfg/requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt
