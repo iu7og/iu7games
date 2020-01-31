@@ -6,10 +6,7 @@ LABEL maintainer="IU7OG"
 ENV PYTHONBUFFERED 1
 ENV PATH $PATH:/scripts
 
-RUN apk add --no-cache \
-    tzdata \
-    python3-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    \
+RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
 RUN apk add --no-cache --virtual .tmp-build-deps \
