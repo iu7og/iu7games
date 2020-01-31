@@ -1,6 +1,7 @@
 # IU7Games Environment
 
 FROM python:3.8-alpine
+LABEL maintainer="IU7OG"
 
 ENV PYTHONBUFFERED 1
 ENV PATH $PATH:/scripts
