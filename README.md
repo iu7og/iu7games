@@ -1,5 +1,7 @@
 # IU7Games
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7847b7ccad584ba3bb5c6648ba38f48d)](https://app.codacy.com/gh/IU7OG-Team/iu7games?utm_source=github.com&utm_medium=referral&utm_content=IU7OG-Team/iu7games&utm_campaign=Badge_Grade_Dashboard)
+
 ## О проекте
 Соревновательная система для оттачивания навыков программирования, созданная для студентов кафедры ИУ7 МГТУ им. Н.Э. Баумана, проходящих курс **"Программирование на Си"**.
 
