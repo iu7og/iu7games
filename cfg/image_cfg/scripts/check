@@ -26,7 +26,7 @@ then
     $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(volatile\)/\1/p')n"
     SPAM=$(echo $SPAM | tr -d ' ')
     echo -e "\033[0;34mCHECK SPAM EXISTANCE\033[0m"
-    if [[ "$SPAM" =~ n{5,} ]]
+    if [ "$SPAM" = 'nnnnn' ]
     then
         echo -e "\033[0;32mNO SPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
         gcc ${COMPILE_FLAGS} -fpic ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
