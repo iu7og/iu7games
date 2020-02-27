@@ -312,8 +312,7 @@ def start_competition(instance, game, group_name, stage):
     if stage == "release":
         print(f"SEARCHING FOR {game.upper()}"
               " DEPLOY JOB TO COMPARE NEW RESULTS WITH PREVIOUS ONES")
-        deploy_job = worker.repo.get_deploy_job(
-            IU7GAMES, game.lower(), "develop")
+        deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "master")
         if deploy_job is not None:
             print(f"{game.upper()} DEPLOY JOB FOUND."
                   " NEW RESULTS WILL BE AFFECTED BY PREVIOUS ONES\n")

@@ -38,13 +38,16 @@ build:
 
 ## Результаты
 
-* [**NUM63RSgame**](NUM63RSgame-Leaderboard)
+* [**NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame-Leaderboard)
 <!-- * [**7EQUEENCEgame**](7EQUEENCEgame-Leaderboard)
 * [**XOgame**](XOgame-Leaderboard)
 * [**STRgame**](STRgame-Leaderboard)
 * [**TEEN48game**](TEEN48game-Leaderboard) -->
 
 ## Changelog
+
+### 1.0.1 (27.02.2020)
+* Исправлено отображение изменения позиции в лидербордах
 
 ### 1.0.0 (22.02.2020)
 * Открыта первая игра **NUM63RSgame**
