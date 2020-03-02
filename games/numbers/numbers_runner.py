@@ -22,7 +22,7 @@ from math import gcd
 from functools import reduce
 import games.utils.utils as utils
 
-MAX_LBORDER = 1
+MAX_LBORDER = 14
 MAX_RBORDER = 22
 
 TIMEIT_REPEATS = 1001
@@ -68,6 +68,18 @@ def player_results(player_lib, intervals):
     return (utils.OK, median, dispersion)
 
 
+def print_conditions(intervals):
+    """
+        Печать условий раунда.
+    """
+
+    print(
+        f'LEFT: {intervals["l_border"]}' +
+        f'RIGHT: {intervals["r_border"]}' +
+        f'SOLUTION: {intervals["solution"]}'
+    )
+
+
 def start_numbers_game(players_info):
     """
         Открытие библиотеки с функциями игроков, подсчёт времени исполнения их функций,
@@ -76,6 +88,7 @@ def start_numbers_game(players_info):
 
     utils.redirect_ctypes_stdout()
     intervals = round_intervals()
+    print_conditions(intervals)
     results = []
 
     for player_lib in players_info:
