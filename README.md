@@ -39,7 +39,7 @@ build:
 ## Результаты
 
 * [**NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame-Leaderboard)
-* [**7EQUEENCEgame**](7EQUEENCEgame-Leaderboard)
+* [**7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame-Leaderboard)
 <!-- * [**XOgame**](XOgame-Leaderboard)
 * [**STRgame**](STRgame-Leaderboard)
 * [**TEEN48game**](TEEN48game-Leaderboard) -->
