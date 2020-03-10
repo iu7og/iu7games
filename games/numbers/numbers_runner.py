@@ -22,10 +22,10 @@ from math import gcd
 from functools import reduce
 import games.utils.utils as utils
 
-MAX_LBORDER = 14
+MAX_LBORDER = 1
 MAX_RBORDER = 22
 
-TIMEIT_REPEATS = 101
+TIMEIT_REPEATS = 301
 
 def lcm(interval):
     """
@@ -39,8 +39,8 @@ def round_intervals():
         Генерация левой, правой границы интервала и решения для текущего раунда.
     """
 
-    left_border = 1 #randint(MAX_LBORDER, MAX_RBORDER)
-    right_border = 22 #randint(left_border, MAX_RBORDER)
+    left_border = MAX_LBORDER #randint(MAX_LBORDER, MAX_RBORDER)
+    right_border = MAX_RBORDER #randint(left_border, MAX_RBORDER)
     solution = lcm(range(left_border, right_border + 1))
 
     return {"l_border": left_border, "r_border": right_border, "solution": solution}
@@ -74,9 +74,10 @@ def print_conditions(intervals):
     """
 
     print(
-        f'LEFT: {intervals["l_border"]}' +
-        f'RIGHT: {intervals["r_border"]}' +
-        f'SOLUTION: {intervals["solution"]}'
+        "GAME CONDITIONS:\n" +
+        f'LEFT: {intervals["l_border"]} ' +
+        f'RIGHT: {intervals["r_border"]} ' +
+        f'SOLUTION: {intervals["solution"]}\n'
     )
 
 
