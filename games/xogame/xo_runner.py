@@ -18,6 +18,7 @@
 """
 
 import ctypes
+from multiprocessing import Process, Value
 import games.utils.utils as utils
 
 DRAW = 0
@@ -28,6 +29,7 @@ ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
 N = 30
+SEGFAULT_CONST = -1
 
 def start_game_print(player1, player2):
     """
@@ -127,6 +129,10 @@ def check_move_correctness(c_strings, c_strings_copy, move, field_size):
         на испорченость матрицы стратегией игрока.
     """
 
+    if move == SEGFAULT_CONST:
+        print("▼ This player caused segmentation fault. ▼")
+        return False
+
     for i in range(field_size):
         if c_strings_copy[i].value != c_strings[i].value:
             return False
@@ -152,6 +158,27 @@ def make_move(c_strings, move, symb, field_size):
     return c_strings
 
 
+def ctypes_wrapper(player_lib, c_battlefield, field_size, char, move):
+    """
+        Обертка для отловки segmentation fault.
+    """
+
+    move.value = player_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar(char))
+
+
+def call_libary(player_lib, c_battlefield, field_size, char):
+    """
+        Вызов функции игрока с помощью multiprocessing, для отловки segfault.
+    """
+
+    move = Value('i', SEGFAULT_CONST)
+    proc = Process(target=ctypes_wrapper, args=(player_lib, c_battlefield, field_size, char, move))
+    proc.start()
+    proc.join()
+
+    return move.value
+
+
 def xogame_round(player1_lib, player2_lib, field_size, players_names):
     """
         Запуск одного раунда игры для двух игроков.
@@ -164,7 +191,8 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
 
     while shot_count < field_size * field_size:
         shot_count += 1
-        move = player1_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('X'))
+
+        move = call_libary(player1_lib, c_battlefield, field_size, 'X')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[0], " CHEATING")
 
@@ -185,7 +213,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return DRAW
 
         shot_count += 1
-        move = player2_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('O'))
+        move = call_libary(player2_lib, c_battlefield, field_size, '0')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[1], " CHEATING")
 
