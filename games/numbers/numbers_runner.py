@@ -15,7 +15,6 @@
 """
 
 import ctypes
-#from random import randint
 from timeit import Timer
 from time import process_time_ns
 from math import gcd
