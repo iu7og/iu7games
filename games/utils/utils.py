@@ -90,6 +90,7 @@ def print_results(results, players_info):
     """
 
     for player, result in zip(players_info, results):
+        print("TEST: ", player)
         print(
             "PLAYER:", parsing_name(player),
             "SOLUTION:", "FAIL" if result[0] else "OK",
