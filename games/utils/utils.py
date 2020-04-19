@@ -89,14 +89,15 @@ def print_results(results, players_info):
         Печать финальных результатов для каждого игрока.
     """
 
-    for i in range(len(players_info)):
-        if players_info[i] != "NULL":
-            print(
-                "PLAYER:", parsing_name(players_info[i]),
-                "SOLUTION:", "FAIL" if results[i][0] else "OK",
-                "MEDIAN:", results[i][1],
-                "DISPERSION:", results[i][2]
-            )
+    for player, result in zip(players_info, results):
+    #for i in range(len(players_info)):
+        #if players_info[i] != "NULL":
+        print(
+            "PLAYER:", parsing_name(player),
+            "SOLUTION:", "FAIL" if result[0] else "OK",
+            "MEDIAN:", result[1],
+            "DISPERSION:", result[2]
+        )
 
 
 def concat_strings(file):
