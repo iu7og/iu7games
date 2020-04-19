@@ -19,7 +19,6 @@
 
 import ctypes
 from multiprocessing import Process, Value
-#import multiprocessing as mp
 import games.utils.utils as utils
 
 DRAW = 0
@@ -194,7 +193,6 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
 
         move = call_libary(player1_lib, c_battlefield, field_size, 'X')
-        #move = player1_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('X'))
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[0], " CHEATING")
 
@@ -215,7 +213,6 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return DRAW
 
         shot_count += 1
-        #move = player2_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar('O'))
         move = call_libary(player2_lib, c_battlefield, field_size, '0')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[1], " CHEATING")
