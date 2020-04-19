@@ -90,13 +90,13 @@ def print_results(results, players_info):
     """
 
     for player, result in zip(players_info, results):
-        print("TEST: ", player)
-        print(
-            "PLAYER:", parsing_name(player),
-            "SOLUTION:", "FAIL" if result[0] else "OK",
-            "MEDIAN:", result[1],
-            "DISPERSION:", result[2]
-        )
+        if player != "NULL":
+            print(
+                "PLAYER:", parsing_name(player),
+                "SOLUTION:", "FAIL" if result[0] else "OK",
+                "MEDIAN:", result[1],
+                "DISPERSION:", result[2]
+            )
 
 
 def concat_strings(file):
