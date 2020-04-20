@@ -207,8 +207,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return PLAYER_ONE_WIN
 
         if shot_count == field_size * field_size:
-            print("DRAW\n", "=" * N, sep="")
-            print_field(c_strings, field_size, players_names[0])
+            print("TIE\n", "=" * N, sep="")
 
             return DRAW
 
