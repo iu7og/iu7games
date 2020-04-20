@@ -212,7 +212,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return DRAW
 
         shot_count += 1
-        move = call_libary(player2_lib, c_battlefield, field_size, '0')
+        move = call_libary(player2_lib, c_battlefield, field_size, 'O')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[1], " CHEATING")
 
