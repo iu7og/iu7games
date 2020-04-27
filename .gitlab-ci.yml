@@ -72,21 +72,21 @@ badges:
 #   only:
 #     - merge_requests
 
-# build_strgame:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 build | tee buildlog_strgame.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_strgame.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_strgame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 build | tee buildlog_strgame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_strgame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 # build_teen48game:
 #   stage: build
@@ -173,23 +173,22 @@ codestyle:
 #   only:
 #     - schedules
 
-# deploy_strgame:
-#   stage: deploy
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 release | tee deploylog_strgame.txt
-#   after_script:
-#     - rm -f *.so *.zip
-#   artifacts:
-#     paths:
-#       - deploylog_strgame.txt
-#       - ./*.obj
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - schedules
-
+deploy_strgame:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 release | tee deploylog_strgame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_strgame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
 # deploy_teen48game:
 #   stage: deploy
 #   image: hackfeed/iu7games

@@ -10,8 +10,8 @@
 * `NUM63RSgame`
 * `7EQUEENCEgame`
 * `XOgame`
-<!-- * `STRgame`
-* `TEEN48game` -->
+* `STRgame`
+<!-- * `TEEN48game` -->
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
@@ -31,8 +31,8 @@ build:
 * [Правила **NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/NUM63RSgame-Greeting#показания-к-выполнению-задания)
 * [Правила **7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/7EQUEENCEgame-Greeting#показания-к-выполнению-задания)
 * [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
-<!-- * [Правила **STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STRgame-Greeting#показания-к-выполнению-задания)
-* [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания) -->
+* [Правила **STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STRgame-Greeting#показания-к-выполнению-задания)
+<!-- * [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания) -->
 
 Вы восхитительны! Можно начинать соревноваться!
 
@@ -41,10 +41,13 @@ build:
 * [**NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame-Leaderboard)
 * [**7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame-Leaderboard)
 * [**XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/XOgame-Leaderboard)
-<!-- * [**STRgame**](STRgame-Leaderboard)
-* [**TEEN48game**](TEEN48game-Leaderboard) -->
+* [**STRgame**](STRgame-Leaderboard)
+<!-- * [**TEEN48game**](TEEN48game-Leaderboard) -->
 
 ## Changelog
+
+### 1.3.0 (27.04.2020)
+* Открыта третья игра **STRgame**
 
 ### 1.2.0 (28.03.2020)
 * Открыта третья игра **XOgame**
