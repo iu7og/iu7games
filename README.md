@@ -11,7 +11,7 @@
 * `7EQUEENCEgame`
 * `XOgame`
 * `STRgame`
-<!-- * `TEEN48game` -->
+* `TEEN48game`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
@@ -21,33 +21,45 @@ build:
     - $CI_COMMIT_REF_NAME
   after_script:
     - rm -f *.o
+  coverage: '/lines[\.]+\: (\d+\.\d+)\%/'
   artifacts:
     paths:
       - ./*.so
+      - ./*game/*_codecoverage
 ```
 
 После изменения `.gitlab-ci.yml`, ознакомиться с правилами игры:
+
+* [**Инструкция для практикантов, весна 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STAIU7HOME)
 
 * [Правила **NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/NUM63RSgame-Greeting#показания-к-выполнению-задания)
 * [Правила **7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/7EQUEENCEgame-Greeting#показания-к-выполнению-задания)
 * [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
 * [Правила **STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STRgame-Greeting#показания-к-выполнению-задания)
-<!-- * [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания) -->
+* [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания)
 
 Вы восхитительны! Можно начинать соревноваться!
 
 ## Результаты
 
 * [**NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame-Leaderboard)
+* [**NUM63RSgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame_practice-Leaderboard)
 * [**7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame-Leaderboard)
+* [**7EQUEENCEgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame_practice-Leaderboard)
 * [**XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/XOgame-Leaderboard)
-* [**STRgame**](STRgame-Leaderboard)
-<!-- * [**TEEN48game**](TEEN48game-Leaderboard) -->
+* [**XOgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/XOgame_practice-Leaderboard)
+* [**STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/STRgame-Leaderboard)
+* [**STRgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/STRgame_practice-Leaderboard)
+* [**TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TEEN48game-Leaderboard)
+* [**TEEN48game Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TEEN48game_practice-Leaderboard)
 
 ## Changelog
 
+### 2.0.0 (04.05.2020)
+* Открыта пятая игра **TEEN48game**. Запуск **#STAIU7HOME Spring Algorithm Practice**
+
 ### 1.3.0 (27.04.2020)
-* Открыта третья игра **STRgame**
+* Открыта четвертая игра **STRgame**
 
 ### 1.2.0 (28.03.2020)
 * Открыта третья игра **XOgame**
