@@ -4,7 +4,8 @@ build:
     - $CI_COMMIT_REF_NAME
   after_script:
     - rm -f *.o
+  coverage: '/lines[\.]+\: (\d+\.\d+)\%/'
   artifacts:
     paths:
       - ./*.so
-      - ./*_codecoverage/
+      - ./*game/*_codecoverage
