@@ -24,53 +24,53 @@ badges:
     - merge_requests
     - schedules
 
-# build_num63rsgame:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py NUM63RSgame iu7-games-2020 build | tee buildlog_num63rsgame.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_num63rsgame.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_num63rsgame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py NUM63RSgame iu7-games-2020 build | tee buildlog_num63rsgame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_num63rsgame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
-# build_7equeencegame:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame iu7-games-2020 build | tee buildlog_7equeencegame.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_7equeencegame.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_7equeencegame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame iu7-games-2020 build | tee buildlog_7equeencegame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_7equeencegame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
-# build_xogame:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-2020 build | tee buildlog_xogame.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - bildlog_xogame.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_xogame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-games-2020 build | tee buildlog_xogame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - bildlog_xogame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 build_strgame:
   stage: build
@@ -88,21 +88,21 @@ build_strgame:
   only:
     - merge_requests
 
-# build_teen48game:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-2020 build | tee buildlog_teen48game.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_teen48game.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_teen48game:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-2020 build | tee buildlog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_teen48game.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 codestyle:
   stage: test
@@ -122,6 +122,7 @@ codestyle:
     - pushes
     - merge_requests
     - schedules
+
 # deploy_num63rsgame:
 #   stage: deploy
 #   image: hackfeed/iu7games
@@ -178,7 +179,7 @@ deploy_strgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 release | tee deploylog_strgame.txt
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-games-2020 release nonpractice | tee deploylog_strgame.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
@@ -189,19 +190,107 @@ deploy_strgame:
     expire_in: 30 days
   only:
     - schedules
-# deploy_teen48game:
-#   stage: deploy
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-2020 release | tee deploylog_teen48game.txt
-#   after_script:
-#     - rm -f *.so *.zip
-#   artifacts:
-#     paths:
-#       - deploylog_teen48game.txt
-#       - ./*.obj
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - schedules
+
+deploy_teen48game:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-games-2020 release nonpractice | tee deploylog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_teen48game.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+####################
+
+deploy_num63rsgame_practice:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py NUM63RSgame iu7-bachelors-2023-practice-2020-iu7games release practice | tee deploylog_num63rsgame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_num63rsgame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_7equeencegame_practice:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame iu7-bachelors-2023-practice-2020-iu7games release practice | tee deploylog_7equeencegame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_7equeencegame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_xogame_practice:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py XOgame iu7-bachelors-2023-practice-2020-iu7games release practice | tee deploylog_xogame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_xogame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_strgame_practice:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py STRgame iu7-bachelors-2023-practice-2020-iu7games release practice | tee deploylog_strgame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_strgame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_teen48game_practice:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game iu7-bachelors-2023-practice-2020-iu7games release practice | tee deploylog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_teen48game.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
