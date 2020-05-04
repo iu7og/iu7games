@@ -11,9 +11,19 @@ RUN apk add --no-cache \
     linux-headers \
     g++ \
     tzdata \
+    perl-io-gzip \
+    perl-json \
+    git \
+    make \
     \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
+
+RUN git clone https://github.com/linux-test-project/lcov \
+    && cd lcov/ \
+    && make install \
+    && cd .. \
+    && rm -rf lcov/
 
 COPY cfg/image_cfg/requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt

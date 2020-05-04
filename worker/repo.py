@@ -166,15 +166,26 @@ def get_group_artifacts(instance, game, group_name):
         developer = None
         members = project.members.list(all=True)
 
+        members_list = []
+
         for mmbr in members:
             member = project.members.get(mmbr.id)
             if member.access_level == gitlab.DEVELOPER_ACCESS:
-                developer = member
-                break
+                members_list.append(member)
+
+        if group_name == "iu7-bachelors-2023-practice-2020-iu7games":
+            developer = members_list[0]
+            developer.name = project.name[len(group_name) + 1:]
+            username = ""
+            for member in members_list:
+                username += f"@{member.username}, "
+            developer.username = username[:-2]
+        else:
+            developer = members_list[0]
+            developer.username = f"@{developer.username}"
 
         if developer is not None:
-            user_result = [str(ind), developer.name, "@" +
-                           developer.username, get_job_date(job)]
+            user_result = [str(ind), developer.name, developer.username, get_job_date(job)]
             results.append(user_result)
             if check_md5(os.path.abspath("cfg/.gitlab-ci.students.yml"),
                          project, game, ".gitlab-ci.yml") is False:

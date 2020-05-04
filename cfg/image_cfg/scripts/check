@@ -1,7 +1,15 @@
 #! /bin/bash
 COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion -c -O3"
+COMPILE_COV_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
+-Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion"
+COVERAGE_FLAGS="-fprofile-arcs -ftest-coverage"
 GAME_PATH="$1"
+
+if [[ ${CI_PROJECT_NAME} == "iu7-bachelors-2023-practice-2020-iu7games"* ]]
+then
+    GITLAB_USER_LOGIN="$(echo "${CI_PROJECT_NAME}" | sed 's/iu7-bachelors-2023-practice-2020-iu7games-//')"
+fi
 
 echo -e "\033[0;34mCHECK SOURCE EXISTANCE\033[0m"
 if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c ]
@@ -37,6 +45,25 @@ then
         echo -e "  system\n  fork\n  exec family\n  asm family\n  volatile\033[0m"
         echo -e "\033[0;31mCHECK FAILED\033[0m\n"
         exit 1
+    fi
+    if [[ ${CI_PROJECT_NAME} == "iu7-bachelors-2023-practice-2020-iu7games"* ]]
+    then
+        echo -e "\033[0;34mCHECK TEST SOURCE EXISTANCE\033[0m"
+        if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c ]
+        then
+            echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c FOUND\033[0m"
+            echo -e "\033[0;34mSTART YOUR UNIT TESTING\033[0m"
+            gcc ${COMPILE_COV_FLAGS} -c -O3 ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c
+            gcc ${COMPILE_COV_FLAGS} ${COVERAGE_FLAGS} -c -O3 ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
+            gcc -lgcov --coverage -o test.exe ${GITLAB_USER_LOGIN}_$2_test.o ${GITLAB_USER_LOGIN}_$2.o
+            ./test.exe
+            lcov -t "test" -o test.info -c -d .
+            genhtml -o ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_codecoverage test.info
+            echo -e "\033[0;32mUNIT TESTING FINISHED\033[0m"
+        else
+            echo -e "\033[0;31m${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c NOT FOUND\033[0m\n"
+            exit 1
+        fi
     fi
     cp ${GITLAB_USER_LOGIN}_$2_lib.so /sandbox
     echo -e "\033[0;34mCHECK STRATEGY SAFETY\033[0m"

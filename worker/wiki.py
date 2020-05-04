@@ -12,6 +12,7 @@ from functools import cmp_to_key
 
 from jinja2 import Template
 import intervals
+import gitlab
 
 DOUBLE_TESTS_COL = 3
 DOUBLE_RES_COL = 4
@@ -51,10 +52,13 @@ def update_page(project, page_slug, title, content):
         Обновление Wiki-страницы.
     """
 
-    page = project.wikis.get(page_slug)
-    page.title = title
-    page.content = content
-    page.save()
+    try:
+        page = project.wikis.get(page_slug)
+        page.title = title
+        page.content = content
+        page.save()
+    except (gitlab.exceptions.GitlabHttpError, gitlab.exceptions.GitlabGetError):
+        create_page(project, title, content)
 
 
 def delete_page(project, page_slug):
@@ -67,7 +71,7 @@ def delete_page(project, page_slug):
 
 
 def get_date():
-    """ 
+    """
         Получение текущей даты.
     """
 
@@ -264,20 +268,25 @@ def update_wiki(project, game, fresults, sresults):
         "7EQUEENCEgame Leaderboard": "7EQUEENCEgame-Leaderboard",
         "XOgame Leaderboard": "XOgame-Leaderboard",
         "STRgame Leaderboard": "STRgame-Leaderboard",
-        "TEEN48game Leaderboard": "TEEN48game-Leaderboard"
+        "TEEN48game Leaderboard": "TEEN48game-Leaderboard",
+        "NUM63RSgame_practice Leaderboard": "NUM63RSgame_practice-Leaderboard",
+        "7EQUEENCEgame_practice Leaderboard": "7EQUEENCEgame_practice-Leaderboard",
+        "XOgame_practice Leaderboard": "XOgame_practice-Leaderboard",
+        "STRgame_practice Leaderboard": "STRgame_practice-Leaderboard",
+        "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard"
     }
 
     page = ""
 
-    if game == "NUM63RSgame":
+    if game.startswith("NUM63RSgame"):
         page = handle_num63rsgame(fresults)
-    elif game == "7EQUEENCEgame":
+    elif game.startswith("7EQUEENCEgame"):
         page = handle_7equeencegame(fresults)
-    elif game == "XOgame":
+    elif game.startswith("XOgame"):
         page = handle_xogame(fresults, sresults)
-    elif game == "STRgame":
+    elif game.startswith("STRgame"):
         page = handle_strgame(fresults, sresults)
-    elif game == "TEEN48game":
+    elif game.startswith("TEEN48game"):
         page = handle_teen48game(fresults, sresults)
 
     for key in games:

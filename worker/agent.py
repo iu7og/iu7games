@@ -300,7 +300,7 @@ def run_teen48game(results):
     return (data_4x4, data_6x6)
 
 
-def start_competition(instance, game, group_name, stage):
+def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
     """
@@ -308,6 +308,9 @@ def start_competition(instance, game, group_name, stage):
     results = worker.repo.get_group_artifacts(instance, game, group_name)
     fresults = []
     sresults = []
+
+    if is_practice == "practice":
+        game += "_practice"
 
     if stage == "release":
         print(f"SEARCHING FOR {game.upper()}"
@@ -322,15 +325,15 @@ def start_competition(instance, game, group_name, stage):
     elif stage == "build":
         print(f"START BUILD FOR {game.upper()}\n")
 
-    if game == "NUM63RSgame":
+    if game.startswith("NUM63RSgame"):
         fresults = run_num63rsgame(results)
-    elif game == "7EQUEENCEgame":
+    elif game.startswith("7EQUEENCEgame"):
         fresults = run_7equeencegame(results)
-    elif game == "XOgame":
+    elif game.startswith("XOgame"):
         fresults, sresults = run_xogame(results)
-    elif game == "STRgame":
+    elif game.startswith("STRgame"):
         fresults, sresults = run_strgame(results)
-    elif game == "TEEN48game":
+    elif game.startswith("TEEN48game"):
         fresults, sresults = run_teen48game(results)
 
     if stage == "release":
@@ -349,6 +352,7 @@ def add_args():
     parser.add_argument("game", help="Select a game")
     parser.add_argument("group_name", help="Select a GitLab group")
     parser.add_argument("stage", help="Select a stage for run")
+    parser.add_argument("is_practice", help="Is it is practice group")
     args = parser.parse_args()
 
     return args
@@ -357,4 +361,4 @@ def add_args():
 if __name__ == "__main__":
     ARGS = add_args()
 
-    start_competition(GIT_INST, ARGS.game, ARGS.group_name, ARGS.stage)
+    start_competition(GIT_INST, ARGS.game, ARGS.group_name, ARGS.stage, ARGS.is_practice)
