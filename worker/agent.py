@@ -27,7 +27,22 @@ IU7GAMES_ID = 2546
 IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
 
 
-def run_num63rsgame(results):
+def choose_name(rec, mode):
+    """
+        Проверка режима игры для формирования имени файла.
+    """
+
+    name = None
+
+    if mode == "practice":
+        name = rec[1].lower()
+    else:
+        name = rec[2][1:]
+
+    return name
+
+
+def run_num63rsgame(results, mode):
     """
         Старт NUM63RSgame.
     """
@@ -37,7 +52,7 @@ def run_num63rsgame(results):
     libs = []
 
     for rec in data:
-        lib_path = os.path.abspath(f"{rec[2][1:]}_num63rs_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec, mode)}_num63rs_lib.so")
 
         if os.path.exists(lib_path):
             libs.append(lib_path)
@@ -76,7 +91,7 @@ def run_num63rsgame(results):
     return data
 
 
-def run_7equeencegame(results):
+def run_7equeencegame(results, mode):
     """
         Старт 7EQUEENCEgame.
     """
@@ -86,7 +101,7 @@ def run_7equeencegame(results):
     libs = []
 
     for rec in data:
-        lib_path = os.path.abspath(f"{rec[2][1:]}_7equeence_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec, mode)}_7equeence_lib.so")
 
         if os.path.exists(lib_path):
             libs.append(lib_path)
@@ -125,7 +140,7 @@ def run_7equeencegame(results):
     return data
 
 
-def run_xogame(results):
+def run_xogame(results, mode):
     """
         Старт XOgame.
     """
@@ -156,7 +171,7 @@ def run_xogame(results):
             if rec_5x5[1] == rec_5x5_old[1]:
                 rating_5x5 = rec_5x5_old[3]
 
-        lib_path = os.path.abspath(f"{rec_3x3[2][1:]}_xo_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec_3x3, mode)}_xo_lib.so")
 
         if os.path.exists(lib_path):
             libs_3x3.append((lib_path, rating_3x3))
@@ -180,7 +195,7 @@ def run_xogame(results):
     return (data_3x3, data_5x5)
 
 
-def run_strgame(results):
+def run_strgame(results, mode):
     """
         Старт STRgame.
     """
@@ -193,7 +208,7 @@ def run_strgame(results):
 
         print(f"{rec_split[1]}:")
 
-        lib_path = os.path.abspath(f"{rec_split[2][1:]}_split_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec_split, mode)}_split_lib.so")
         test_path = os.path.abspath("games/strgame/tests/split")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -217,7 +232,7 @@ def run_strgame(results):
                 )
             ]
 
-        lib_path = os.path.abspath(f"{rec_strtok[2][1:]}_strtok_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec_strtok, mode)}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -245,7 +260,7 @@ def run_strgame(results):
     return (data_split, data_strtok)
 
 
-def run_teen48game(results):
+def run_teen48game(results, mode):
     """
         Старт TEEN48game.
     """
@@ -276,7 +291,7 @@ def run_teen48game(results):
             if rec_6x6[1] == rec_6x6_old[1]:
                 rating_6x6 = rec_6x6_old[3]
 
-        lib_path = os.path.abspath(f"{rec_4x4[2][1:]}_teen48_lib.so")
+        lib_path = os.path.abspath(f"{choose_name(rec_4x4, mode)}_teen48_lib.so")
 
         if os.path.exists(lib_path):
             libs_4x4.append((lib_path, rating_4x4))
@@ -326,15 +341,15 @@ def start_competition(instance, game, group_name, stage, is_practice):
         print(f"START BUILD FOR {game.upper()}\n")
 
     if game.startswith("NUM63RSgame"):
-        fresults = run_num63rsgame(results)
+        fresults = run_num63rsgame(results, is_practice)
     elif game.startswith("7EQUEENCEgame"):
-        fresults = run_7equeencegame(results)
+        fresults = run_7equeencegame(results, is_practice)
     elif game.startswith("XOgame"):
-        fresults, sresults = run_xogame(results)
+        fresults, sresults = run_xogame(results, is_practice)
     elif game.startswith("STRgame"):
-        fresults, sresults = run_strgame(results)
+        fresults, sresults = run_strgame(results, is_practice)
     elif game.startswith("TEEN48game"):
-        fresults, sresults = run_teen48game(results)
+        fresults, sresults = run_teen48game(results, is_practice)
 
     if stage == "release":
         worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
