@@ -151,6 +151,7 @@ def shift_field(game_field):
 
     for i in range(game_field.rows):
         nonzero_elements = 0
+
         for j in range(game_field.columns):
             if game_field.matrix[i][j] != 0:
                 new_matrix.matrix[i][nonzero_elements] = game_field.matrix[i][j]
@@ -167,10 +168,12 @@ def merge_field_cells(game_field):
     """
 
     merge_is_done = False
+
     for i in range(game_field.rows):
         for j in range(game_field.columns - 1):
             if game_field.matrix[i][j] == game_field.matrix[i][j + 1] \
                 and game_field.matrix[i][j] != 0:
+
                 game_field.matrix[i][j] *= 2
                 game_field.matrix[i][j + 1] = 0
                 merge_is_done = True
@@ -264,7 +267,8 @@ def print_field(game_field, player_name, score, field_size):
         Печать итогового состояния игрового поля и количество набранных очков.
     """
 
-    print("PLAYER:", player_name, "SCORE:", score)
+    print(f"PLAYER: {player_name} SCORE: {score}")
+
     for i in range(field_size):
         for j in range(field_size):
             print(game_field.matrix[i][j], end="\t")
