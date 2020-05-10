@@ -1,5 +1,5 @@
 """
-      ===== XO RUNNER v.1.1d =====
+      ===== XO RUNNER v.1.2a =====
       Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для проведения соревнования
@@ -29,7 +29,6 @@ ASCII_O = 79
 ASCII_X = 88
 ASCII_SPACE = 32
 N = 30
-SEGFAULT_CONST = -1
 
 def start_game_print(player1, player2):
     """
@@ -129,7 +128,7 @@ def check_move_correctness(c_strings, c_strings_copy, move, field_size):
         на испорченость матрицы стратегией игрока.
     """
 
-    if move == SEGFAULT_CONST:
+    if move == utils.SEGFAULT:
         print("▼ This player caused segmentation fault. ▼")
         return False
 
@@ -171,7 +170,7 @@ def call_libary(player_lib, c_battlefield, field_size, char):
         Вызов функции игрока с помощью multiprocessing, для отловки segfault.
     """
 
-    move = Value('i', SEGFAULT_CONST)
+    move = Value('i', utils.SEGFAULT)
     proc = Process(target=ctypes_wrapper, args=(player_lib, c_battlefield, field_size, char, move))
     proc.start()
     proc.join()
