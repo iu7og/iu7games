@@ -1,5 +1,5 @@
 """
-        ===== TEEN48 RUNNER v.1.0d =====
+        ===== TEEN48 RUNNER v.1.1a =====
         Copyright (C) 2019 - 2020 IU7Games Team.
 
       - Данный скрипт предназначен для проведения соревнований по игре teen48 (2048).
@@ -208,13 +208,13 @@ def make_move(move, game_field):
 
     is_done = False
 
-    if move == b'l':
+    if move == 'l':
         game_field, is_done = update_field(game_field, None)
-    elif move == b'r':
+    elif move == 'r':
         game_field, is_done = update_field(game_field, reverse_field)
-    elif move == b'u':
+    elif move == 'u':
         game_field, is_done = update_field(game_field, transpose_field)
-    elif move == b'd':
+    elif move == 'd':
         game_field, is_done = update_field(game_field, lambda x: reverse_field(transpose_field(x)))
 
     return game_field, is_done
@@ -272,12 +272,12 @@ def print_field(game_field, player_name, score, field_size):
         print("")
 
 
-def ctypes_wrapper(player_lib, game_field):
+def ctypes_wrapper(player_lib, game_field, move):
     """
         Обертка для отловки segmentation fault.
     """
 
-    move.value = player_lib.teen48game(game_field)
+    move.value = player_lib.teen48game(game_field).decode('utf-8')
 
 
 def call_libary(player_lib, game_field):
@@ -285,8 +285,8 @@ def call_libary(player_lib, game_field):
         Вызов функции игрока с помощью multiprocessing, для отловки segfault.
     """
 
-    move = Value('c', utils.SEGFAULT)
-    proc = Process(target=ctypes_wrapper, args=(player_lib, game_field))
+    move = Value(ctypes.c_wchar, utils.CHAR_SEGFAULT)
+    proc = Process(target=ctypes_wrapper, args=(player_lib, game_field, move))
     proc.start()
     proc.join()
 
@@ -332,6 +332,10 @@ def start_teen48game_competition(players_info, field_size):
 
             game_is_end = check_end_game(game_field)
 
+            if move == utils.CHAR_SEGFAULT:
+                print("▼ This player caused segmentation fault. ▼")
+                game_is_end = True
+
         score = scoring(game_field)
         results.append(score if score > player[1] else player[1])
         print_field(game_field, utils.parsing_name(player[0]), score, field_size)
@@ -339,4 +343,4 @@ def start_teen48game_competition(players_info, field_size):
     return results
 
 if __name__ == "__main__":
-    start_teen48game_competition([("games/teen48/teen48lib.so", 0), ("NULL", 1000)], 6)
+    start_teen48game_competition([("games/teen48/teen48lib.so", 0), ("NULL", 1000)], 4)
