@@ -324,6 +324,7 @@ def start_teen48game_competition(players_info, field_size):
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
         game_is_end = False
+        prev_move = "_"
 
         while not game_is_end:
             copy_field(game_field, game_field_copy)
@@ -339,6 +340,12 @@ def start_teen48game_competition(players_info, field_size):
             if move == utils.CHAR_SEGFAULT:
                 print("▼ This player caused segmentation fault. ▼")
                 game_is_end = True
+
+            if prev_move == move and not is_done:
+                print(f"Two identical moves that do not change the field. Move: {move}")
+                game_is_end = True
+
+            prev_move = move
 
         score = scoring(game_field)
         results.append(score if score > player[1] else player[1])
