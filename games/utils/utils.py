@@ -11,6 +11,7 @@ import os
 from math import sqrt
 from functools import reduce
 from psutil import virtual_memory
+from multiprocessing import Process, Value
 
 OK = 0
 SOLUTION_FAIL = 1
@@ -27,12 +28,12 @@ SPLIT_DELIMITER = ' '
 NULL = 0
 
 
-def call_libary(player_lib, wrapper, type, *args):
+def call_libary(player_lib, wrapper, сtype, *args):
     """
         Вызов функции игрока с помощью multiprocessing, для отловки segfault.
     """
 
-    move = Value(type, utils.SEGFAULT)
+    move = Value(сtype, utils.SEGFAULT)
     proc = Process(target=wrapper, args=(player_lib, move, *args))
     proc.start()
     proc.join()

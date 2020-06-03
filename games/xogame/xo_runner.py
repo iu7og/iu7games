@@ -18,7 +18,6 @@
 """
 
 import ctypes
-from multiprocessing import Process, Value
 import games.utils.utils as utils
 
 DRAW = 0
@@ -32,7 +31,7 @@ N = 30
 
 def start_game_print(player1, player2):
     """
-        Информаиця о начале раунда.
+        Информация о начале раунда.
     """
 
     print(
