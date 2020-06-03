@@ -24,6 +24,7 @@ from time import process_time_ns
 from timeit import Timer
 import games.utils.utils as utils
 
+
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
@@ -63,6 +64,10 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
         Проверка корректности разбиения и возвращаемого
         значения тестируемой функции split.
     """
+
+    if player_size == utils.SEGFAULT:
+        print("⬆ This player caused segmentation fault. ⬆")
+        return INCORRECT_TEST
 
     correct_string_array.pop()
     correct_size = len(correct_string_array)
@@ -106,6 +111,14 @@ def split_time_counter(lib_player, c_string, c_array_pointer, c_delimiter):
     return median, dispersion
 
 
+def ctypes_wrapper(player_lib, move, c_string, c_array_pointer, c_delim):
+    """
+        Обертка для отловки segmentation fault.
+    """
+
+    move.value = player_lib.split(c_string, c_array_pointer, c_delim)
+
+
 def run_split_test(lib_player, delimiter, test_data):
     """
         Вызов функций split, сравнения поведения функции
@@ -121,12 +134,13 @@ def run_split_test(lib_player, delimiter, test_data):
     c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
     utils.print_memory_usage("SPLIT FINAL MEMORY ALLOCATED")
 
-    player_size = lib_player.split(c_string, c_array_pointer, c_delim)
-    error_code = check_split_correctness(
-        player_size,
-        c_array_pointer,
-        correct_split
+    #player_size = lib_player.split(c_string, c_array_pointer, c_delim)
+
+    player_size = utils.call_libary(
+        lib_player, ctypes_wrapper, 'i', utils.SEGFAULT, c_string, c_array_pointer, c_delim
     )
+
+    error_code = check_split_correctness(player_size, c_array_pointer, correct_split)
 
     if error_code == utils.OK:
         run_time, dispersion = split_time_counter(lib_player, c_string, c_array_pointer, c_delim)

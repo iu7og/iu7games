@@ -21,7 +21,6 @@
 
 import ctypes
 from random import randint, random
-from multiprocessing import Process, Value
 import games.utils.utils as utils
 
 class matrix_t(ctypes.Structure):
@@ -276,25 +275,12 @@ def print_field(game_field, player_name, score, field_size):
         print("")
 
 
-def ctypes_wrapper(player_lib, game_field, move):
+def ctypes_wrapper(player_lib, move, game_field):
     """
         Обертка для отловки segmentation fault.
     """
 
     move.value = player_lib.teen48game(game_field).decode('utf-8')
-
-
-def call_libary(player_lib, game_field):
-    """
-        Вызов функции игрока с помощью multiprocessing, для отловки segfault.
-    """
-
-    move = Value(ctypes.c_wchar, utils.CHAR_SEGFAULT)
-    proc = Process(target=ctypes_wrapper, args=(player_lib, game_field, move))
-    proc.start()
-    proc.join()
-
-    return move.value
 
 
 def start_teen48game_competition(players_info, field_size):
@@ -328,7 +314,11 @@ def start_teen48game_competition(players_info, field_size):
 
         while not game_is_end:
             copy_field(game_field, game_field_copy)
-            move = call_libary(player_lib, game_field_copy)
+
+            move = utils.call_libary(
+                player_lib, ctypes_wrapper, ctypes.c_wchar, utils.CHAR_SEGFAULT, game_field
+            )
+
             game_field, is_done = make_move(move, game_field)
 
             if is_done:

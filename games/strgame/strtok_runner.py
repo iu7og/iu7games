@@ -93,6 +93,7 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
         """
             Обёртка для timeit.
         """
+
         c_strtok_timer.strtok_wrapper(
             player_name, c_string_player,
             c_delimiters_string, ctypes.c_int(iterations)
