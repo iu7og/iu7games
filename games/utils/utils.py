@@ -28,12 +28,12 @@ SPLIT_DELIMITER = ' '
 NULL = 0
 
 
-def call_libary(player_lib, wrapper, с_type, *args):
+def call_libary(player_lib, wrapper, argtype, stdval, *args):
     """
         Вызов функции игрока с помощью multiprocessing, для отловки segfault.
     """
 
-    move = Value(с_type, SEGFAULT)
+    move = Value(argtype, stdval)
     proc = Process(target=wrapper, args=(player_lib, move, *args))
     proc.start()
     proc.join()

@@ -24,6 +24,8 @@ from time import process_time_ns
 from timeit import Timer
 import games.utils.utils as utils
 
+from multiprocessing import Process, Value
+
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
