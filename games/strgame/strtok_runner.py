@@ -75,7 +75,7 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
 
     #player_ptr = libs["player"].strtok(c_string_player, c_delimiters_string)
     player_ptr = utils.call_libary(
-        libs["player"], ctypes_wrapper, ctypes.c_wchar_p, None, c_string_player, c_delimiters_string
+        libs["player"], ctypes_wrapper, ctypes.LP_c_char, None, c_string_player, c_delimiters_string
     )
 
     libary_ptr = libs["libary"].strtok(c_string, c_delimiters_string)
