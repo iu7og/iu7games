@@ -157,25 +157,12 @@ def make_move(c_strings, move, symb, field_size):
     return c_strings
 
 
-def ctypes_wrapper(player_lib, c_battlefield, field_size, char, move):
+def ctypes_wrapper(player_lib, move, c_battlefield, field_size, char):
     """
         Обертка для отловки segmentation fault.
     """
 
     move.value = player_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar(char))
-
-
-def call_libary(player_lib, c_battlefield, field_size, char):
-    """
-        Вызов функции игрока с помощью multiprocessing, для отловки segfault.
-    """
-
-    move = Value('i', utils.SEGFAULT)
-    proc = Process(target=ctypes_wrapper, args=(player_lib, c_battlefield, field_size, char, move))
-    proc.start()
-    proc.join()
-
-    return move.value
 
 
 def xogame_round(player1_lib, player2_lib, field_size, players_names):
@@ -191,7 +178,8 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
     while shot_count < field_size * field_size:
         shot_count += 1
 
-        move = call_libary(player1_lib, c_battlefield, field_size, 'X')
+        move = utils.call_libary(player1_lib, ctypes_wrapper, 'i', c_battlefield, field_size, 'X')
+        #move = call_libary(player1_lib, c_battlefield, field_size, 'X')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[0], " CHEATING")
 
@@ -211,7 +199,8 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
             return DRAW
 
         shot_count += 1
-        move = call_libary(player2_lib, c_battlefield, field_size, 'O')
+        move = utils.call_libary(player2_lib, ctypes_wrapper, 'i', c_battlefield, field_size, 'O')
+        #move = call_libary(player2_lib, c_battlefield, field_size, 'O')
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
             end_game_print(players_names[1], " CHEATING")
 

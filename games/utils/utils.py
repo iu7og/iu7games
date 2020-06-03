@@ -26,6 +26,20 @@ STRTOK_DELIMITERS = " ,.;:"
 SPLIT_DELIMITER = ' '
 NULL = 0
 
+
+def call_libary(player_lib, wrapper, type, *args):
+    """
+        Вызов функции игрока с помощью multiprocessing, для отловки segfault.
+    """
+
+    move = Value(type, utils.SEGFAULT)
+    proc = Process(target=wrapper, args=(player_lib, move, *args))
+    proc.start()
+    proc.join()
+
+    return move.value
+
+
 def print_memory_usage(stage):
     """
         Печать текущего состояния использования памяти
