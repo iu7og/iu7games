@@ -66,7 +66,7 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
     """
 
     if player_size == utils.SEGFAULT:
-        print("▼ This player caused segmentation fault. ▼")
+        print("⬆ This player caused segmentation fault. ⬆")
         return INCORRECT_TEST
 
     correct_string_array.pop()
