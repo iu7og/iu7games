@@ -63,7 +63,7 @@ def ctypes_wrapper(player_lib, move, c_string, c_delimiters):
         Обертка для отловки segmentation fault.
     """
 
-    move.value = player_lib.strtok(c_string, c_delimieters)
+    move.value = player_lib.strtok(c_string, c_delimiters)
 
 
 def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
