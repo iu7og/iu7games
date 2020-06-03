@@ -112,7 +112,6 @@ def ctypes_wrapper(player_lib, move, c_string, c_array_pointer, c_delim):
         Обертка для отловки segmentation fault.
     """
 
-    move.value = player_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar(char))
     move.value = player_lib.split(c_string, c_array_pointer, c_delim)
 
 
