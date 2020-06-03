@@ -10,6 +10,7 @@ import sys
 import os
 from math import sqrt
 from functools import reduce
+from multiprocessing import Process, Value
 from psutil import virtual_memory
 
 OK = 0
@@ -18,6 +19,7 @@ INVALID_PTR = 1
 NO_RESULT = -1337
 SEGFAULT = -1
 CHAR_SEGFAULT = '0'
+PTR_SEGF = '0'
 
 ENCODING = "utf-8"
 TEST_FILE = "/test_data.txt"
@@ -25,6 +27,20 @@ TEST_FILE = "/test_data.txt"
 STRTOK_DELIMITERS = " ,.;:"
 SPLIT_DELIMITER = ' '
 NULL = 0
+
+
+def call_libary(player_lib, wrapper, argtype, stdval, *args):
+    """
+        Вызов функции игрока с помощью multiprocessing, для отловки segfault.
+    """
+
+    move = Value(argtype, stdval)
+    proc = Process(target=wrapper, args=(player_lib, move, *args))
+    proc.start()
+    proc.join()
+
+    return move.value
+
 
 def print_memory_usage(stage):
     """
