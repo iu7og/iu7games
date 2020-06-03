@@ -21,7 +21,6 @@
 
 import ctypes
 from random import randint, random
-from multiprocessing import Process, Value
 import games.utils.utils as utils
 
 class matrix_t(ctypes.Structure):
