@@ -19,6 +19,7 @@ INVALID_PTR = 1
 NO_RESULT = -1337
 SEGFAULT = -1
 CHAR_SEGFAULT = '0'
+PTR_SEGF = '0'
 
 ENCODING = "utf-8"
 TEST_FILE = "/test_data.txt"

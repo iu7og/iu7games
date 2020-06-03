@@ -65,6 +65,10 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
         значения тестируемой функции split.
     """
 
+    if player_size == utils.SEGFAULT:
+        print("▼ This player caused segmentation fault. ▼")
+        return INCORRECT_TEST
+
     correct_string_array.pop()
     correct_size = len(correct_string_array)
 

@@ -58,6 +58,14 @@ def create_c_objects(bytes_string, delimiters):
     return c_delimiters_string, c_string, c_string_player
 
 
+def ctypes_wrapper(player_lib, move, c_string, c_delimiters):
+    """
+        Обертка для отловки segmentation fault.
+    """
+
+    move.value = player_lib.strtok(c_string, c_delimieters)
+
+
 def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
     """
         Запуск одной итерации функции strtok игрока,
@@ -65,7 +73,11 @@ def strtok_iteration(c_delimiters_string, c_string_player, c_string, libs):
         Сравнение возвращаемых результатов этих функций.
     """
 
-    player_ptr = libs["player"].strtok(c_string_player, c_delimiters_string)
+    #player_ptr = libs["player"].strtok(c_string_player, c_delimiters_string)
+    player_ptr = utils.call_libary(
+        libs["player"], ctypes_wrapper, ctypes.c_wchar_p, None, c_string_player, c_delimiters_string
+    )
+
     libary_ptr = libs["libary"].strtok(c_string, c_delimiters_string)
 
     player_ptr = ctypes.cast(player_ptr, ctypes.c_char_p)
@@ -93,6 +105,7 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
         """
             Обёртка для timeit.
         """
+
         c_strtok_timer.strtok_wrapper(
             player_name, c_string_player,
             c_delimiters_string, ctypes.c_int(iterations)
