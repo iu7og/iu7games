@@ -28,7 +28,7 @@ import games.utils.utils as utils
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-STRING_MULTIPLIER = 24000
+STRING_MULTIPLIER = 1
 WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
@@ -73,6 +73,7 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
     correct_size = len(correct_string_array)
 
     if correct_size * STRING_MULTIPLIER != player_size:
+        print(player_size, "size", correct_size * STRING_MULTIPLIER)
         return INCORRECT_TEST
 
     split_comparator = ctypes.CDLL("split_comparator.so")
