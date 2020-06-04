@@ -28,7 +28,7 @@ import games.utils.utils as utils
 INCORRECT_LEN = 1
 INCORRECT_TEST = 2
 
-STRING_MULTIPLIER = 1
+STRING_MULTIPLIER = 24000
 WORDS_COUNT = 5200 * STRING_MULTIPLIER
 MAX_LEN_WORD = 17
 TIMEIT_REPEATS = 11
@@ -144,7 +144,6 @@ def run_split_test(lib_player, delimiter, test_data):
     if check_segfault(player_size):
         return 0.0, utils.SEGFAULT, 0.0
 
-    c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(player_size, c_array_pointer, correct_split)
 
