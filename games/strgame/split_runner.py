@@ -144,6 +144,7 @@ def run_split_test(lib_player, delimiter, test_data):
     if check_segfault(player_size):
         return 0.0, utils.SEGFAULT, 0.0
 
+    c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
     player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(player_size, c_array_pointer, correct_split)
 
