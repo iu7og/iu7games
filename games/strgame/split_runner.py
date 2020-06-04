@@ -65,10 +65,6 @@ def check_split_correctness(player_size, player_string_array, correct_string_arr
         значения тестируемой функции split.
     """
 
-    if player_size == utils.SEGFAULT:
-        print("⬆ This player caused segmentation fault. ⬆")
-        return INCORRECT_TEST
-
     correct_string_array.pop()
     correct_size = len(correct_string_array)
 
@@ -119,6 +115,14 @@ def ctypes_wrapper(player_lib, move, c_string, c_array_pointer, c_delim):
     move.value = player_lib.split(c_string, c_array_pointer, c_delim)
 
 
+def check_segfault(size):
+    if size == utils.SEGFAULT:
+        print("⇈ This player caused segmentation fault. ⇈")
+        return True
+
+    return False
+
+
 def run_split_test(lib_player, delimiter, test_data):
     """
         Вызов функций split, сравнения поведения функции
@@ -134,12 +138,13 @@ def run_split_test(lib_player, delimiter, test_data):
     c_string, _, c_array_pointer, c_delim = create_c_objects(bytes_string, delimiter)
     utils.print_memory_usage("SPLIT FINAL MEMORY ALLOCATED")
 
-    #player_size = lib_player.split(c_string, c_array_pointer, c_delim)
-
     player_size = utils.call_libary(
-        lib_player, ctypes_wrapper, 'i', utils.SEGFAULT, c_string, c_array_pointer, c_delim
-    )
+        lib_player, ctypes_wrapper, 'i', utils.SEGFAULT, c_string, c_array_pointer, c_delim)
 
+    if check_segfault(player_size):
+        return 0.0, utils.SEGFAULT, 0.0
+
+    player_size = lib_player.split(c_string, c_array_pointer, c_delim)
     error_code = check_split_correctness(player_size, c_array_pointer, correct_split)
 
     if error_code == utils.OK:
