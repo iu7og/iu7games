@@ -116,6 +116,10 @@ def ctypes_wrapper(player_lib, move, c_string, c_array_pointer, c_delim):
 
 
 def check_segfault(size):
+    """
+        Проверка значения на segfault.
+    """
+
     if size == utils.SEGFAULT:
         print("⇈ This player caused segmentation fault. ⇈")
         return True
