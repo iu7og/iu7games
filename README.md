@@ -7,10 +7,10 @@
 
 В своём ученическом репозитории создать ветку `<gamename>`, 
 где `<gamename>` может быть:
-*  `NUM63RSgame`
-* `7EQUEENCEgame`
-* `XOgame`
-* `STRgame`
+*  `NUM63RSgame`  
+*  `7EQUEENCEgame`
+*   `XOgame`
+*  `STRgame`
 * `TEEN48game`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
