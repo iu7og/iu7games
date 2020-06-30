@@ -7,7 +7,7 @@
 
 В своём ученическом репозитории создать ветку `<gamename>`, 
 где `<gamename>` может быть:
-* `NUM63RSgame`
+*  `NUM63RSgame`
 * `7EQUEENCEgame`
 * `XOgame`
 * `STRgame`
