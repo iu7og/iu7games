@@ -31,7 +31,6 @@ build:
 После изменения `.gitlab-ci.yml`, ознакомиться с правилами игры:
 
 *   [**Инструкция для практикантов, весна 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STAIU7HOME)
-
 *   [Правила **NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/NUM63RSgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/7EQUEENCEgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
