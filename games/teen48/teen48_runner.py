@@ -37,6 +37,10 @@ class matrix_t(ctypes.Structure):
                 ("matrix", ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))]
 
     def __init__(self, rows, columns):
+        """
+            Конструктор для класса matrix_t.
+        """
+
         self.rows = rows
         self.columns = columns
         self.matrix = init_matrix(rows, columns)
