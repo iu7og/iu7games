@@ -8,6 +8,7 @@
 
 import sys
 import os
+import subprocess
 from math import sqrt
 from functools import reduce
 from multiprocessing import Process, Value
@@ -54,6 +55,30 @@ def print_memory_usage(stage):
         "USAGE PERCENTAGE:", memory_usage[2]
     )
 
+def memory_leak_check(executable):
+    """
+        Проверка наличия утечек памяти через valgrind
+    """
+    
+    command = [
+        'valgrind',
+        '--quiet',
+        '--verbose',
+        '--leak-check=full',
+        '--show-leak-kinds=all',
+        '--track-origins=yes',
+        '--error-exitcode=1',
+        executable
+    ]
+
+    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+
+    return 0 if process.wait() == 0 else int(next(
+        filter(
+            lambda x: x.isdigit(), 
+            process.stderr.readlines()[-1].split()
+        )
+    ).decode('utf-8'))
 
 def redirect_ctypes_stdout():
     """
