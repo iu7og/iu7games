@@ -59,7 +59,7 @@ def memory_leak_check(executable):
     """
         Проверка наличия утечек памяти через valgrind
     """
-    
+
     command = [
         'valgrind',
         '--quiet',
@@ -75,7 +75,7 @@ def memory_leak_check(executable):
 
     return 0 if process.wait() == 0 else int(next(
         filter(
-            lambda x: x.isdigit(), 
+            lambda x: x.isdigit(),
             process.stderr.readlines()[-1].split()
         )
     ).decode('utf-8'))
