@@ -73,7 +73,8 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             lib_path,
             '-o',
             executable
-        ]
+        ],
+        check=True
     )
 
     process = subprocess.Popen(
@@ -92,7 +93,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
 
     check_res = process.wait() == 0
 
-    subprocess.run(['rm', executable])
+    subprocess.run(['rm', executable], check=True)
 
     return 0 if check_res else int(next(
         filter(
