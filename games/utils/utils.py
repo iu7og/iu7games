@@ -9,7 +9,7 @@
 import sys
 import os
 import subprocess
-from math import sqrt
+from statistics import median, pvariance
 from functools import reduce
 from multiprocessing import Process, Value
 from psutil import virtual_memory
@@ -98,13 +98,7 @@ def process_time(time_results):
         Обработка результатов (по времени) игрока. Подсчёт медианы и дисперсии.
     """
 
-    time_results.sort()
-    median = time_results[len(time_results) // 2]
-    avg_time = sum(time_results) / len(time_results)
-    time_results = list(map(lambda x: (x - avg_time) * (x - avg_time), time_results))
-    dispersion = sqrt(sum(time_results) / len(time_results))
-
-    return median, dispersion
+    return median(time_results), pvariance(time_results)
 
 
 def parsing_name(lib_path):
