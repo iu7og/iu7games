@@ -120,7 +120,7 @@ def params_sort(results, sort_keys, output_params, game):
         Сортировка результатов в зависимости от игры.
     """
 
-    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame"]
+    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame", "TR4V31game"]
     timedepless_games = ["XOgame", "TEEN48game"]
 
     if game in timedep_games:
@@ -258,6 +258,19 @@ def handle_teen48game(fresults, sresults):
     return page
 
 
+def handle_tr4v31game(fresults):
+    """
+        Обновление таблицы для TR4V31game.
+    """
+
+    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                         "TR4V31game", "")
+    tmp = open(os.path.abspath("templates/tr4v31game.template")).read()
+    page = Template(tmp).render(results=results, date=get_date())
+
+    return page
+
+
 def update_wiki(project, game, fresults, sresults):
     """
         Обновление Wiki-страницы с обновленными результатами.
@@ -269,11 +282,13 @@ def update_wiki(project, game, fresults, sresults):
         "XOgame Leaderboard": "XOgame-Leaderboard",
         "STRgame Leaderboard": "STRgame-Leaderboard",
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard",
+        "TR4V31game Leaderboard": "TR4V31game-Leaderboard",
         "NUM63RSgame_practice Leaderboard": "NUM63RSgame_practice-Leaderboard",
         "7EQUEENCEgame_practice Leaderboard": "7EQUEENCEgame_practice-Leaderboard",
         "XOgame_practice Leaderboard": "XOgame_practice-Leaderboard",
         "STRgame_practice Leaderboard": "STRgame_practice-Leaderboard",
-        "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard"
+        "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard",
+        "TR4V31game_practice Leaderboard": "TR4V31game_practice-Leaderboard"
     }
 
     page = ""
@@ -288,6 +303,8 @@ def update_wiki(project, game, fresults, sresults):
         page = handle_strgame(fresults, sresults)
     elif game.startswith("TEEN48game"):
         page = handle_teen48game(fresults, sresults)
+    elif game.startswith("TR4V31game"):
+        page = handle_tr4v31game(fresults)
 
     for key in games:
         if game in key:
