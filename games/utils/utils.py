@@ -55,25 +55,46 @@ def print_memory_usage(stage):
         "USAGE PERCENTAGE:", memory_usage[2]
     )
 
-def memory_leak_check(executable):
+def memory_leak_check(sample_path, lib_path, sample_args):
     """
         Проверка наличия утечек памяти через valgrind
+
+        sample_path - полный путь до тестовой программы
+        lib_path - полный путь до тестируемой библиотеки
+        sample_args - аргументы запуска тестовой программы
     """
 
-    command = [
-        'valgrind',
-        '--quiet',
-        '--verbose',
-        '--leak-check=full',
-        '--show-leak-kinds=all',
-        '--track-origins=yes',
-        '--error-exitcode=1',
-        executable
-    ]
+    executable = './memory_leak_check.out'
+    subprocess.run(
+        [
+            'gcc',
+            '--std=c99',
+            sample_path,
+            lib_path,
+            '-o',
+            executable
+        ]
+    )
 
-    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+        [
+            'valgrind',
+            '--quiet',
+            '--verbose',
+            '--leak-check=full',
+            '--show-leak-kinds=all',
+            '--track-origins=yes',
+            '--error-exitcode=1',
+            executable
+        ] + sample_args,
+        stderr=subprocess.PIPE
+    )
 
-    return 0 if process.wait() == 0 else int(next(
+    check_res = process.wait() == 0
+
+    subprocess.run(['rm', executable])
+
+    return 0 if check_res else int(next(
         filter(
             lambda x: x.isdigit(),
             process.stderr.readlines()[-1].split()
