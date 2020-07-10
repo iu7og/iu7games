@@ -62,6 +62,8 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         sample_path - полный путь до тестовой программы
         lib_path - полный путь до тестируемой библиотеки
         sample_args - аргументы запуска тестовой программы
+
+        Возвращаемое значение - кол-во утечек
     """
 
     executable = './memory_leak_check.out'
