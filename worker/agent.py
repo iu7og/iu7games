@@ -16,6 +16,7 @@ from games.sequence import sequence_runner
 from games.xogame import xo_runner
 from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
+from games.travel import travel_runner
 
 
 SIGMA_COEF = 3
@@ -315,6 +316,59 @@ def run_teen48game(results, mode):
     return (data_4x4, data_6x6)
 
 
+def run_tr4v31game(results, mode):
+    """
+        Старт TR4V31game
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    for rec in data:
+        lib_path = os.path.abspath(f"{choose_name(rec, mode)}_tr4v31_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append(lib_path)
+        else:
+            libs.append("NULL")
+
+    print("TR4V31GAME RESULTS\n")
+
+    test_path = os.path.abspath("games/tr4v31game/tests")
+
+    if os.path.exists(test_path):
+        results_def = travel_runner.start_travel_game(libs, test_path)
+
+        i = 0
+        for rec in data:
+            sign = worker.wiki.SIGN[0]
+            if results_def[i][0] == worker.wiki.NO_RESULT:
+                sign = worker.wiki.SIGN[1]
+                rec[3:3] = [
+                    sign,
+                    intervals.closed(
+                        abs(worker.wiki.NO_RESULT),
+                        intervals.inf
+                    )
+                ]
+            else:
+                if results_def[i][0] != 0:
+                    sign = worker.wiki.SIGN[1]
+                rec[3:3] = [
+                    sign,
+                    intervals.closed(
+                        round(results_def[i][1] - SIGMA_COEF *
+                              results_def[i][2], 7),
+                        round(results_def[i][1] + SIGMA_COEF *
+                              results_def[i][2], 7)
+                    )
+                ]
+            i += 1
+
+    return data
+
+
 def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
@@ -350,6 +404,8 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults, sresults = run_strgame(results, is_practice)
     elif game.startswith("TEEN48game"):
         fresults, sresults = run_teen48game(results, is_practice)
+    elif game.startswith("TR4V31game"):
+        fresults = run_tr4v31game(results, is_practice)
 
     if stage == "release":
         worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
