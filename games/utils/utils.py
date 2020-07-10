@@ -69,6 +69,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         [
             'gcc',
             '--std=c99',
+            '-O3',
             sample_path,
             lib_path,
             '-o',
