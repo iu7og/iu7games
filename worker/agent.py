@@ -63,8 +63,7 @@ def run_num63rsgame(results, mode):
     print("NUM63RSGAME RESULTS\n")
     results_def = numbers_runner.start_numbers_game(libs)
 
-    i = 0
-    for rec in data:
+    for i, rec in enumerate(data):
         sign = worker.wiki.SIGN[0]
         if results_def[i][0] == worker.wiki.NO_RESULT:
             sign = worker.wiki.SIGN[1]
@@ -87,7 +86,6 @@ def run_num63rsgame(results, mode):
                           results_def[i][2], 7)
                 )
             ]
-        i += 1
 
     return data
 
@@ -112,8 +110,7 @@ def run_7equeencegame(results, mode):
     print("7EQUEENCEGAME RESULTS\n")
     results_def = sequence_runner.start_sequence_game(libs)
 
-    i = 0
-    for rec in data:
+    for i, rec in enumerate(data):
         sign = worker.wiki.SIGN[0]
         if results_def[i][0] == worker.wiki.NO_RESULT:
             sign = worker.wiki.SIGN[1]
@@ -136,7 +133,6 @@ def run_7equeencegame(results, mode):
                           results_def[i][2], 7)
                 )
             ]
-        i += 1
 
     return data
 
@@ -340,8 +336,7 @@ def run_tr4v31game(results, mode):
     if os.path.exists(test_path):
         results_def = travel_runner.start_travel_game(libs, test_path)
 
-        i = 0
-        for rec in data:
+        for i, rec in enumerate(data):
             sign = worker.wiki.SIGN[0]
             if results_def[i][0] == worker.wiki.NO_RESULT:
                 sign = worker.wiki.SIGN[1]
@@ -364,7 +359,6 @@ def run_tr4v31game(results, mode):
                               results_def[i][2], 7)
                     )
                 ]
-            i += 1
 
     return data
 
