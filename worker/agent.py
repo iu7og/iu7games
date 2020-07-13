@@ -64,9 +64,8 @@ def run_num63rsgame(results, mode):
     results_def = numbers_runner.start_numbers_game(libs)
 
     for i, rec in enumerate(data):
-        sign = worker.wiki.SIGN[0]
+        sign = worker.wiki.SIGN[1]
         if results_def[i][0] == worker.wiki.NO_RESULT:
-            sign = worker.wiki.SIGN[1]
             rec[3:3] = [
                 sign,
                 intervals.closed(
@@ -75,8 +74,7 @@ def run_num63rsgame(results, mode):
                 )
             ]
         else:
-            if results_def[i][0] != 0:
-                sign = worker.wiki.SIGN[1]
+            sign = worker.wiki.SIGN[results_def[i][0] != 0]
             rec[3:3] = [
                 sign,
                 intervals.closed(
@@ -111,9 +109,8 @@ def run_7equeencegame(results, mode):
     results_def = sequence_runner.start_sequence_game(libs)
 
     for i, rec in enumerate(data):
-        sign = worker.wiki.SIGN[0]
+        sign = worker.wiki.SIGN[1]
         if results_def[i][0] == worker.wiki.NO_RESULT:
-            sign = worker.wiki.SIGN[1]
             rec[3:3] = [
                 sign,
                 intervals.closed(
@@ -122,8 +119,7 @@ def run_7equeencegame(results, mode):
                 )
             ]
         else:
-            if results_def[i][0] != 0:
-                sign = worker.wiki.SIGN[1]
+            sign = worker.wiki.SIGN[results_def[i][0] != 0]
             rec[3:3] = [
                 sign,
                 intervals.closed(
@@ -337,9 +333,8 @@ def run_tr4v31game(results, mode):
         results_def = travel_runner.start_travel_game(libs, test_path)
 
         for i, rec in enumerate(data):
-            sign = worker.wiki.SIGN[0]
+            sign = worker.wiki.SIGN[1]
             if results_def[i][0] == worker.wiki.NO_RESULT:
-                sign = worker.wiki.SIGN[1]
                 rec[3:3] = [
                     sign,
                     intervals.closed(
@@ -348,8 +343,7 @@ def run_tr4v31game(results, mode):
                     )
                 ]
             else:
-                if results_def[i][0] != 0:
-                    sign = worker.wiki.SIGN[1]
+                sign = worker.wiki.SIGN[results_def[i][0] != 0]
                 rec[3:3] = [
                     sign,
                     intervals.closed(
