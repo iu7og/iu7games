@@ -190,7 +190,6 @@ def handle_num63rsgame(fresults):
     results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                          "NUM63RSgame", "")
 
-    tmp = ""
     with open(os.path.abspath("templates/num63rsgame.template")) as template:
         tmp = template.read()
 
@@ -207,7 +206,6 @@ def handle_7equeencegame(fresults):
     results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                          "7EQUEENCEgame", "")
 
-    tmp = ""
     with open(os.path.abspath("templates/7equeencegame.template")) as template:
         tmp = template.read()
 
@@ -226,7 +224,6 @@ def handle_xogame(fresults, sresults):
     results_5x5 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
                              "XOgame", "5x5")
 
-    tmp = ""
     with open(os.path.abspath("templates/xogame.template")) as template:
         tmp = template.read()
 
@@ -246,7 +243,6 @@ def handle_strgame(fresults, sresults):
     results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                                 "STRgame", "strtok")
 
-    tmp = ""
     with open(os.path.abspath("templates/strgame.template")) as template:
         tmp = template.read()
 
@@ -266,7 +262,6 @@ def handle_teen48game(fresults, sresults):
     results_6x6 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
                              "TEEN48game", "6x6")
 
-    tmp = ""
     with open(os.path.abspath("templates/teen48game.template")) as template:
         tmp = template.read()
 
@@ -284,7 +279,6 @@ def handle_tr4v31game(fresults):
     results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                          "TR4V31game", "")
 
-    tmp = ""
     with open(os.path.abspath("templates/tr4v31game.template")) as template:
         tmp = template.read()
 
