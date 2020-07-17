@@ -22,9 +22,9 @@ import ctypes
 from random import randint, random
 import games.utils.utils as utils
 
-class matrix_t(ctypes.Structure):
+class Matrix(ctypes.Structure):
     """
-        Класс matrix_t описывает одноименную структуру в С.
+        Класс Matrix описывает одноименную структуру в С.
         Класс имеет поля:
         - rows - количество строк матрицы
         - columns - количество столбцов матрицы
@@ -37,7 +37,7 @@ class matrix_t(ctypes.Structure):
 
     def __init__(self, rows, columns):
         """
-            Конструктор для класса matrix_t.
+            Конструктор для класса Matrix
         """
 
         self.rows = rows
@@ -149,7 +149,7 @@ def shift_field(game_field):
         Сдвиг ненулевых ячеек игрового поля в левую сторону.
     """
 
-    new_matrix = matrix_t(game_field.rows, game_field.columns)
+    new_matrix = Matrix(game_field.rows, game_field.columns)
 
     for i in range(game_field.rows):
         nonzero_elements = 0
@@ -304,11 +304,11 @@ def start_teen48game_competition(players_info, field_size):
             continue
 
         player_lib = ctypes.CDLL(player[0])
-        player_lib.teen48game.argtypes = [matrix_t]
+        player_lib.teen48game.argtypes = [Matrix]
         player_lib.teen48game.restype = ctypes.c_char
 
-        game_field = matrix_t(field_size, field_size)
-        game_field_copy = matrix_t(field_size, field_size)
+        game_field = Matrix(field_size, field_size)
+        game_field_copy = Matrix(field_size, field_size)
 
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
         fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
