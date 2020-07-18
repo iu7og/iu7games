@@ -7,16 +7,17 @@
 """
 
 import os
-import ctypes
-import games.utils.utils as utils
+from games.strgame.split_runner import start_split
+#import ctypes
+#import games.utils.utils as utils
 
+
+"""
 WORDS_COUNT = 5200
 MAX_LEN_WORD = 17
 
 def create_c_objects(bytes_string):
-    """
-        Создание строки, матрицы и символа делителя в С для передачи в функцию.
-    """
+        #Создание строки, матрицы и символа делителя в С для передачи в функцию.
 
     c_string = ctypes.create_string_buffer(bytes_string)
     c_split_strings = [ctypes.create_string_buffer(b' ' * MAX_LEN_WORD) for i in range(WORDS_COUNT)]
@@ -27,9 +28,7 @@ def create_c_objects(bytes_string):
 
 
 def light_split_runner(player_lib_path, tests_path):
-    """
-        Чтение строки из файла, запуск split функции игрока
-    """
+        #Чтение строки из файла, запуск split функции игрока
 
     utils.redirect_ctypes_stdout()
 
@@ -42,7 +41,16 @@ def light_split_runner(player_lib_path, tests_path):
     _ = player_lib.split(c_string, c_matrix, delim)
 
     print("\033[0;32mSPLIT OK\033[0m")
+"""
 
+def light_split_runner(player_lib_path, tests_path):
+    """
+        Запуск функции split игрока используя основной раннер.
+    """
+
+    tests_failed, _, _ = start_split(palyer_lib_path, tests_path)
+
+    print(f"\033[0;32mSPLIT OK\033[0m\nTESTS FAILED: {tests_failed}")
 
 if __name__ == "__main__":
     light_split_runner(
