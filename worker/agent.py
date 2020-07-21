@@ -16,7 +16,7 @@ from games.sequence import sequence_runner
 from games.xogame import xo_runner
 from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
-from games.travel import travel_runner
+from games.travelgame import travel_runner
 
 
 SIGMA_COEF = 3
