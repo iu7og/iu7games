@@ -8,7 +8,8 @@
 
 import sys
 import os
-from math import sqrt
+import subprocess
+from statistics import median, pvariance
 from functools import reduce
 from multiprocessing import Process, Value
 from psutil import virtual_memory
@@ -54,6 +55,55 @@ def print_memory_usage(stage):
         "USAGE PERCENTAGE:", memory_usage[2]
     )
 
+def memory_leak_check(sample_path, lib_path, sample_args):
+    """
+        Проверка наличия утечек памяти через valgrind
+
+        sample_path - полный путь до тестовой программы
+        lib_path - полный путь до тестируемой библиотеки
+        sample_args - аргументы запуска тестовой программы
+
+        Возвращаемое значение - кол-во утечек
+    """
+
+    executable = './memory_leak_check.out'
+    subprocess.run(
+        [
+            'gcc',
+            '--std=c99',
+            '-O3',
+            sample_path,
+            lib_path,
+            '-o',
+            executable
+        ],
+        check=True
+    )
+
+    process = subprocess.Popen(
+        [
+            'valgrind',
+            '--quiet',
+            '--verbose',
+            '--leak-check=full',
+            '--show-leak-kinds=all',
+            '--track-origins=yes',
+            '--error-exitcode=1',
+            executable
+        ] + sample_args,
+        stderr=subprocess.PIPE
+    )
+
+    check_res = process.wait() == 0
+
+    subprocess.run(['rm', executable], check=True)
+
+    return 0 if check_res else int(next(
+        filter(
+            lambda x: x.isdigit(),
+            process.stderr.readlines()[-1].split()
+        )
+    ).decode('utf-8'))
 
 def redirect_ctypes_stdout():
     """
@@ -73,13 +123,7 @@ def process_time(time_results):
         Обработка результатов (по времени) игрока. Подсчёт медианы и дисперсии.
     """
 
-    time_results.sort()
-    median = time_results[len(time_results) // 2]
-    avg_time = sum(time_results) / len(time_results)
-    time_results = list(map(lambda x: (x - avg_time) * (x - avg_time), time_results))
-    dispersion = sqrt(sum(time_results) / len(time_results))
-
-    return median, dispersion
+    return median(time_results), pvariance(time_results)
 
 
 def parsing_name(lib_path):
