@@ -17,7 +17,7 @@ def light_strtok_runner(player_lib_path, tests_path):
 
     solution, _, _, = start_strtok(player_lib_path, tests_path)
 
-    print(f"\033[0;32mSTRTOK OK\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'")
+    print(f"\033[0;32mSTRTOK OK\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'}")
 
 
 if __name__ == "__main__":

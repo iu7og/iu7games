@@ -17,7 +17,7 @@ def light_split_runner(player_lib_path, tests_path):
 
     solution, _, _ = start_split(player_lib_path, tests_path)
 
-    print(f"\033[0;32mSPLIT OK\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'")
+    print(f"\033[0;32mSPLIT OK\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'}")
 
 
 if __name__ == "__main__":

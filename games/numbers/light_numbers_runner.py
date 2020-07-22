@@ -15,7 +15,7 @@ def light_numbers_runner(player_lib_path):
     """
 
     solution, _, _ = start_numbers_game([player_lib_path])[0]
-    print(f"\033[0;32mNUMBERS GAME: OKAY\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'")
+    print(f"\033[0;32mNUMBERS GAME: OKAY\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'}")
 
 
 if __name__ == "__main__":
