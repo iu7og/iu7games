@@ -178,8 +178,8 @@ def strgame_runner(tests_path, tests_runner):
         Универсальная функция, производящая запуск STR игр (split, strtok)
     """
 
-    with open(tests_path + TEST_FILE, "r") as f:
-        test_data = concat_strings(f)
+    with open(tests_path + TEST_FILE, "r") as f_obj:
+        test_data = concat_strings(f_obj)
 
     time, error_code, dispersion = tests_runner(test_data)
 
