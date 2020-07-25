@@ -125,5 +125,10 @@ dmypy.json
 .idea
 
 
+# Admins utils
+
+utils/
+
+
 # API config
 cfg/api_config.cfg

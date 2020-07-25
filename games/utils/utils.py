@@ -143,7 +143,7 @@ def print_strgame_results(game, incorrect_test, total_time, dispersion):
     """
 
     print(
-        f"{game TESTS: {'\033[0;31mFAIL\033[0m' if incorrect_test else '\033[0;32mOK\033[0m'} "
+        f"{game} TESTS: {'\033[0;31mFAIL\033[0m' if incorrect_test else '\033[0;32mOK\033[0m'} "
         f"TIME: {total_time} "
         f"DISPERSION: {dispersion}"
     )
