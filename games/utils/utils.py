@@ -143,7 +143,7 @@ def print_strgame_results(game, incorrect_test, total_time, dispersion):
     """
 
     print(
-        f"{game} TESTS: {'\033[0;31mFAIL\033[0m' if incorrect_test else '\033[0;32mOK\033[0m'} "
+        f"{game} TESTS: {FAIL' if incorrect_test else 'OK'} "
         f"TIME: {total_time} "
         f"DISPERSION: {dispersion}"
     )
@@ -158,7 +158,7 @@ def print_results(results, players_info):
         if player != "NULL":
             print(
                 f"PLAYER: {parsing_name(player)} ",
-                f"SOLUTION: {'\033[0;31mFAIL\033[0m' if result[0] else '\033[0;32mOK\033[0m'} ",
+                f"SOLUTION: {'FAIL' if result[0] else 'OK'} ",
                 f"MEDIAN: {result[1]} ",
                 f"DISPERSION: {result[2]}"
             )
