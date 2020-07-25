@@ -51,9 +51,9 @@ def print_memory_usage(stage):
     memory_usage = virtual_memory()
 
     print(
-         f"STAGE: {stage} "
-         f"AVAILABLE MEMORY: {memory_usage[1]} "
-         f"USAGE PERCENTAGE: {memory_usage[2]}"
+        f"STAGE: {stage} "
+        f"AVAILABLE MEMORY: {memory_usage[1]} "
+        f"USAGE PERCENTAGE: {memory_usage[2]}"
     )
 
 
@@ -164,13 +164,13 @@ def print_results(results, players_info):
             )
 
 
-def concat_strings(f):
+def concat_strings(f_obj):
     """
         Склеивание каждой строки файла в одну единственную строку,
         удаление символов окончания строки.
     """
 
-    return reduce(lambda x, y: x + y[:-1], f)
+    return reduce(lambda x, y: x + y[:-1], f_obj)
 
 
 def strgame_runner(tests_path, tests_runner):
