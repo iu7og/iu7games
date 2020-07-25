@@ -49,11 +49,13 @@ def print_memory_usage(stage):
     """
 
     memory_usage = virtual_memory()
+
     print(
-        "STAGE:", stage,
-        "AVAILABLE MEMORY:", memory_usage[1],
-        "USAGE PERCENTAGE:", memory_usage[2]
+        f"STAGE: {stage} "
+        f"AVAILABLE MEMORY: {memory_usage[1]} "
+        f"USAGE PERCENTAGE: {memory_usage[2]}"
     )
+
 
 def memory_leak_check(sample_path, lib_path, sample_args):
     """
@@ -105,6 +107,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         )
     ).decode('utf-8'))
 
+
 def redirect_ctypes_stdout():
     """
         Выключение принтов в стратегиях игроков.
@@ -140,9 +143,9 @@ def print_strgame_results(game, incorrect_test, total_time, dispersion):
     """
 
     print(
-        game + " TESTS:", "FAIL" if incorrect_test else "OK",
-        "TIME:", total_time,
-        "DISPERSION:", dispersion
+        f"{game} TESTS: {'FAIL' if incorrect_test else 'OK'} "
+        f"TIME: {total_time} "
+        f"DISPERSION: {dispersion}"
     )
 
 
@@ -154,20 +157,20 @@ def print_results(results, players_info):
     for player, result in zip(players_info, results):
         if player != "NULL":
             print(
-                "PLAYER:", parsing_name(player),
-                "SOLUTION:", "FAIL" if result[0] else "OK",
-                "MEDIAN:", result[1],
-                "DISPERSION:", result[2]
+                f"PLAYER: {parsing_name(player)} ",
+                f"SOLUTION: {'FAIL' if result[0] else 'OK'} ",
+                f"MEDIAN: {result[1]} ",
+                f"DISPERSION: {result[2]}"
             )
 
 
-def concat_strings(file):
+def concat_strings(f_obj):
     """
         Склеивание каждой строки файла в одну единственную строку,
         удаление символов окончания строки.
     """
 
-    return reduce(lambda x, y: x + y[:-1], file)
+    return reduce(lambda x, y: x + y[:-1], f_obj)
 
 
 def strgame_runner(tests_path, tests_runner):
@@ -175,9 +178,8 @@ def strgame_runner(tests_path, tests_runner):
         Универсальная функция, производящая запуск STR игр (split, strtok)
     """
 
-    file = open(tests_path + TEST_FILE, "r")
-    test_data = concat_strings(file)
-    file.close()
+    with open(tests_path + TEST_FILE, "r") as f_obj:
+        test_data = concat_strings(f_obj)
 
     time, error_code, dispersion = tests_runner(test_data)
 
