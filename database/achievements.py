@@ -9,6 +9,7 @@ from collections import namedtuple
 import mongoengine as mg
 import models
 
+
 AchievemtsList = namedtuple(
     'ACHIEVEMENTS',
     [
@@ -31,6 +32,25 @@ Achievements = AchievemtsList(
     ALMOST_THERE='almost_there',
     AUTOMERGE_KING='automerge_king'
 )
+
+ErrorCodesList = namedtuple(
+    'ERROR_CODES',
+    [
+        'DEFAULT_VALUE',
+        'STRATEGY_LOST',
+        'WRONG_RES'
+    ]
+)
+
+ErrorCodes = ErrorCodesList(
+    DEFAULT_VALUE=0,
+    STRATEGY_LOST=-1,
+    WRONG_RES=-2
+)
+
+ERROR_REGEX = r'[а-яА-Я]+'
+TIME_REGEX = r'\[[0-9,.e-]+,[0-9,.e-]+\]'
+WRONG_RES_REGEX = r'[0-9]+'
 
 def add_achievements_to_db():
     """
@@ -92,3 +112,25 @@ def add_achievements_to_db():
     achievement.save()
 
     mg.disconnect()
+
+def get_players_achievements(players_ids):
+    """
+        Получение выполненных достижений по списку
+        gitlab_id игроков
+    """
+
+    result = {}
+
+    mg.connect()
+
+    achievements = models.Achievement.objects()
+
+    for gitlab_id in players_ids:
+        player = models.Player.objects(gitlab_id=gitlab_id).first()
+
+        result[gitlab_id] = [achievement.name for achievement in achievements \
+            if player.trackers.items() >= achievement.states.items()]
+
+    mg.disconnect()
+
+    return result
