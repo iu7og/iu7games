@@ -9,8 +9,7 @@ from collections import namedtuple
 import mongoengine as mg
 import models
 
-
-AchievemtsList = namedtuple(
+AchievementList = namedtuple(
     'ACHIEVEMENTS',
     [
         'STRATEGY_LOST',
@@ -23,7 +22,7 @@ AchievemtsList = namedtuple(
     ]
 )
 
-Achievements = AchievemtsList(
+ACHIEVEMENTS = AchievementList(
     STRATEGY_LOST='strategy_lost',
     WRONG_RES='wrong_res',
     HABITUE='habitue',
@@ -42,7 +41,7 @@ ErrorCodesList = namedtuple(
     ]
 )
 
-ErrorCodes = ErrorCodesList(
+ERROR_CODES = ErrorCodesList(
     DEFAULT_VALUE=0,
     STRATEGY_LOST=-1,
     WRONG_RES=-2
@@ -65,49 +64,49 @@ def add_achievements_to_db():
     achievement = models.Achievement(
         name='И так сойдет...',
         description='Получить статус "Отсутствует стратегия" в лидерборде одной из игр',
-        states={Achievements.STRATEGY_LOST:1}
+        states={ACHIEVEMENTS.STRATEGY_LOST:1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Но у меня работало...',
         description='Получить статус "[0]" в лидерборде одной из игр',
-        states={Achievements.WRONG_RES:1}
+        states={ACHIEVEMENTS.WRONG_RES:1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Завсегдатай...',
         description='Во всех играх есть рабочая стратегия',
-        states={Achievements.HABITUE:5}
+        states={ACHIEVEMENTS.HABITUE:5}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Почти получилось',
         description='Занять 4-ое место в одной из игр',
-        states={Achievements.ALMOST_THERE:1}
+        states={ACHIEVEMENTS.ALMOST_THERE:1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Ещё не вечер',
         description='Занять 2-ое или 3-е место в одной из игр',
-        states={Achievements.THE_NIGHT_IS_STILL_YOUNG:1}
+        states={ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG:1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Первый среди равных',
         description='Занять 1-ое место в одной из игр',
-        states={Achievements.FIRST_AMONG_EQUALS:1}
+        states={ACHIEVEMENTS.FIRST_AMONG_EQUALS:1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Король автомержей',
         description='Войти в тройку во всех играх',
-        states={Achievements.ALMOST_THERE:5}
+        states={ACHIEVEMENTS.ALMOST_THERE:5}
     )
     achievement.save()
 
