@@ -7,6 +7,7 @@
 
 from collections import namedtuple
 from functools import reduce
+import re
 import mongoengine as mg
 import models
 
@@ -48,9 +49,8 @@ ERROR_CODES = ErrorCodesList(
     WRONG_RES=-2
 )
 
-ERROR_REGEX = r'[а-яА-Я]+'
-TIME_REGEX = r'\[[0-9,.e-]+,[0-9,.e-]+\]'
-WRONG_RES_REGEX = r'[0-9]+'
+ERROR_REGEX = r'^[а-яА-Я ]+$'
+WRONG_RES_REGEX = r'^\[\d\]+$'
 
 def add_achievements_to_db():
     """
@@ -110,6 +110,45 @@ def add_achievements_to_db():
         states={ACHIEVEMENTS.ALMOST_THERE:5}
     )
     achievement.save()
+
+    mg.disconnect()
+
+def update_players_results(game_name, results):
+    """
+        Обновление результатов игр у игроков.
+        Использует сырые данные прогона (до преобразования в таблицу для Wiki)
+    """
+
+    mg.connect()
+
+    game = models.Game.objects(name=game_name).first()
+
+    if game is None:
+        game = models.Game(name=game_name)
+        game.save()
+
+    for result in results:
+        player = models.Player.objects(gitlab_id=result[2]).first()
+
+        if player is None:
+            player = models.Player(gitlab_id=result[2], name=result[1])
+            player.save()
+
+        player_res = models.GameResult.objects(game=game, player=player).first()
+
+        if player_res is None:
+            player_res = models.GameResult(game=game, player=player)
+
+        player_res.position = result[0]
+
+        if re.match(ERROR_REGEX, result[4]):
+            player_res.error_code = ERROR_CODES.STRATEGY_LOST
+        elif re.match(WRONG_RES_REGEX, result[4]):
+            player_res.error_code = ERROR_CODES.WRONG_RES
+        else:
+            player_res.error_code = ERROR_CODES.DEFAULT_VALUE
+
+        player_res.save()
 
     mg.disconnect()
 
