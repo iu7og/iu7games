@@ -1,5 +1,5 @@
 """
-    ===== TR4V31 RUNNER v.1.1a =====
+    ===== TR4V31 RUNNER v.1.2b =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
@@ -7,13 +7,13 @@
     совершенных из аэропорта _from в аэропорт _to, в указанный месяц и день.
 
     - В соревновании принимают участие функции, имеющие следующую сигнатуру:
-    - int travel_game(int **result, const FILE *const flights, const flight *const route)
+    - int travel_game(int **result, const FILE *const flights, const flight route)
 
     - Структура flight:
       typedef struct
       {
-          const char *const _from;
-          const char *const _to;
+          const char _from[4];
+          const char _to[4];
           const int month;
           const int day;
       } flight;
@@ -27,7 +27,7 @@ from timeit import Timer
 from time import process_time_ns
 import games.utils.utils as utils
 
-TIMEIT_REPEATS = 1
+TIMEIT_REPEATS = 1000
 
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_AIRPORTS = 322
@@ -44,9 +44,9 @@ class Flight(ctypes.Structure):
         Класс Flight описывает структуру flight в C.
         Класс имеет поля:
         1. _from - идентфикатор аэропорта, откуда самолет вылетел -
-                 const char *const from
+                 const char _from[4]
         2. _to - идентификатор аэропорта, куда самолет прилетел -
-                 const char *const to
+                 const char _to[4]
         3. month - месяц вылета -  const int month
         4. day - день вылета -  const int month
     """
@@ -103,7 +103,6 @@ def solution(file_flights, test_data):
        в указанный день и месяц.
     """
     flights = []
-    count_flights = 0
 
     for line in file_flights:
         info_flight = line.split(',')
@@ -134,7 +133,7 @@ def ctypes_wrapper(player_lib, move, c_pointer, file_pointer, route):
     """
        Обёртка для отловки segmentation fault.
     """
-    player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_int, Flight]
+    player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
 
     move.value = player_lib.travel_game(c_pointer, file_pointer, route)
@@ -159,7 +158,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     if player_count != count_flights:
         return utils.SOLUTION_FAIL
 
-    flights = ctypes.c_int * count_flights
+    flights = (ctypes.c_int * count_flights)()
 
     for i in range(count_flights):
         flights[i] = array_flights[i]
@@ -182,7 +181,7 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
     """
-    player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_int, Flight]
+    player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
 
     player_count = utils.call_libary(
@@ -268,6 +267,7 @@ def start_travel_game(players_info, tests_path):
 
     fclose(file_pointer)
 
+    utils.print_results(results, players_info)
     return results
 
 
