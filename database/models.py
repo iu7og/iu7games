@@ -37,7 +37,7 @@ class GameResult(mg.Document):
         Класс, представляющий результат игрока в игре
     """
 
-    game: mg.ReferenceField(Game, reverse_delete_rule=mg.CASCADE)
-    player: mg.ReferenceField(Player, reverse_delete_rule=mg.CASCADE)
+    game: mg.ReferenceField(Game)
+    player: mg.ReferenceField(Player)
     position: mg.IntField(min_value=0)
     error_code: mg.IntField()
