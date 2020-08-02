@@ -6,6 +6,7 @@
 """
 
 from collections import namedtuple
+from functools import reduce
 import mongoengine as mg
 import models
 
@@ -109,6 +110,84 @@ def add_achievements_to_db():
         states={ACHIEVEMENTS.ALMOST_THERE:5}
     )
     achievement.save()
+
+    mg.disconnect()
+
+def update_players_trackers(game_name, users):
+    """
+        Обновление трекеров достижений у игроков.
+        game_name - название игры
+        users - list, содержащий пары [gitlab_id, name]
+    """
+    def update_tracker(player, tracker, value, increase=False):
+        """
+            Обновление конкретного трекера у игрока
+        """
+        if increase and tracker in player.trackers:
+            player.trackers[tracker] += value
+        else:
+            player.trackers[tracker] = value
+
+    def check_trackers(game, player, results):
+        """
+            Обновление трекеров игрока, не зависящих от других игроков
+        """
+
+        error_code = reduce(lambda x, y: x if x.game == game else y, results).error_code
+
+        # И так сойдет
+        if error_code == ERROR_CODES.STRATEGY_LOST:
+            update_tracker(player, ACHIEVEMENTS.STRATEGY_LOST, 1)
+        # Но у меня работало
+        elif error_code == ERROR_CODES.WRONG_RES:
+            update_tracker(player, ACHIEVEMENTS.WRONG_RES, 1)
+
+        positions = {'1':0, '1_2_3':0, '2_3':0, '4':0, 'other':0}
+        for res in results:
+
+            if res.error_code != ERROR_CODES.DEFAULT_VALUE:
+                continue
+
+            if res.position == 0:
+                positions['1'] += 1
+
+            if res.position in (0, 1, 2):
+                positions['1_2_3'] += 1
+
+            if res.position in (1, 2):
+                positions['2_3'] += 1
+
+            if res.position == 3:
+                positions['4'] += 1
+
+            positions['other'] += 1
+
+        # Завсегдатай
+        update_tracker(player, ACHIEVEMENTS.HABITUE, positions['other'])
+
+        # Почти получилось
+        update_tracker(player, ACHIEVEMENTS.ALMOST_THERE, 1 if positions['4'] > 0 else 0)
+
+        # Ещё не вечер
+        update_tracker(player, ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG, \
+            1 if positions['2_3'] > 0 else 0)
+
+        # Король автомержей
+        update_tracker(player, ACHIEVEMENTS.AUTOMERGE_KING, positions['1_2_3'])
+
+        # Первый среди равных
+        update_tracker(player, ACHIEVEMENTS.FIRST_AMONG_EQUALS, 1 if positions['1'] > 0 else 0)
+
+    mg.connect()
+
+    game = models.Game.objects(name=game_name).first()
+
+    for user in users:
+        player = models.Player.objects(gitlab_id=user[0]).first()
+
+        check_trackers(game, player, models.GameResult.objects(player=player))
+
+        player.save()
 
     mg.disconnect()
 
