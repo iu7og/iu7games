@@ -1,5 +1,5 @@
 #! /bin/bash
 echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
 check TR4V31game/ tr4v31 \
-"int travel_game(int **result, const FILE *const flights, const flight *const route)" \
+"int travel_game(int **result, const FILE *const flights, const flight route)" \
 travel "light_travel_runner.py"
