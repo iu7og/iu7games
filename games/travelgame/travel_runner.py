@@ -187,15 +187,12 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
     player_count = utils.call_libary(
         player_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_pointer, file_pointer, route)
 
-    free(c_pointer)
-
     if check_segfault(player_count):
         return (utils.SEGFAULT, 0, 0)
 
-    player_count = player_lib.travel_game(c_pointer, file_pointer, route)
-    free(c_pointer)
     error_code = check_flights(player_count, c_pointer, array_flights, count_flights)
-
+    free(c_pointer)
+    
     if error_code != utils.OK:
         return (utils.SOLUTION_FAIL, 0, 0)
 
