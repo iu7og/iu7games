@@ -135,7 +135,7 @@ def ctypes_wrapper(player_lib, move, c_pointer, file_pointer, route):
        Обёртка для отловки segmentation fault.
     """
     player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)),
-     ctypes.c_void_p, Flight]
+                                       ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
 
     move.value = player_lib.travel_game(c_pointer, file_pointer, route)
@@ -184,7 +184,7 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
        Подсчет времени выполнения функции игрока
     """
     player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)),
-     ctypes.c_void_p, Flight]
+                                       ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
 
     player_count = utils.call_libary(
@@ -195,7 +195,7 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
 
     error_code = check_flights(player_count, c_pointer, array_flights, count_flights)
     free(c_pointer)
-
+    
     if error_code != utils.OK:
         return (utils.SOLUTION_FAIL, 0, 0)
 
@@ -272,5 +272,4 @@ def start_travel_game(players_info, tests_path):
 
 
 if __name__ == "__main__":
-    start_travel_game(["games/travelgame/test.so", "NULL", "games/travelgame/test.so"],
-     "games/travelgame/tests")
+    start_travel_game([], "games/travelgame/tests")
