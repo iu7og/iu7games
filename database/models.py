@@ -18,6 +18,7 @@ class Player(mg.Document):
     trackers = mg.DictField()
 
 
+
 class Achievement(mg.Document):
     """
         Класс, представляющий достижение игрока
@@ -28,12 +29,14 @@ class Achievement(mg.Document):
     states = mg.DictField(required=True)
 
 
+
 class Game(mg.Document):
     """
         Класс, представляющий игру
     """
 
     name = mg.StringField(required=True)
+
 
 
 class GameResult(mg.Document):
