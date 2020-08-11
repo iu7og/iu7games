@@ -7,6 +7,7 @@
 
 from collections import namedtuple
 from functools import reduce
+from typing import List, Dict
 import re
 import mongoengine as mg
 import models
@@ -52,7 +53,8 @@ ERROR_CODES = ErrorCodesList(
 ERROR_REGEX = r'^[а-яА-Я ]+$'
 WRONG_RES_REGEX = r'^\[\d\]+$'
 
-def add_achievements_to_db():
+
+def add_achievements_to_db() -> None:
     """
         Добавление полного списка достижений в БД
     """
@@ -65,55 +67,56 @@ def add_achievements_to_db():
     achievement = models.Achievement(
         name='И так сойдет...',
         description='Получить статус "Отсутствует стратегия" в лидерборде одной из игр',
-        states={ACHIEVEMENTS.STRATEGY_LOST:1}
+        states={ACHIEVEMENTS.STRATEGY_LOST: 1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Но у меня работало...',
         description='Получить статус "[0]" в лидерборде одной из игр',
-        states={ACHIEVEMENTS.WRONG_RES:1}
+        states={ACHIEVEMENTS.WRONG_RES: 1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Завсегдатай...',
         description='Во всех играх есть рабочая стратегия',
-        states={ACHIEVEMENTS.HABITUE:5}
+        states={ACHIEVEMENTS.HABITUE: 5}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Почти получилось',
         description='Занять 4-ое место в одной из игр',
-        states={ACHIEVEMENTS.ALMOST_THERE:1}
+        states={ACHIEVEMENTS.ALMOST_THERE: 1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Ещё не вечер',
         description='Занять 2-ое или 3-е место в одной из игр',
-        states={ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG:1}
+        states={ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG: 1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Первый среди равных',
         description='Занять 1-ое место в одной из игр',
-        states={ACHIEVEMENTS.FIRST_AMONG_EQUALS:1}
+        states={ACHIEVEMENTS.FIRST_AMONG_EQUALS: 1}
     )
     achievement.save()
 
     achievement = models.Achievement(
         name='Король автомержей',
         description='Войти в тройку во всех играх',
-        states={ACHIEVEMENTS.ALMOST_THERE:5}
+        states={ACHIEVEMENTS.ALMOST_THERE: 5}
     )
     achievement.save()
 
     mg.disconnect()
 
-def update_players_results(game_name, results):
+
+def update_players_results(game_name: str, results: List[List[str]]) -> None:
     """
         Обновление результатов игр у игроков.
         Использует сырые данные прогона (до преобразования в таблицу для Wiki)
@@ -134,7 +137,8 @@ def update_players_results(game_name, results):
             player = models.Player(gitlab_id=result[2], name=result[1])
             player.save()
 
-        player_res = models.GameResult.objects(game=game, player=player).first()
+        player_res = models.GameResult.objects(
+            game=game, player=player).first()
 
         if player_res is None:
             player_res = models.GameResult(game=game, player=player)
@@ -152,7 +156,8 @@ def update_players_results(game_name, results):
 
     mg.disconnect()
 
-def update_players_trackers(game_name, users):
+
+def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
     """
         Обновление трекеров достижений у игроков.
         game_name - название игры
@@ -172,7 +177,8 @@ def update_players_trackers(game_name, users):
             Обновление трекеров игрока, не зависящих от других игроков
         """
 
-        error_code = reduce(lambda x, y: x if x.game == game else y, results).error_code
+        error_code = reduce(lambda x, y: x if x.game ==
+                            game else y, results).error_code
 
         # И так сойдет
         if error_code == ERROR_CODES.STRATEGY_LOST:
@@ -181,7 +187,7 @@ def update_players_trackers(game_name, users):
         elif error_code == ERROR_CODES.WRONG_RES:
             update_tracker(player, ACHIEVEMENTS.WRONG_RES, 1)
 
-        positions = {'1':0, '1_2_3':0, '2_3':0, '4':0, 'other':0}
+        positions = {'1': 0, '1_2_3': 0, '2_3': 0, '4': 0, 'other': 0}
         for res in results:
 
             if res.error_code != ERROR_CODES.DEFAULT_VALUE:
@@ -205,17 +211,19 @@ def update_players_trackers(game_name, users):
         update_tracker(player, ACHIEVEMENTS.HABITUE, positions['other'])
 
         # Почти получилось
-        update_tracker(player, ACHIEVEMENTS.ALMOST_THERE, 1 if positions['4'] > 0 else 0)
+        update_tracker(player, ACHIEVEMENTS.ALMOST_THERE,
+                       1 if positions['4'] > 0 else 0)
 
         # Ещё не вечер
-        update_tracker(player, ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG, \
-            1 if positions['2_3'] > 0 else 0)
+        update_tracker(player, ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG,
+                       1 if positions['2_3'] > 0 else 0)
 
         # Король автомержей
         update_tracker(player, ACHIEVEMENTS.AUTOMERGE_KING, positions['1_2_3'])
 
         # Первый среди равных
-        update_tracker(player, ACHIEVEMENTS.FIRST_AMONG_EQUALS, 1 if positions['1'] > 0 else 0)
+        update_tracker(player, ACHIEVEMENTS.FIRST_AMONG_EQUALS,
+                       1 if positions['1'] > 0 else 0)
 
     mg.connect()
 
@@ -230,7 +238,8 @@ def update_players_trackers(game_name, users):
 
     mg.disconnect()
 
-def get_players_achievements(players_ids):
+
+def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
     """
         Получение выполненных достижений по списку
         gitlab_id игроков
@@ -245,8 +254,8 @@ def get_players_achievements(players_ids):
     for gitlab_id in players_ids:
         player = models.Player.objects(gitlab_id=gitlab_id).first()
 
-        result[gitlab_id] = [achievement.name for achievement in achievements \
-            if player.trackers.items() >= achievement.states.items()]
+        result[gitlab_id] = [achievement.name for achievement in achievements
+                             if player.trackers.items() >= achievement.states.items()]
 
     mg.disconnect()
 
