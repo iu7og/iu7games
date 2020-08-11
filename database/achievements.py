@@ -64,54 +64,47 @@ def add_achievements_to_db() -> None:
     for achievement in models.Achievement.objects():
         achievement.delete()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='И так сойдет...',
         description='Получить статус "Отсутствует стратегия" в лидерборде одной из игр',
         states={ACHIEVEMENTS.STRATEGY_LOST: 1}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Но у меня работало...',
         description='Получить статус "[0]" в лидерборде одной из игр',
         states={ACHIEVEMENTS.WRONG_RES: 1}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Завсегдатай...',
         description='Во всех играх есть рабочая стратегия',
         states={ACHIEVEMENTS.HABITUE: 5}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Почти получилось',
         description='Занять 4-ое место в одной из игр',
         states={ACHIEVEMENTS.ALMOST_THERE: 1}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Ещё не вечер',
         description='Занять 2-ое или 3-е место в одной из игр',
         states={ACHIEVEMENTS.THE_NIGHT_IS_STILL_YOUNG: 1}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Первый среди равных',
         description='Занять 1-ое место в одной из игр',
         states={ACHIEVEMENTS.FIRST_AMONG_EQUALS: 1}
-    )
-    achievement.save()
+    ).save()
 
-    achievement = models.Achievement(
+    models.Achievement(
         name='Король автомержей',
         description='Войти в тройку во всех играх',
         states={ACHIEVEMENTS.ALMOST_THERE: 5}
-    )
-    achievement.save()
+    ).save()
 
     mg.disconnect()
 
