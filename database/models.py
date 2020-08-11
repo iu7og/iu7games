@@ -7,6 +7,7 @@
 
 import mongoengine as mg
 
+
 class Player(mg.Document):
     """
         Класс, представляющий игрока
@@ -15,6 +16,7 @@ class Player(mg.Document):
     gitlab_id = mg.StringField(max_length=64, primary_key=True)
     name: mg.StringField(max_length=64, required=True)
     trackers: mg.DictField()
+
 
 class Achievement(mg.Document):
     """
@@ -25,12 +27,14 @@ class Achievement(mg.Document):
     description: mg.StringField(max_length=128, required=True)
     states: mg.DictField(required=True)
 
+
 class Game(mg.Document):
     """
         Класс, представляющий игру
     """
 
     name: mg.StringField(required=True)
+
 
 class GameResult(mg.Document):
     """
