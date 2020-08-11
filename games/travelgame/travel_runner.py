@@ -25,7 +25,6 @@ import ctypes
 from random import randint, choice
 from timeit import Timer
 from time import process_time_ns
-from multiprocessing import Process, Value
 import games.utils.utils as utils
 
 TIMEIT_REPEATS = 100000
