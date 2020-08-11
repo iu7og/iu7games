@@ -30,12 +30,8 @@ import games.utils.utils as utils
 TIMEIT_REPEATS = 100000
 
 MAX_LEN_AIRPORTS_NAME = 4
-MAX_COUNT_AIRPORTS = 322
+MAX_COUNT_FLIGHTS = 86395
 
-COUNT_MONTH = 12
-COUNT_DAY = 31
-
-FILE_AIRPORTS = "/airports.csv"
 FILE_FLIGHTS = "/flights.csv"
 
 
@@ -78,22 +74,18 @@ def init_string(string):
     return c_string
 
 
-def create_test(file_airports):
+def create_test(file_flights):
     """
         Создание тестовых данных.
     """
-    line_from = randint(1, MAX_COUNT_AIRPORTS)
-    line_to = choice(list(range(1, line_from)) +
-                     list(range(line_from + 1, MAX_COUNT_AIRPORTS + 1)))
+    random_flight = randint(1, MAX_COUNT_FLIGHTS)
 
-    for i, line in enumerate(file_airports):
-        if i == line_from:
-            airport_from = line.split(',')[0]
-        elif i == line_to:
-            airport_to = line.split(',')[0]
-
-    month = randint(1, COUNT_MONTH)
-    day = randint(1, COUNT_DAY)
+    for i, line in enumerate(file_flights):
+        if i == random_flight:
+            month = line.split(',')[0]
+            day = line.split(',')[1]
+            airport_from = line.split(',')[2]
+            airport_to = line.split(',')[3]
 
     return {"origin": airport_from, "destination": airport_to, "month": month, "day": day}
 
@@ -250,10 +242,9 @@ def start_travel_game(players_info, tests_path):
     """
     utils.redirect_ctypes_stdout()
 
-    with open(tests_path + FILE_AIRPORTS, "r") as file_airports:
-        test_data = create_test(file_airports)
-
     with open(tests_path + FILE_FLIGHTS, "r") as file_flights:
+        test_data = create_test(file_flights)
+        file_flights.seek(0)
         array_flights = solution(file_flights, test_data)
 
     print_conditions(test_data, array_flights)
