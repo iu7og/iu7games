@@ -1,10 +1,10 @@
 """
-    ===== TR4V31 RUNNER v.1.2b =====
+    ===== TR4V31 RUNNER v.1.3b =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Ранер для игры TR4V31GAME, суть которой заключается в нахождении всех рейсов,
-    совершенных из аэропорта _from в аэропорт _to, в указанный месяц и день.
+    совершенных из аэропорта origin в аэропорт destination, в указанный месяц и день.
 
     - В соревновании принимают участие функции, имеющие следующую сигнатуру:
     - int travel_game(int **result, const FILE *const flights, const flight route)
@@ -12,8 +12,8 @@
     - Структура flight:
       typedef struct
       {
-          const char _from[4];
-          const char _to[4];
+          const char origin[4];
+          const char destination[4];
           const int month;
           const int day;
       } flight;
@@ -25,9 +25,10 @@ import ctypes
 from random import randint, choice
 from timeit import Timer
 from time import process_time_ns
+from multiprocessing import Process, Value
 import games.utils.utils as utils
 
-TIMEIT_REPEATS = 1000
+TIMEIT_REPEATS = 100000
 
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_AIRPORTS = 322
@@ -43,16 +44,16 @@ class Flight(ctypes.Structure):
     """
         Класс Flight описывает структуру flight в C.
         Класс имеет поля:
-        1. _from - идентфикатор аэропорта, откуда самолет вылетел -
-                 const char _from[4]
-        2. _to - идентификатор аэропорта, куда самолет прилетел -
-                 const char _to[4]
+        1. origin - идентфикатор аэропорта, откуда самолет вылетел -
+                 const char origin[4]
+        2. destination - идентификатор аэропорта, куда самолет прилетел -
+                 const char destination[4]
         3. month - месяц вылета -  const int month
         4. day - день вылета -  const int month
     """
 
-    _fields_ = [("_from", ctypes.c_char * MAX_LEN_AIRPORTS_NAME),
-                ("_to", ctypes.c_char * MAX_LEN_AIRPORTS_NAME),
+    _fields_ = [("origin", ctypes.c_char * MAX_LEN_AIRPORTS_NAME),
+                ("destination", ctypes.c_char * MAX_LEN_AIRPORTS_NAME),
                 ("month", ctypes.c_int),
                 ("day", ctypes.c_int)]
 
@@ -60,9 +61,9 @@ class Flight(ctypes.Structure):
         """
             Конструктор для класса Flight.
         """
-
-        self._from = test_data["from"].encode(utils.ENCODING)
-        self._to = test_data["to"].encode(utils.ENCODING)
+        super(Flight, self).__init__()
+        self.origin = test_data["origin"].encode(utils.ENCODING)
+        self.destination = test_data["destination"].encode(utils.ENCODING)
         self.month = test_data["month"]
         self.day = test_data["day"]
 
@@ -83,7 +84,8 @@ def create_test(file_airports):
         Создание тестовых данных.
     """
     line_from = randint(1, MAX_COUNT_AIRPORTS)
-    line_to = choice(list(range(1, line_from)) + list(range(line_from + 1, MAX_COUNT_AIRPORTS + 1)))
+    line_to = choice(list(range(1, line_from)) +
+                     list(range(line_from + 1, MAX_COUNT_AIRPORTS + 1)))
 
     for i, line in enumerate(file_airports):
         if i == line_from:
@@ -94,7 +96,7 @@ def create_test(file_airports):
     month = randint(1, COUNT_MONTH)
     day = randint(1, COUNT_DAY)
 
-    return {"from" : airport_from, "to" : airport_to, "month" : month, "day" : day}
+    return {"origin": airport_from, "destination": airport_to, "month": month, "day": day}
 
 
 def solution(file_flights, test_data):
@@ -105,15 +107,12 @@ def solution(file_flights, test_data):
     flights = []
 
     for line in file_flights:
-        info_flight = line.split(',')
-        if info_flight[7] == test_data["from"] and info_flight[8] == test_data["to"] \
-                and info_flight[1] == str(test_data["month"]) \
-                     and info_flight[2] == str(test_data["day"]):
-            flights.append(int(info_flight[5]))
+        flight = line.strip().split(',')
+        if (flight[2], flight[3]) == (test_data["origin"], test_data["destination"]) \
+                and (flight[0], flight[1]) == (str(test_data["month"]), str(test_data["day"])):
+            flights.append(int(flight[4]))
 
-    count_flights = len(flights)
-
-    return flights, count_flights
+    return flights
 
 
 def print_conditions(test_data, array_flights):
@@ -122,8 +121,8 @@ def print_conditions(test_data, array_flights):
     """
     print(
         "GAME CONDITIONS\n" +
-        f'FROM: {test_data["from"]}\n' +
-        f'TO: {test_data["to"]}\n' +
+        f'ORIGIN: {test_data["origin"]}\n' +
+        f'DESTINATION: {test_data["destination"]}\n' +
         f'MONTH: {test_data["month"]}\n' +
         f'DAY: {test_data["day"]}\n' +
         f'SOLUTION: {array_flights}'
@@ -157,6 +156,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     """
        Проверка полученных игроком рейсов.
     """
+
     if player_count != count_flights:
         return utils.SOLUTION_FAIL
 
@@ -178,7 +178,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     return utils.OK
 
 
-def player_results(player_lib, c_pointer, file_pointer, route, array_flights, count_flights, free):
+def player_results(player_lib, c_pointer, file_pointer, route, array_flights, free, rewind):
     """
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
@@ -193,9 +193,13 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
     if check_segfault(player_count):
         return (utils.SEGFAULT, 0, 0)
 
-    error_code = check_flights(player_count, c_pointer, array_flights, count_flights)
+    rewind(file_pointer)
+    player_count = player_lib.travel_game(c_pointer, file_pointer, route)
+    error_code = check_flights(
+        player_count, c_pointer, array_flights, len(array_flights))
+
     free(c_pointer)
-    
+
     if error_code != utils.OK:
         return (utils.SOLUTION_FAIL, 0, 0)
 
@@ -203,32 +207,22 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, co
         """
            Обертка для Timeit.
         """
+        rewind(file_pointer)
         player_lib.travel_game(c_pointer, file_pointer, route)
 
-    time_results = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
-    free(c_pointer)
+    time_results = Timer(timeit_wrapper, process_time_ns).repeat(
+        TIMEIT_REPEATS, 1)
     median, dispersion = utils.process_time(time_results)
 
     return (utils.OK, median, dispersion)
 
 
-def start_travel_game(players_info, tests_path):
+def get_c_functions():
     """
-       Открытие библиотеки с функциями игроков.
-       Подсчет времени выполнения их функций.
-       Получение результатов.
+        Подключение стандартных функций из lib.so
     """
-    utils.redirect_ctypes_stdout()
 
-    with open(tests_path + FILE_AIRPORTS, "r") as file_airports:
-        test_data = create_test(file_airports)
-
-    with open(tests_path + FILE_FLIGHTS, "r") as file_flights:
-        array_flights, count_flights = solution(file_flights, test_data)
-
-    print_conditions(test_data, array_flights)
-
-    libc = ctypes.CDLL('libc.so.6')
+    libc = ctypes.CDLL("libc.so.6")
 
     fopen = libc.fopen
     fopen.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -244,7 +238,28 @@ def start_travel_game(players_info, tests_path):
 
     free = libc.free
     free.argtypes = [ctypes.c_void_p]
-    free.restype = None
+    free.restype = ctypes.c_void_p
+
+    return fopen, rewind, fclose, free
+
+
+def start_travel_game(players_info, tests_path):
+    """
+       Открытие библиотеки с функциями игроков.
+       Подсчет времени выполнения их функций.
+       Получение результатов.
+    """
+    utils.redirect_ctypes_stdout()
+
+    with open(tests_path + FILE_AIRPORTS, "r") as file_airports:
+        test_data = create_test(file_airports)
+
+    with open(tests_path + FILE_FLIGHTS, "r") as file_flights:
+        array_flights = solution(file_flights, test_data)
+
+    print_conditions(test_data, array_flights)
+
+    fopen, rewind, fclose, free = get_c_functions()
 
     mode = init_string("r")
     file_name = init_string(tests_path + FILE_FLIGHTS)
@@ -256,20 +271,27 @@ def start_travel_game(players_info, tests_path):
     results = []
 
     for player_lib in players_info:
-        if player_lib != "NULL":
-            rewind(file_pointer)
-            lib = ctypes.CDLL(player_lib)
-            results.append(player_results(
-                lib, c_pointer, file_pointer, route, array_flights, count_flights, free))
-            free(c_pointer)
-        else:
+        if player_lib == "NULL":
             results.append((utils.NO_RESULT, 0, 0))
+            continue
+
+        rewind(file_pointer)
+
+        lib = ctypes.CDLL(player_lib)
+        results.append(
+            player_results(lib, c_pointer, file_pointer, route,
+                           array_flights, free, rewind)
+        )
+
+        free(c_pointer)
 
     fclose(file_pointer)
 
     utils.print_results(results, players_info)
+
     return results
 
 
 if __name__ == "__main__":
-    start_travel_game([], "games/travelgame/tests")
+    start_travel_game(["games/travelgame/test.so", "NULL",
+                       "games/travelgame/test.so"], "games/travelgame/tests")
