@@ -68,29 +68,33 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
-    executable = './memory_leak_check.out'
+    executable = "./games/utils/memory_leak_check.out"
+
+    path = lib_path.split('/')
     subprocess.run(
         [
-            'gcc',
-            '--std=c99',
-            '-O3',
+            "gcc",
+            "--std=c99",
+            "-O3",
+            "-L" + "/".join(path[:-1]),
+            "-Wl,-rpath=" + "/".join(path[:-1]),
+            "-o",
+            executable,
             sample_path,
-            lib_path,
-            '-o',
-            executable
+            "-l:" + path[-1]
         ],
         check=True
     )
 
     process = subprocess.Popen(
         [
-            'valgrind',
-            '--quiet',
-            '--verbose',
-            '--leak-check=full',
-            '--show-leak-kinds=all',
-            '--track-origins=yes',
-            '--error-exitcode=1',
+            "valgrind",
+            "--quiet",
+            "--verbose",
+            "--leak-check=full",
+            "--show-leak-kinds=all",
+            "--track-origins=yes",
+            "--error-exitcode=1",
             executable
         ] + sample_args,
         stderr=subprocess.PIPE
@@ -98,14 +102,14 @@ def memory_leak_check(sample_path, lib_path, sample_args):
 
     check_res = process.wait() == 0
 
-    subprocess.run(['rm', executable], check=True)
+    subprocess.run(["rm", executable], check=True)
 
     return 0 if check_res else int(next(
         filter(
             lambda x: x.isdigit(),
             process.stderr.readlines()[-1].split()
         )
-    ).decode('utf-8'))
+    ).decode("utf-8"))
 
 
 def redirect_ctypes_stdout():
