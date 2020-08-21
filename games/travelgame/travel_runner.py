@@ -296,5 +296,5 @@ def start_travel_game(players_info):
 
 
 if __name__ == "__main__":
-    start_travel_game(
-        ["/home/gregory/projects/iu7games/mga19u548_tr4v31_lib.so"])
+    start_travel_game(["games/travelgame/test.so", "NULL",
+                       "games/travelgame/test.so"])
