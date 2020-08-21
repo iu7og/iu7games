@@ -32,7 +32,8 @@ TIMEIT_REPEATS = 100000
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
 
-FILE_FLIGHTS = "/flights.csv"
+TESTS_PATH = "games/travelgame/tests/"
+FILE_FLIGHTS = "flights.csv"
 
 
 class Flight(ctypes.Structure):
@@ -169,11 +170,12 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     return utils.OK
 
 
-def player_results(player_lib, c_pointer, file_pointer, route, array_flights, free, rewind):
+def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free, rewind):
     """
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
     """
+    player_lib = ctypes.CDLL(lib_path)
     player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)),
                                        ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
@@ -193,6 +195,16 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, fr
 
     if error_code != utils.OK:
         return (utils.SOLUTION_FAIL, 0, 0)
+
+    if utils.memory_leak_check(
+            "./cfg/image_cfg/c_samples/travelgame.c", lib_path,
+            [
+                TESTS_PATH + FILE_FLIGHTS,
+                route.origin, route.destination,
+                str(route.month), str(route.day)
+            ]
+    ) > 0:
+        return (utils.MEMORY_LEAK, 0, 0)
 
     def timeit_wrapper():
         """
@@ -234,7 +246,7 @@ def get_c_functions():
     return fopen, rewind, fclose, free
 
 
-def start_travel_game(players_info, tests_path):
+def start_travel_game(players_info):
     """
        Открытие библиотеки с функциями игроков.
        Подсчет времени выполнения их функций.
@@ -242,7 +254,7 @@ def start_travel_game(players_info, tests_path):
     """
     utils.redirect_ctypes_stdout()
 
-    with open(tests_path + FILE_FLIGHTS, "r") as file_flights:
+    with open(TESTS_PATH + FILE_FLIGHTS, "r") as file_flights:
         test_data = create_test(file_flights)
         file_flights.seek(0)
         array_flights = solution(file_flights, test_data)
@@ -252,7 +264,7 @@ def start_travel_game(players_info, tests_path):
     fopen, rewind, fclose, free = get_c_functions()
 
     mode = init_string("r")
-    file_name = init_string(tests_path + FILE_FLIGHTS)
+    file_name = init_string(TESTS_PATH + FILE_FLIGHTS)
 
     c_pointer = ctypes.POINTER(ctypes.c_int)()
     file_pointer = fopen(file_name, mode)
@@ -267,9 +279,8 @@ def start_travel_game(players_info, tests_path):
 
         rewind(file_pointer)
 
-        lib = ctypes.CDLL(player_lib)
         results.append(
-            player_results(lib, c_pointer, file_pointer, route,
+            player_results(player_lib, c_pointer, file_pointer, route,
                            array_flights, free, rewind)
         )
 
@@ -284,4 +295,4 @@ def start_travel_game(players_info, tests_path):
 
 if __name__ == "__main__":
     start_travel_game(["games/travelgame/test.so", "NULL",
-                       "games/travelgame/test.so"], "games/travelgame/tests")
+                       "games/travelgame/test.so"])
