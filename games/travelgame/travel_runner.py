@@ -35,6 +35,8 @@ MAX_COUNT_FLIGHTS = 86395
 TESTS_PATH = "games/travelgame/tests/"
 FILE_FLIGHTS = "flights.csv"
 
+SAMPLE_PATH = utils.MEMORY_LEAK_SAMPLE_PATH + "travelgame.c"
+
 
 class Flight(ctypes.Structure):
     """
@@ -197,7 +199,7 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
     free(c_pointer)
 
     if utils.memory_leak_check(
-            "./cfg/image_cfg/c_samples/travelgame.c", lib_path,
+            SAMPLE_PATH, lib_path,
             [
                 TESTS_PATH + FILE_FLIGHTS,
                 route.origin, route.destination,
@@ -294,5 +296,5 @@ def start_travel_game(players_info):
 
 
 if __name__ == "__main__":
-    start_travel_game(["games/travelgame/test.so", "NULL",
-                       "games/travelgame/test.so"])
+    start_travel_game(
+        ["/home/gregory/projects/iu7games/mga19u548_tr4v31_lib.so"])

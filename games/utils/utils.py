@@ -23,6 +23,8 @@ MEMORY_LEAK = -2
 CHAR_SEGFAULT = '0'
 PTR_SEGF = '0'
 
+MEMORY_LEAK_SAMPLE_PATH = "./cfg/image_cfg/c_samples/"
+
 ENCODING = "utf-8"
 TEST_FILE = "/test_data.txt"
 
