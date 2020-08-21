@@ -186,17 +186,18 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
         player_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_pointer, file_pointer, route)
 
     if check_segfault(player_count):
+        free(c_pointer)
         return (utils.SEGFAULT, 0, 0)
 
     rewind(file_pointer)
+
     player_count = player_lib.travel_game(c_pointer, file_pointer, route)
     error_code = check_flights(
         player_count, c_pointer, array_flights, len(array_flights))
 
     if error_code != utils.OK:
+        free(c_pointer)
         return (utils.SOLUTION_FAIL, 0, 0)
-
-    free(c_pointer)
 
     if utils.memory_leak_check(
             SAMPLE_PATH, lib_path,
@@ -217,6 +218,8 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
 
     time_results = Timer(timeit_wrapper, process_time_ns).repeat(
         TIMEIT_REPEATS, 1)
+    free(c_pointer)
+
     median, dispersion = utils.process_time(time_results)
 
     return (utils.OK, median, dispersion)
@@ -285,8 +288,6 @@ def start_travel_game(players_info):
             player_results(player_lib, c_pointer, file_pointer, route,
                            array_flights, free, rewind)
         )
-
-        free(c_pointer)
 
     fclose(file_pointer)
 
