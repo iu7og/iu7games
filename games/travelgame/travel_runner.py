@@ -60,8 +60,8 @@ class Flight(ctypes.Structure):
         super(Flight, self).__init__()
         self.origin = test_data["origin"].encode(utils.ENCODING)
         self.destination = test_data["destination"].encode(utils.ENCODING)
-        self.month = test_data["month"]
-        self.day = test_data["day"]
+        self.month = int(test_data["month"])
+        self.day = int(test_data["day"])
 
 
 def init_string(string):
@@ -191,10 +191,10 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
     error_code = check_flights(
         player_count, c_pointer, array_flights, len(array_flights))
 
-    free(c_pointer)
-
     if error_code != utils.OK:
         return (utils.SOLUTION_FAIL, 0, 0)
+
+    free(c_pointer)
 
     if utils.memory_leak_check(
             "./cfg/image_cfg/c_samples/travelgame.c", lib_path,
