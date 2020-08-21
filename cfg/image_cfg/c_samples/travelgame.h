@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    char *origin;
-    char *destination;
+    char origin[4];
+    char destination[4];
     int month;
     int day;
 } Flight;
