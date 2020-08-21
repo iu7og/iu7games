@@ -112,7 +112,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             lambda x: x.isdigit(),
             process.stderr.readlines()[-1].split()
         )
-    ).decode("utf-8"))
+    ).decode(ENCODING))
 
 
 def redirect_ctypes_stdout():
