@@ -35,7 +35,7 @@ MAX_COUNT_FLIGHTS = 86395
 TESTS_PATH = "games/travelgame/tests"
 FILE_FLIGHTS = "/flights.csv"
 
-SAMPLE_PATH = utils.MEMORY_LEAK_SAMPLE_PATH + "/travelgame.c"
+SAMPLE_PATH = utils.MemoryLeakConstants.sample_path + "/travelgame.c"
 
 
 class Flight(ctypes.Structure):
@@ -210,8 +210,8 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
     )
     if memory_leak_check_res:
         return (
-            utils.MEMORY_LEAK if memory_leak_check_res > 0
-            else utils.MEMORY_LEAK_CHECK_ERROR, 0, 0
+            utils.MemoryLeakConstants.leak if memory_leak_check_res > 0
+            else utils.MemoryLeakConstants.check_error, 0, 0
         )
 
     def timeit_wrapper():

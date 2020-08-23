@@ -9,6 +9,7 @@
 import sys
 import os
 import subprocess
+from dataclasses import dataclass
 from statistics import median, pvariance
 from functools import reduce
 from multiprocessing import Process, Value
@@ -19,12 +20,8 @@ SOLUTION_FAIL = 1
 INVALID_PTR = 1
 NO_RESULT = -1337
 SEGFAULT = -1
-MEMORY_LEAK = -2
-MEMORY_LEAK_CHECK_ERROR = -3
 CHAR_SEGFAULT = '0'
 PTR_SEGF = '0'
-
-MEMORY_LEAK_SAMPLE_PATH = os.path.abspath("./cfg/image_cfg/c_samples/")
 
 ENCODING = "utf-8"
 TEST_FILE = "/test_data.txt"
@@ -32,6 +29,14 @@ TEST_FILE = "/test_data.txt"
 STRTOK_DELIMITERS = " ,.;:"
 SPLIT_DELIMITER = ' '
 NULL = 0
+
+
+@dataclass
+class MemoryLeakConstants:
+    """Util's constants class for memory leak check"""
+    sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
+    leak = -2
+    check_error = -3
 
 
 def call_libary(player_lib, wrapper, argtype, stdval, *args):
