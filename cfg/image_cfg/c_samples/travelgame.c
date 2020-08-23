@@ -3,19 +3,34 @@
 #include <string.h>
 #include "travelgame.h"
 
+#define WRONG_ARG_NUM 1
+#define FILE_ERROR 2
+
 int main(int argc, char **argv)
 {
-    int *res = NULL;
+    if (argc != 6)
+    {
+        fprintf(stderr, "\n");
+        return WRONG_ARG_NUM;
+    }
 
     FILE *fin = fopen(argv[1], "r");
+    if (fin == NULL)
+    {
+        fprintf(stderr, "\n");
+        return FILE_ERROR;
+    }
+
+    int *res = NULL;
+
     Flight flight = {.month = atoi(argv[4]), .day = atoi(argv[5])};
-    strcpy(argv[2], flight.origin);
-    strcpy(argv[3], flight.destination);
+    strcpy(flight.origin, argv[2]);
+    strcpy(flight.destination, argv[3]);
 
     travel_game(&res, fin, flight);
 
-    fclose(fin);
     free(res);
+    fclose(fin);
 
     return 0;
 }
