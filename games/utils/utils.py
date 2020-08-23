@@ -20,10 +20,11 @@ INVALID_PTR = 1
 NO_RESULT = -1337
 SEGFAULT = -1
 MEMORY_LEAK = -2
+MEMORY_LEAK_CHECK_ERROR = -3
 CHAR_SEGFAULT = '0'
 PTR_SEGF = '0'
 
-MEMORY_LEAK_SAMPLE_PATH = "./cfg/image_cfg/c_samples/"
+MEMORY_LEAK_SAMPLE_PATH = os.path.abspath("./cfg/image_cfg/c_samples/")
 
 ENCODING = "utf-8"
 TEST_FILE = "/test_data.txt"
@@ -71,7 +72,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
-    executable = "./games/utils/memory_leak_check.out"
+    executable = os.path.abspath("./games/utils/memory_leak_check.out")
 
     path = lib_path.split('/')
     subprocess.run(
@@ -88,8 +89,9 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         ],
         check=True
     )
+    del path
 
-    process = subprocess.Popen(
+    process = subprocess.run(
         [
             "valgrind",
             "--quiet",
@@ -100,19 +102,17 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             "--error-exitcode=1",
             executable
         ] + sample_args,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        check=False
     )
-
-    check_res = process.wait() == 0
 
     subprocess.run(["rm", executable], check=True)
 
-    return 0 if check_res else int(next(
-        filter(
-            lambda x: x.isdigit(),
-            process.stderr.readlines()[-1].split()
-        )
-    ).decode(ENCODING))
+    check_res = process.returncode
+    return -1 if check_res else int(next(filter(
+        lambda x: x.isdigit(),
+        process.stderr.decode(ENCODING).split("\n")[-2].split()
+    )))
 
 
 def redirect_ctypes_stdout():

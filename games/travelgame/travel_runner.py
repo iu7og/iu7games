@@ -32,10 +32,10 @@ TIMEIT_REPEATS = 100000
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
 
-TESTS_PATH = "games/travelgame/tests/"
-FILE_FLIGHTS = "flights.csv"
+TESTS_PATH = "games/travelgame/tests"
+FILE_FLIGHTS = "/flights.csv"
 
-SAMPLE_PATH = utils.MEMORY_LEAK_SAMPLE_PATH + "travelgame.c"
+SAMPLE_PATH = utils.MEMORY_LEAK_SAMPLE_PATH + "/travelgame.c"
 
 
 class Flight(ctypes.Structure):
@@ -199,15 +199,20 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
         free(c_pointer)
         return (utils.SOLUTION_FAIL, 0, 0)
 
-    if utils.memory_leak_check(
-            SAMPLE_PATH, lib_path,
-            [
-                TESTS_PATH + FILE_FLIGHTS,
-                route.origin, route.destination,
-                str(route.month), str(route.day)
-            ]
-    ) > 0:
-        return (utils.MEMORY_LEAK, 0, 0)
+    memory_leak_check_res = utils.memory_leak_check(
+        SAMPLE_PATH, lib_path,
+        [
+            TESTS_PATH + FILE_FLIGHTS,
+            str(route.origin, utils.ENCODING),
+            str(route.destination, utils.ENCODING),
+            str(route.month), str(route.day)
+        ]
+    )
+    if memory_leak_check_res:
+        return (
+            utils.MEMORY_LEAK if memory_leak_check_res > 0
+            else utils.MEMORY_LEAK_CHECK_ERROR, 0, 0
+        )
 
     def timeit_wrapper():
         """
