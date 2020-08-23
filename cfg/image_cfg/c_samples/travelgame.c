@@ -10,14 +10,14 @@ int main(int argc, char **argv)
 {
     if (argc != 6)
     {
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Wrong arg num\n");
         return WRONG_ARG_NUM;
     }
 
     FILE *fin = fopen(argv[1], "r");
     if (fin == NULL)
     {
-        fprintf(stderr, "\n");
+        fprintf(stderr, "An error was detected when opening the file\n");
         return FILE_ERROR;
     }
 
