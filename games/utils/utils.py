@@ -18,7 +18,9 @@ from psutil import virtual_memory
 
 @dataclass
 class GameResult:
-    """Util's constants for game results"""
+    """
+        Константы представления рез-ов игр
+    """
     okay = 0
     fail = 1
     no_result = -1337
@@ -26,7 +28,9 @@ class GameResult:
 
 @dataclass
 class Error:
-    """Util's constants for errors"""
+    """
+        Константы представления ошибок
+    """
     invalid_ptr = 1
     segfault = -1
     char_segfault = '0'
@@ -37,7 +41,9 @@ class Error:
 
 @dataclass
 class Constants:
-    """Other util's constants"""
+    """
+        Прочие константы утилит
+    """
     sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
     utf_8 = "utf-8"
     test_file = "/test_data.txt"
