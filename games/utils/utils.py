@@ -15,21 +15,6 @@ from functools import reduce
 from multiprocessing import Process, Value
 from psutil import virtual_memory
 
-OK = 0
-SOLUTION_FAIL = 1
-INVALID_PTR = 1
-NO_RESULT = -1337
-SEGFAULT = -1
-CHAR_SEGFAULT = '0'
-PTR_SEGF = '0'
-
-ENCODING = "utf-8"
-TEST_FILE = "/test_data.txt"
-
-STRTOK_DELIMITERS = " ,.;:"
-SPLIT_DELIMITER = ' '
-NULL = 0
-
 
 @dataclass
 class GameResult:
@@ -54,7 +39,7 @@ class Error:
 class Constants:
     """Other util's constants"""
     sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
-    encoding = "utf-8"
+    utf_8 = "utf-8"
     test_file = "/test_data.txt"
     strtok_delimiters = " ,.;:"
     split_delemiter = ' '
@@ -138,7 +123,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
     check_res = process.returncode
     return -1 if check_res else int(next(filter(
         lambda x: x.isdigit(),
-        process.stderr.decode(ENCODING).split("\n")[-2].split()
+        process.stderr.decode(Constants.utf_8).split("\n")[-2].split()
     )))
 
 
@@ -212,7 +197,7 @@ def strgame_runner(tests_path, tests_runner):
         Универсальная функция, производящая запуск STR игр (split, strtok)
     """
 
-    with open(tests_path + TEST_FILE, "r") as f_obj:
+    with open(tests_path + Constants.test_file, "r") as f_obj:
         test_data = concat_strings(f_obj)
 
     time, error_code, dispersion = tests_runner(test_data)

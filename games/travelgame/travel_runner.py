@@ -60,8 +60,9 @@ class Flight(ctypes.Structure):
             Конструктор для класса Flight.
         """
         super(Flight, self).__init__()
-        self.origin = test_data["origin"].encode(utils.ENCODING)
-        self.destination = test_data["destination"].encode(utils.ENCODING)
+        self.origin = test_data["origin"].encode(utils.Constants.utf_8)
+        self.destination = test_data["destination"].encode(
+            utils.Constants.utf_8)
         self.month = int(test_data["month"])
         self.day = int(test_data["day"])
 
@@ -71,7 +72,7 @@ def init_string(string):
         Инициализация строки.
     """
 
-    bytes_string = string.encode(utils.ENCODING)
+    bytes_string = string.encode(utils.Constants.utf_8)
     c_string = ctypes.create_string_buffer(bytes_string)
 
     return c_string
@@ -139,7 +140,7 @@ def check_segfault(count):
        Проверка значения на segfault.
     """
 
-    if count == utils.SEGFAULT:
+    if count == utils.Error.segfault:
         print("This player caused segmentation fault.")
         return True
 
@@ -152,7 +153,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     """
 
     if player_count != count_flights:
-        return utils.SOLUTION_FAIL
+        return utils.GameResult.fail
 
     flights = (ctypes.c_int * count_flights)()
 
@@ -167,9 +168,9 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
                 break
 
         if equal == 0:
-            return utils.SOLUTION_FAIL
+            return utils.GameResult.fail
 
-    return utils.OK
+    return utils.GameResult.okay
 
 
 def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free, rewind):
@@ -183,11 +184,11 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
     player_lib.travel_game.restype = ctypes.c_int
 
     player_count = utils.call_libary(
-        player_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_pointer, file_pointer, route)
+        player_lib, ctypes_wrapper, 'i', utils.Error.segfault, c_pointer, file_pointer, route)
 
     if check_segfault(player_count):
         free(c_pointer)
-        return (utils.SEGFAULT, 0, 0)
+        return (utils.Error.segfault, 0, 0)
 
     rewind(file_pointer)
 
@@ -195,16 +196,16 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
     error_code = check_flights(
         player_count, c_pointer, array_flights, len(array_flights))
 
-    if error_code != utils.OK:
+    if error_code != utils.GameResult.okay:
         free(c_pointer)
-        return (utils.SOLUTION_FAIL, 0, 0)
+        return (utils.GameResult.fail, 0, 0)
 
     memory_leak_check_res = utils.memory_leak_check(
         SAMPLE_PATH, lib_path,
         [
             TESTS_PATH + FILE_FLIGHTS,
-            str(route.origin, utils.ENCODING),
-            str(route.destination, utils.ENCODING),
+            str(route.origin, utils.Constants.utf_8),
+            str(route.destination, utils.Constants.utf_8),
             str(route.month), str(route.day)
         ]
     )
@@ -228,7 +229,7 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
 
     median, dispersion = utils.process_time(time_results)
 
-    return (utils.OK, median, dispersion)
+    return (utils.GameResult.okay, median, dispersion)
 
 
 def get_c_functions():
@@ -285,7 +286,7 @@ def start_travel_game(players_info):
 
     for player_lib in players_info:
         if player_lib == "NULL":
-            results.append((utils.NO_RESULT, 0, 0))
+            results.append((utils.GameResult.no_result, 0, 0))
             continue
 
         rewind(file_pointer)

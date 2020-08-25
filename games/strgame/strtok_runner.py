@@ -26,6 +26,7 @@ STRING_MULTIPLIER = 1500
 TIMEIT_REPEATS = 1
 TIME_COUNTER_REPEATS = 11
 
+
 def check_strtok_correctness(player_ptr, correct_ptr):
     """
         Проверка корректности возвращаемого указателя
@@ -34,13 +35,13 @@ def check_strtok_correctness(player_ptr, correct_ptr):
     """
 
     if (player_ptr.value is None) != (correct_ptr.value is None):
-        return utils.INVALID_PTR
+        return utils.Error.invalid_ptr
 
     if player_ptr.value is not None:
-        if player_ptr.value.decode(utils.ENCODING) != correct_ptr.value.decode(utils.ENCODING):
-            return utils.INVALID_PTR
+        if player_ptr.value.decode(utils.Constants.utf_8) != correct_ptr.value.decode(utils.Constants.utf_8):
+            return utils.Error.invalid_ptr
 
-    return utils.OK
+    return utils.GameResult.okay
 
 
 def create_c_objects(bytes_string, delimiters):
@@ -82,11 +83,12 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
     """
 
     test_data *= STRING_MULTIPLIER
-    bytes_string = test_data.encode(utils.ENCODING)
+    bytes_string = test_data.encode(utils.Constants.utf_8)
     iterations *= STRING_MULTIPLIER
 
     c_strtok_timer = ctypes.CDLL("strtok_timer.so")
-    player_name = ctypes.create_string_buffer(player_lib_name.encode(utils.ENCODING))
+    player_name = ctypes.create_string_buffer(
+        player_lib_name.encode(utils.Constants.utf_8))
     run_time_info = []
 
     def timeit_wrapper():
@@ -101,9 +103,11 @@ def strtok_time_counter(test_data, delimiters, iterations, player_lib_name):
 
     for _ in range(TIME_COUNTER_REPEATS):
         c_delimiters_string, _, c_string_player = \
-            create_c_objects(bytes_string, delimiters.encode(utils.ENCODING))
+            create_c_objects(
+                bytes_string, delimiters.encode(utils.Constants.utf_8))
 
-        run_time_info.append(Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS))
+        run_time_info.append(
+            Timer(timeit_wrapper, process_time_ns).timeit(TIMEIT_REPEATS))
 
     median, dispersion = utils.process_time(run_time_info)
     return median, dispersion
@@ -117,20 +121,23 @@ def run_strtok_test(delimiters, libs, player_name, test_data):
         замеряется время работы.
     """
 
-    bytes_string = test_data.encode(utils.ENCODING)
+    bytes_string = test_data.encode(utils.Constants.utf_8)
     c_delimiters_string, c_string, c_string_player = \
-        create_c_objects(bytes_string, delimiters.encode(utils.ENCODING))
+        create_c_objects(
+            bytes_string, delimiters.encode(utils.Constants.utf_8))
 
     error_code, std_ptr = \
         strtok_iteration(c_delimiters_string, c_string_player, c_string, libs)
 
     iterations = 0
     while std_ptr.value is not None and not error_code:
-        error_code, std_ptr = strtok_iteration(c_delimiters_string, utils.NULL, utils.NULL, libs)
+        error_code, std_ptr = strtok_iteration(
+            c_delimiters_string, utils.Constants.null, utils.Constants.null, libs)
         iterations += 1
 
-    if error_code == utils.OK:
-        run_time, dispersion = strtok_time_counter(test_data, delimiters, iterations, player_name)
+    if error_code == utils.GameResult.okay:
+        run_time, dispersion = strtok_time_counter(
+            test_data, delimiters, iterations, player_name)
     else:
         run_time, dispersion = 0.0, 0.0
 
@@ -142,7 +149,7 @@ def start_strtok(player_lib_name, tests_path):
         Открытие библиотек, запуск ранера, печать результатов.
     """
 
-    #utils.redirect_ctypes_stdout()
+    # utils.redirect_ctypes_stdout()
     utils.print_memory_usage("STRTOK START")
 
     lib_player = ctypes.CDLL(player_lib_name)
@@ -153,10 +160,12 @@ def start_strtok(player_lib_name, tests_path):
 
     incorrect_test, total_time, dispersion = utils.strgame_runner(
         tests_path,
-        partial(run_strtok_test, utils.STRTOK_DELIMITERS, libs, player_lib_name)
+        partial(run_strtok_test, utils.Constants.strtok_delimiters,
+                libs, player_lib_name)
     )
 
-    utils.print_strgame_results("STRTOK", incorrect_test, total_time, dispersion)
+    utils.print_strgame_results(
+        "STRTOK", incorrect_test, total_time, dispersion)
 
     return incorrect_test, total_time, dispersion
 
