@@ -32,11 +32,33 @@ NULL = 0
 
 
 @dataclass
-class MemoryLeakConstants:
-    """Util's constants class for memory leak check"""
+class GameResult:
+    """Util's constants for game results"""
+    okay = 0
+    fail = 1
+    no_result = -1337
+
+
+@dataclass
+class Error:
+    """Util's constants for errors"""
+    invalid_ptr = 1
+    segfault = -1
+    char_segfault = '0'
+    ptr_segfault = '0'
+    memory_leak = -2
+    memory_leak_check_error = -3
+
+
+@dataclass
+class Constants:
+    """Other util's constants"""
     sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
-    leak = -2
-    check_error = -3
+    encoding = "utf-8"
+    test_file = "/test_data.txt"
+    strtok_delimiters = " ,.;:"
+    split_delemiter = ' '
+    null = 0
 
 
 def call_libary(player_lib, wrapper, argtype, stdval, *args):
