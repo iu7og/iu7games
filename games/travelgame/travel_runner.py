@@ -32,7 +32,10 @@ TIMEIT_REPEATS = 100000
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
 
+TESTS_PATH = "games/travelgame/tests"
 FILE_FLIGHTS = "/flights.csv"
+
+SAMPLE_PATH = utils.Constants.sample_path + "/travelgame.c"
 
 
 class Flight(ctypes.Structure):
@@ -57,10 +60,11 @@ class Flight(ctypes.Structure):
             Конструктор для класса Flight.
         """
         super(Flight, self).__init__()
-        self.origin = test_data["origin"].encode(utils.ENCODING)
-        self.destination = test_data["destination"].encode(utils.ENCODING)
-        self.month = test_data["month"]
-        self.day = test_data["day"]
+        self.origin = test_data["origin"].encode(utils.Constants.utf_8)
+        self.destination = test_data["destination"].encode(
+            utils.Constants.utf_8)
+        self.month = int(test_data["month"])
+        self.day = int(test_data["day"])
 
 
 def init_string(string):
@@ -68,7 +72,7 @@ def init_string(string):
         Инициализация строки.
     """
 
-    bytes_string = string.encode(utils.ENCODING)
+    bytes_string = string.encode(utils.Constants.utf_8)
     c_string = ctypes.create_string_buffer(bytes_string)
 
     return c_string
@@ -136,7 +140,7 @@ def check_segfault(count):
        Проверка значения на segfault.
     """
 
-    if count == utils.SEGFAULT:
+    if count == utils.Error.segfault:
         print("This player caused segmentation fault.")
         return True
 
@@ -149,7 +153,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     """
 
     if player_count != count_flights:
-        return utils.SOLUTION_FAIL
+        return utils.GameResult.fail
 
     flights = (ctypes.c_int * count_flights)()
 
@@ -164,35 +168,53 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
                 break
 
         if equal == 0:
-            return utils.SOLUTION_FAIL
+            return utils.GameResult.fail
 
-    return utils.OK
+    return utils.GameResult.okay
 
 
-def player_results(player_lib, c_pointer, file_pointer, route, array_flights, free, rewind):
+def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free, rewind):
     """
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
     """
+    player_lib = ctypes.CDLL(lib_path)
     player_lib.travel_game.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)),
                                        ctypes.c_void_p, Flight]
     player_lib.travel_game.restype = ctypes.c_int
 
     player_count = utils.call_libary(
-        player_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_pointer, file_pointer, route)
+        player_lib, ctypes_wrapper, 'i', utils.Error.segfault, c_pointer, file_pointer, route)
 
     if check_segfault(player_count):
-        return (utils.SEGFAULT, 0, 0)
+        free(c_pointer)
+        return (utils.Error.segfault, 0, 0)
 
     rewind(file_pointer)
+
     player_count = player_lib.travel_game(c_pointer, file_pointer, route)
     error_code = check_flights(
         player_count, c_pointer, array_flights, len(array_flights))
 
-    free(c_pointer)
+    if error_code != utils.GameResult.okay:
+        free(c_pointer)
+        return (utils.GameResult.fail, 0, 0)
 
-    if error_code != utils.OK:
-        return (utils.SOLUTION_FAIL, 0, 0)
+    memory_leak_check_res = utils.memory_leak_check(
+        SAMPLE_PATH, lib_path,
+        [
+            TESTS_PATH + FILE_FLIGHTS,
+            str(route.origin, utils.Constants.utf_8),
+            str(route.destination, utils.Constants.utf_8),
+            str(route.month), str(route.day)
+        ]
+    )
+    if memory_leak_check_res:
+        return (
+            utils.Error.memory_leak if memory_leak_check_res > 0
+            else utils.Error.memory_leak_check_error,
+            0, 0
+        )
 
     def timeit_wrapper():
         """
@@ -203,9 +225,11 @@ def player_results(player_lib, c_pointer, file_pointer, route, array_flights, fr
 
     time_results = Timer(timeit_wrapper, process_time_ns).repeat(
         TIMEIT_REPEATS, 1)
+    free(c_pointer)
+
     median, dispersion = utils.process_time(time_results)
 
-    return (utils.OK, median, dispersion)
+    return (utils.GameResult.okay, median, dispersion)
 
 
 def get_c_functions():
@@ -234,7 +258,7 @@ def get_c_functions():
     return fopen, rewind, fclose, free
 
 
-def start_travel_game(players_info, tests_path):
+def start_travel_game(players_info):
     """
        Открытие библиотеки с функциями игроков.
        Подсчет времени выполнения их функций.
@@ -242,7 +266,7 @@ def start_travel_game(players_info, tests_path):
     """
     utils.redirect_ctypes_stdout()
 
-    with open(tests_path + FILE_FLIGHTS, "r") as file_flights:
+    with open(TESTS_PATH + FILE_FLIGHTS, "r") as file_flights:
         test_data = create_test(file_flights)
         file_flights.seek(0)
         array_flights = solution(file_flights, test_data)
@@ -252,7 +276,7 @@ def start_travel_game(players_info, tests_path):
     fopen, rewind, fclose, free = get_c_functions()
 
     mode = init_string("r")
-    file_name = init_string(tests_path + FILE_FLIGHTS)
+    file_name = init_string(TESTS_PATH + FILE_FLIGHTS)
 
     c_pointer = ctypes.POINTER(ctypes.c_int)()
     file_pointer = fopen(file_name, mode)
@@ -262,18 +286,15 @@ def start_travel_game(players_info, tests_path):
 
     for player_lib in players_info:
         if player_lib == "NULL":
-            results.append((utils.NO_RESULT, 0, 0))
+            results.append((utils.GameResult.no_result, 0, 0))
             continue
 
         rewind(file_pointer)
 
-        lib = ctypes.CDLL(player_lib)
         results.append(
-            player_results(lib, c_pointer, file_pointer, route,
+            player_results(player_lib, c_pointer, file_pointer, route,
                            array_flights, free, rewind)
         )
-
-        free(c_pointer)
 
     fclose(file_pointer)
 
@@ -284,4 +305,4 @@ def start_travel_game(players_info, tests_path):
 
 if __name__ == "__main__":
     start_travel_game(["games/travelgame/test.so", "NULL",
-                       "games/travelgame/test.so"], "games/travelgame/tests")
+                       "games/travelgame/test.so"])

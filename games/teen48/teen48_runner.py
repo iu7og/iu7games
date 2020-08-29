@@ -25,6 +25,7 @@ import ctypes
 from random import randint, random
 import games.utils.utils as utils
 
+
 class Matrix(ctypes.Structure):
     """
         Класс Matrix описывает одноименную структуру в С.
@@ -98,7 +99,7 @@ def check_end_game(game_field):
     for i in range(game_field.rows - 1):
         for j in range(game_field.rows - 1):
             if game_field.matrix[i][j] == game_field.matrix[i + 1][j] or \
-                game_field.matrix[i][j + 1] == game_field.matrix[i][j]:
+                    game_field.matrix[i][j + 1] == game_field.matrix[i][j]:
                 return False
 
     for i in range(game_field.rows):
@@ -108,12 +109,12 @@ def check_end_game(game_field):
 
     for i in range(game_field.rows - 1):
         if game_field.matrix[game_field.rows - 1][i] == \
-            game_field.matrix[game_field.rows -1][i + 1]:
+                game_field.matrix[game_field.rows - 1][i + 1]:
             return False
 
     for i in range(game_field.rows - 1):
         if game_field.matrix[i][game_field.rows - 1] == \
-            game_field.matrix[i + 1][game_field.rows - 1]:
+                game_field.matrix[i + 1][game_field.rows - 1]:
             return False
 
     return True
@@ -177,7 +178,7 @@ def merge_field_cells(game_field):
     for i in range(game_field.rows):
         for j in range(game_field.columns - 1):
             if game_field.matrix[i][j] == game_field.matrix[i][j + 1] \
-                and game_field.matrix[i][j] != 0:
+                    and game_field.matrix[i][j] != 0:
 
                 game_field.matrix[i][j] *= 2
                 game_field.matrix[i][j + 1] = 0
@@ -223,7 +224,8 @@ def make_move(move, game_field):
     elif move == 'u':
         game_field, is_done = update_field(game_field, transpose_field)
     elif move == 'd':
-        game_field, is_done = update_field(game_field, lambda x: reverse_field(transpose_field(x)))
+        game_field, is_done = update_field(
+            game_field, lambda x: reverse_field(transpose_field(x)))
 
     return game_field, is_done
 
@@ -303,7 +305,7 @@ def start_teen48game_competition(players_info, field_size):
 
     for player in players_info:
         if player[0] == "NULL":
-            results.append(utils.NO_RESULT)
+            results.append(utils.GameResult.no_result)
             continue
 
         player_lib = ctypes.CDLL(player[0])
@@ -313,8 +315,10 @@ def start_teen48game_competition(players_info, field_size):
         game_field = Matrix(field_size, field_size)
         game_field_copy = Matrix(field_size, field_size)
 
-        fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
-        fill_random_cell(game_field.matrix, get_random_numb(), game_field.rows, game_field.columns)
+        fill_random_cell(game_field.matrix, get_random_numb(),
+                         game_field.rows, game_field.columns)
+        fill_random_cell(game_field.matrix, get_random_numb(),
+                         game_field.rows, game_field.columns)
         game_is_end = False
         prev_move = "_"
 
@@ -322,32 +326,37 @@ def start_teen48game_competition(players_info, field_size):
             copy_field(game_field, game_field_copy)
 
             move = utils.call_libary(
-                player_lib, ctypes_wrapper, ctypes.c_wchar, utils.CHAR_SEGFAULT, game_field
+                player_lib, ctypes_wrapper, ctypes.c_wchar, utils.Error.char_segfault, game_field
             )
 
             game_field, is_done = make_move(move, game_field)
 
             if is_done:
                 rand_numb = get_random_numb()
-                fill_random_cell(game_field.matrix, rand_numb, game_field.rows, game_field.columns)
+                fill_random_cell(game_field.matrix, rand_numb,
+                                 game_field.rows, game_field.columns)
 
             game_is_end = check_end_game(game_field)
 
-            if move == utils.CHAR_SEGFAULT:
+            if move == utils.Error.char_segfault:
                 print("▼ This player caused segmentation fault. ▼")
                 game_is_end = True
 
             if prev_move == move and not is_done:
-                print(f"Two identical moves that do not change the field. Move: {move}")
+                print(
+                    f"Two identical moves that do not change the field. Move: {move}")
                 game_is_end = True
 
             prev_move = move
 
         score = scoring(game_field)
         results.append(score if score > player[1] else player[1])
-        print_field(game_field, utils.parsing_name(player[0]), score, field_size)
+        print_field(game_field, utils.parsing_name(
+            player[0]), score, field_size)
 
     return results
 
+
 if __name__ == "__main__":
-    start_teen48game_competition([("games/teen48/teen48lib.so", 0), ("NULL", 1000)], 4)
+    start_teen48game_competition(
+        [("games/teen48/teen48lib.so", 0), ("NULL", 1000)], 4)
