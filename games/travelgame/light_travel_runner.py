@@ -1,5 +1,5 @@
 """
-    ===== LIGHT TR4V31 RUNNER v.1.0a =====
+    ===== LIGHT TR4V31 RUNNER v.1.1a =====
     Copyright (C) 2019 - 2020 IU7Games Team.
 
     Данный ранер запускает функцию travel_game игрока для проверки
@@ -16,7 +16,7 @@ def light_travel_runner(player_lib_path):
     """
 
     start_travel_game([player_lib_path])
-    print("\033[0;32mNUMBERS GAME: OKAY\033[0m")
+    print("\033[0;32mTRAVEL GAME: OKAY\033[0m")
 
 
 if __name__ == "__main__":

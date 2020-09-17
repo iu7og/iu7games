@@ -1,5 +1,5 @@
 """
-    ===== TR4V31 RUNNER v.1.3b =====
+    ===== TR4V31 RUNNER v.1.4b =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
@@ -7,16 +7,16 @@
     совершенных из аэропорта origin в аэропорт destination, в указанный месяц и день.
 
     - В соревновании принимают участие функции, имеющие следующую сигнатуру:
-    - int travel_game(int **result, const FILE *const flights, const flight route)
+    - int travel_game(int **result, const FILE *const flights, const Flight route)
 
-    - Структура flight:
+    - Структура Flight:
       typedef struct
       {
-          const char origin[4];
-          const char destination[4];
-          const int month;
-          const int day;
-      } flight;
+          char origin[4];
+          char destination[4];
+          int month;
+          int day;
+      } Flight;
 
     - Функция должна возвращать int-значение, равное количеству найденных рейсов
 """
@@ -27,7 +27,7 @@ from timeit import Timer
 from time import process_time_ns
 import games.utils.utils as utils
 
-TIMEIT_REPEATS = 100000
+TIMEIT_REPEATS = 10000
 
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
@@ -43,11 +43,11 @@ class Flight(ctypes.Structure):
         Класс Flight описывает структуру flight в C.
         Класс имеет поля:
         1. origin - идентфикатор аэропорта, откуда самолет вылетел -
-                 const char origin[4]
+                char origin[4]
         2. destination - идентификатор аэропорта, куда самолет прилетел -
-                 const char destination[4]
-        3. month - месяц вылета -  const int month
-        4. day - день вылета -  const int month
+                char destination[4]
+        3. month - месяц вылета - int month
+        4. day - день вылета - int month
     """
 
     _fields_ = [("origin", ctypes.c_char * MAX_LEN_AIRPORTS_NAME),
@@ -82,7 +82,7 @@ def create_test(file_flights):
     """
         Создание тестовых данных.
     """
-    random_flight = randint(1, MAX_COUNT_FLIGHTS)
+    random_flight = randint(2, MAX_COUNT_FLIGHTS)
 
     for i, line in enumerate(file_flights):
         if i == random_flight:
@@ -173,7 +173,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     return utils.GameResult.okay
 
 
-def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free, rewind):
+def player_results(lib_path, c_pointer, file_pointer, route, array_flights, rewind):
     """
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
@@ -187,7 +187,6 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
         player_lib, ctypes_wrapper, 'i', utils.Error.segfault, c_pointer, file_pointer, route)
 
     if check_segfault(player_count):
-        free(c_pointer)
         return (utils.Error.segfault, 0, 0)
 
     rewind(file_pointer)
@@ -197,7 +196,6 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
         player_count, c_pointer, array_flights, len(array_flights))
 
     if error_code != utils.GameResult.okay:
-        free(c_pointer)
         return (utils.GameResult.fail, 0, 0)
 
     memory_leak_check_res = utils.memory_leak_check(
@@ -209,6 +207,7 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
             str(route.month), str(route.day)
         ]
     )
+
     if memory_leak_check_res:
         return (
             utils.Error.memory_leak if memory_leak_check_res > 0
@@ -225,7 +224,6 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, free
 
     time_results = Timer(timeit_wrapper, process_time_ns).repeat(
         TIMEIT_REPEATS, 1)
-    free(c_pointer)
 
     median, dispersion = utils.process_time(time_results)
 
@@ -251,11 +249,7 @@ def get_c_functions():
     fclose.argtypes = [ctypes.c_void_p]
     fclose.restype = ctypes.c_int
 
-    free = libc.free
-    free.argtypes = [ctypes.c_void_p]
-    free.restype = ctypes.c_void_p
-
-    return fopen, rewind, fclose, free
+    return fopen, rewind, fclose
 
 
 def start_travel_game(players_info):
@@ -273,7 +267,7 @@ def start_travel_game(players_info):
 
     print_conditions(test_data, array_flights)
 
-    fopen, rewind, fclose, free = get_c_functions()
+    fopen, rewind, fclose = get_c_functions()
 
     mode = init_string("r")
     file_name = init_string(TESTS_PATH + FILE_FLIGHTS)
@@ -293,7 +287,7 @@ def start_travel_game(players_info):
 
         results.append(
             player_results(player_lib, c_pointer, file_pointer, route,
-                           array_flights, free, rewind)
+                           array_flights, rewind)
         )
 
     fclose(file_pointer)
