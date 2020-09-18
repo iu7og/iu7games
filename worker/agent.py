@@ -327,32 +327,29 @@ def run_tr4v31game(results, mode):
 
     print("TR4V31GAME RESULTS\n")
 
-    test_path = os.path.abspath("games/tr4v31game/tests")
+    results_def = travel_runner.start_travel_game(libs)
 
-    if os.path.exists(test_path):
-        results_def = travel_runner.start_travel_game(libs, test_path)
-
-        for i, rec in enumerate(data):
-            sign = worker.wiki.SIGN[1]
-            if results_def[i][0] == worker.wiki.NO_RESULT:
-                rec[3:3] = [
-                    sign,
-                    intervals.closed(
-                        abs(worker.wiki.NO_RESULT),
-                        intervals.inf
-                    )
-                ]
-            else:
-                sign = worker.wiki.SIGN[results_def[i][0] != 0]
-                rec[3:3] = [
-                    sign,
-                    intervals.closed(
-                        round(results_def[i][1] - SIGMA_COEF *
-                              results_def[i][2], 7),
-                        round(results_def[i][1] + SIGMA_COEF *
-                              results_def[i][2], 7)
-                    )
-                ]
+    for i, rec in enumerate(data):
+        sign = worker.wiki.SIGN[1]
+        if results_def[i][0] == worker.wiki.NO_RESULT:
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    abs(worker.wiki.NO_RESULT),
+                    intervals.inf
+                )
+            ]
+        else:
+            sign = worker.wiki.SIGN[results_def[i][0] != 0]
+            rec[3:3] = [
+                sign,
+                intervals.closed(
+                    round(results_def[i][1] - SIGMA_COEF *
+                          results_def[i][2], 7),
+                    round(results_def[i][1] + SIGMA_COEF *
+                          results_def[i][2], 7)
+                )
+            ]
 
     return data
 
