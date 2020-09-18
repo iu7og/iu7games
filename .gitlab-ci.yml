@@ -104,6 +104,22 @@ build_teen48game:
   only:
     - merge_requests
 
+build_tr4v31game:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 build nonpractice | tee buildlog_tr4v31game.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_tr4v31game.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
+
 codestyle:
   stage: test
   image: hackfeed/iu7games
@@ -202,6 +218,23 @@ deploy_teen48game:
   artifacts:
     paths:
       - deploylog_teen48game.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_tr4v31game:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 release nonpractice | tee deploylog_tr4v31game.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_tr4v31game.txt
       - ./*.obj
     when: always
     expire_in: 30 days

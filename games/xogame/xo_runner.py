@@ -30,6 +30,7 @@ ASCII_X = 88
 ASCII_SPACE = 32
 N = 30
 
+
 def start_game_print(player1, player2):
     """
         Информация о начале раунда.
@@ -61,7 +62,8 @@ def print_results(points, players_info, players_amount):
 
     for i in range(players_amount):
         if players_info[i][0] != "NULL":
-            print("PLAYER", utils.parsing_name(players_info[i][0]), "POINTS:", points[i])
+            print("PLAYER", utils.parsing_name(
+                players_info[i][0]), "POINTS:", points[i])
 
 
 def print_field(c_strings, field_size, player_name):
@@ -73,7 +75,8 @@ def print_field(c_strings, field_size, player_name):
 
     print("┏", "━" * field_size, "┓", sep="")
     for i in range(field_size):
-        print("┃", c_strings[i].value.decode(utils.ENCODING), "┃", sep="")
+        print("┃", c_strings[i].value.decode(
+            utils.Constants.utf_8), "┃", sep="")
     print("┗", "━" * field_size, "┛", sep="")
 
 
@@ -116,9 +119,12 @@ def create_c_objects(field_size):
         Создание боевого поля и его копии (массива строк) в виде С объекта.
     """
 
-    c_strings = [ctypes.create_string_buffer(b' ' * field_size) for i in range(field_size)]
-    c_strings_copy = [ctypes.create_string_buffer(b' ' * field_size) for i in range(field_size)]
-    c_battlefield = (ctypes.c_char_p * field_size)(*map(ctypes.addressof, c_strings))
+    c_strings = [ctypes.create_string_buffer(
+        b' ' * field_size) for i in range(field_size)]
+    c_strings_copy = [ctypes.create_string_buffer(
+        b' ' * field_size) for i in range(field_size)]
+    c_battlefield = (ctypes.c_char_p * field_size)(*
+                                                   map(ctypes.addressof, c_strings))
     return c_strings, c_strings_copy, c_battlefield
 
 
@@ -128,7 +134,7 @@ def check_move_correctness(c_strings, c_strings_copy, move, field_size):
         на испорченость матрицы стратегией игрока.
     """
 
-    if move == utils.SEGFAULT:
+    if move == utils.Error.segfault:
         print("▼ This player caused segmentation fault. ▼")
         return False
 
@@ -162,7 +168,8 @@ def ctypes_wrapper(player_lib, move, c_battlefield, field_size, char):
         Обертка для отловки segmentation fault.
     """
 
-    move.value = player_lib.xogame(c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar(char))
+    move.value = player_lib.xogame(
+        c_battlefield, ctypes.c_int(field_size), ctypes.c_wchar(char))
 
 
 def xogame_round(player1_lib, player2_lib, field_size, players_names):
@@ -179,7 +186,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
 
         move = utils.call_libary(
-            player1_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_battlefield, field_size, 'X'
+            player1_lib, ctypes_wrapper, 'i', utils.Error.segfault, c_battlefield, field_size, 'X'
         )
 
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
@@ -203,7 +210,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         shot_count += 1
 
         move = utils.call_libary(
-            player2_lib, ctypes_wrapper, 'i', utils.SEGFAULT, c_battlefield, field_size, 'O'
+            player2_lib, ctypes_wrapper, 'i', utils.Error.segfault, c_battlefield, field_size, 'O'
         )
 
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
@@ -270,11 +277,12 @@ def scoring(points, player1_index, player2_index, round_info):
         player1_round_result = 0
         player2_round_result = 1
 
-
     pts1 = points[player1_index]
     pts2 = points[player2_index]
-    points[player1_index] = int(calculate_elo_rating(pts1, pts2, player1_round_result))
-    points[player2_index] = int(calculate_elo_rating(pts2, pts1, player2_round_result))
+    points[player1_index] = int(
+        calculate_elo_rating(pts1, pts2, player1_round_result))
+    points[player2_index] = int(
+        calculate_elo_rating(pts2, pts1, player2_round_result))
 
     return points
 
@@ -315,9 +323,9 @@ def start_xogame_competition(players_info, field_size):
                     points = scoring(points, j, i, round_info)
 
                 else:
-                    points[j] = utils.NO_RESULT
+                    points[j] = utils.GameResult.no_result
         else:
-            points[i] = utils.NO_RESULT
+            points[i] = utils.GameResult.no_result
 
     print_results(points, players_info, len(players_info))
 

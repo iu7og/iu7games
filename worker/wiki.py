@@ -120,7 +120,7 @@ def params_sort(results, sort_keys, output_params, game):
         Сортировка результатов в зависимости от игры.
     """
 
-    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame"]
+    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame", "TR4V31game"]
     timedepless_games = ["XOgame", "TEEN48game"]
 
     if game in timedep_games:
@@ -189,7 +189,10 @@ def handle_num63rsgame(fresults):
 
     results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                          "NUM63RSgame", "")
-    tmp = open(os.path.abspath("templates/num63rsgame.template")).read()
+
+    with open(os.path.abspath("templates/num63rsgame.template")) as template:
+        tmp = template.read()
+
     page = Template(tmp).render(results=results, date=get_date())
 
     return page
@@ -202,7 +205,10 @@ def handle_7equeencegame(fresults):
 
     results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                          "7EQUEENCEgame", "")
-    tmp = open(os.path.abspath("templates/7equeencegame.template")).read()
+
+    with open(os.path.abspath("templates/7equeencegame.template")) as template:
+        tmp = template.read()
+
     page = Template(tmp).render(results=results, date=get_date())
 
     return page
@@ -218,7 +224,9 @@ def handle_xogame(fresults, sresults):
     results_5x5 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
                              "XOgame", "5x5")
 
-    tmp = open(os.path.abspath("templates/xogame.template")).read()
+    with open(os.path.abspath("templates/xogame.template")) as template:
+        tmp = template.read()
+
     page = Template(tmp).render(results_3x3=results_3x3,
                                 results_5x5=results_5x5, date=get_date())
 
@@ -234,7 +242,10 @@ def handle_strgame(fresults, sresults):
                                "STRgame", "split")
     results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
                                 "STRgame", "strtok")
-    tmp = open(os.path.abspath("templates/strgame.template")).read()
+
+    with open(os.path.abspath("templates/strgame.template")) as template:
+        tmp = template.read()
+
     page = Template(tmp).render(results_split=results_split,
                                 results_strtok=results_strtok, date=get_date())
 
@@ -251,9 +262,27 @@ def handle_teen48game(fresults, sresults):
     results_6x6 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
                              "TEEN48game", "6x6")
 
-    tmp = open(os.path.abspath("templates/teen48game.template")).read()
+    with open(os.path.abspath("templates/teen48game.template")) as template:
+        tmp = template.read()
+
     page = Template(tmp).render(results_4x4=results_4x4,
                                 results_6x6=results_6x6, date=get_date())
+
+    return page
+
+
+def handle_tr4v31game(fresults):
+    """
+        Обновление таблицы для TR4V31game.
+    """
+
+    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+                         "TR4V31game", "")
+
+    with open(os.path.abspath("templates/tr4v31game.template")) as template:
+        tmp = template.read()
+
+    page = Template(tmp).render(results=results, date=get_date())
 
     return page
 
@@ -269,11 +298,13 @@ def update_wiki(project, game, fresults, sresults):
         "XOgame Leaderboard": "XOgame-Leaderboard",
         "STRgame Leaderboard": "STRgame-Leaderboard",
         "TEEN48game Leaderboard": "TEEN48game-Leaderboard",
+        "TR4V31game Leaderboard": "TR4V31game-Leaderboard",
         "NUM63RSgame_practice Leaderboard": "NUM63RSgame_practice-Leaderboard",
         "7EQUEENCEgame_practice Leaderboard": "7EQUEENCEgame_practice-Leaderboard",
         "XOgame_practice Leaderboard": "XOgame_practice-Leaderboard",
         "STRgame_practice Leaderboard": "STRgame_practice-Leaderboard",
-        "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard"
+        "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard",
+        "TR4V31game_practice Leaderboard": "TR4V31game_practice-Leaderboard"
     }
 
     page = ""
@@ -288,6 +319,8 @@ def update_wiki(project, game, fresults, sresults):
         page = handle_strgame(fresults, sresults)
     elif game.startswith("TEEN48game"):
         page = handle_teen48game(fresults, sresults)
+    elif game.startswith("TR4V31game"):
+        page = handle_tr4v31game(fresults)
 
     for key in games:
         if game in key:

@@ -9,25 +9,47 @@
 import sys
 import os
 import subprocess
+from dataclasses import dataclass
 from statistics import median, pvariance
 from functools import reduce
 from multiprocessing import Process, Value
 from psutil import virtual_memory
 
-OK = 0
-SOLUTION_FAIL = 1
-INVALID_PTR = 1
-NO_RESULT = -1337
-SEGFAULT = -1
-CHAR_SEGFAULT = '0'
-PTR_SEGF = '0'
 
-ENCODING = "utf-8"
-TEST_FILE = "/test_data.txt"
+@dataclass
+class GameResult:
+    """
+        Константы представления рез-ов игр
+    """
+    okay = 0
+    fail = 1
+    no_result = -1337
 
-STRTOK_DELIMITERS = " ,.;:"
-SPLIT_DELIMITER = ' '
-NULL = 0
+
+@dataclass
+class Error:
+    """
+        Константы представления ошибок
+    """
+    invalid_ptr = 1
+    segfault = -1
+    char_segfault = '0'
+    ptr_segfault = '0'
+    memory_leak = -2
+    memory_leak_check_error = -3
+
+
+@dataclass
+class Constants:
+    """
+        Прочие константы утилит
+    """
+    sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
+    utf_8 = "utf-8"
+    test_file = "/test_data.txt"
+    strtok_delimiters = " ,.;:"
+    split_delemiter = ' '
+    null = 0
 
 
 def call_libary(player_lib, wrapper, argtype, stdval, *args):
@@ -49,11 +71,13 @@ def print_memory_usage(stage):
     """
 
     memory_usage = virtual_memory()
+
     print(
-        "STAGE:", stage,
-        "AVAILABLE MEMORY:", memory_usage[1],
-        "USAGE PERCENTAGE:", memory_usage[2]
+        f"STAGE: {stage} "
+        f"AVAILABLE MEMORY: {memory_usage[1]} "
+        f"USAGE PERCENTAGE: {memory_usage[2]}"
     )
+
 
 def memory_leak_check(sample_path, lib_path, sample_args):
     """
@@ -66,44 +90,48 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
-    executable = './memory_leak_check.out'
+    executable = os.path.abspath("./games/utils/memory_leak_check.out")
+
+    path = lib_path.split('/')
     subprocess.run(
         [
-            'gcc',
-            '--std=c99',
-            '-O3',
+            "gcc",
+            "--std=c99",
+            "-O3",
+            "-L" + "/".join(path[:-1]),
+            "-Wl,-rpath=" + "/".join(path[:-1]),
+            "-o",
+            executable,
             sample_path,
-            lib_path,
-            '-o',
-            executable
+            "-l:" + path[-1]
         ],
         check=True
     )
+    del path
 
-    process = subprocess.Popen(
+    process = subprocess.run(
         [
-            'valgrind',
-            '--quiet',
-            '--verbose',
-            '--leak-check=full',
-            '--show-leak-kinds=all',
-            '--track-origins=yes',
-            '--error-exitcode=1',
+            "valgrind",
+            "--quiet",
+            "--verbose",
+            "--leak-check=full",
+            "--show-leak-kinds=all",
+            "--track-origins=yes",
+            "--error-exitcode=1",
             executable
         ] + sample_args,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        check=False
     )
 
-    check_res = process.wait() == 0
+    subprocess.run(["rm", executable], check=True)
 
-    subprocess.run(['rm', executable], check=True)
+    check_res = process.returncode
+    return -1 if check_res else int(next(filter(
+        lambda x: x.isdigit(),
+        process.stderr.decode(Constants.utf_8).split("\n")[-2].split()
+    )))
 
-    return 0 if check_res else int(next(
-        filter(
-            lambda x: x.isdigit(),
-            process.stderr.readlines()[-1].split()
-        )
-    ).decode('utf-8'))
 
 def redirect_ctypes_stdout():
     """
@@ -140,9 +168,9 @@ def print_strgame_results(game, incorrect_test, total_time, dispersion):
     """
 
     print(
-        game + " TESTS:", "FAIL" if incorrect_test else "OK",
-        "TIME:", total_time,
-        "DISPERSION:", dispersion
+        f"{game} TESTS: {'FAIL' if incorrect_test else 'OK'} "
+        f"TIME: {total_time} "
+        f"DISPERSION: {dispersion}"
     )
 
 
@@ -154,20 +182,20 @@ def print_results(results, players_info):
     for player, result in zip(players_info, results):
         if player != "NULL":
             print(
-                "PLAYER:", parsing_name(player),
-                "SOLUTION:", "FAIL" if result[0] else "OK",
-                "MEDIAN:", result[1],
-                "DISPERSION:", result[2]
+                f"PLAYER: {parsing_name(player)} ",
+                f"SOLUTION: {'FAIL' if result[0] else 'OK'} ",
+                f"MEDIAN: {result[1]} ",
+                f"DISPERSION: {result[2]}"
             )
 
 
-def concat_strings(file):
+def concat_strings(f_obj):
     """
         Склеивание каждой строки файла в одну единственную строку,
         удаление символов окончания строки.
     """
 
-    return reduce(lambda x, y: x + y[:-1], file)
+    return reduce(lambda x, y: x + y[:-1], f_obj)
 
 
 def strgame_runner(tests_path, tests_runner):
@@ -175,9 +203,8 @@ def strgame_runner(tests_path, tests_runner):
         Универсальная функция, производящая запуск STR игр (split, strtok)
     """
 
-    file = open(tests_path + TEST_FILE, "r")
-    test_data = concat_strings(file)
-    file.close()
+    with open(tests_path + Constants.test_file, "r") as f_obj:
+        test_data = concat_strings(f_obj)
 
     time, error_code, dispersion = tests_runner(test_data)
 

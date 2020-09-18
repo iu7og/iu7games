@@ -26,6 +26,7 @@ MAX_RBORDER = 22
 
 TIMEIT_REPEATS = 301
 
+
 def lcm(interval):
     """
         Функция вычисляющая НОК на заданном интервале
@@ -38,8 +39,8 @@ def round_intervals():
         Генерация левой, правой границы интервала и решения для текущего раунда.
     """
 
-    left_border = MAX_LBORDER #randint(MAX_LBORDER, MAX_RBORDER)
-    right_border = MAX_RBORDER #randint(left_border, MAX_RBORDER)
+    left_border = MAX_LBORDER  # randint(MAX_LBORDER, MAX_RBORDER)
+    right_border = MAX_RBORDER  # randint(left_border, MAX_RBORDER)
     solution = lcm(range(left_border, right_border + 1))
 
     return {"l_border": left_border, "r_border": right_border, "solution": solution}
@@ -50,9 +51,10 @@ def player_results(player_lib, intervals):
         Получение и обработка результатов игрока. Подсчёт времени выполнения его функции.
     """
 
-    player_solution = player_lib.numbers_game(intervals["l_border"], intervals["r_border"])
+    player_solution = player_lib.numbers_game(
+        intervals["l_border"], intervals["r_border"])
     if player_solution != intervals["solution"]:
-        return (utils.SOLUTION_FAIL, 0, 0)
+        return (utils.GameResult.fail, 0, 0)
 
     def timeit_wrapper():
         """
@@ -61,10 +63,11 @@ def player_results(player_lib, intervals):
 
         player_lib.numbers_game(intervals["l_border"], intervals["r_border"])
 
-    time_results = Timer(timeit_wrapper, process_time_ns).repeat(TIMEIT_REPEATS, 1)
+    time_results = Timer(timeit_wrapper, process_time_ns).repeat(
+        TIMEIT_REPEATS, 1)
     median, dispersion = utils.process_time(time_results)
 
-    return (utils.OK, median, dispersion)
+    return (utils.GameResult.okay, median, dispersion)
 
 
 def print_conditions(intervals):
@@ -96,10 +99,12 @@ def start_numbers_game(players_info):
             lib = ctypes.CDLL(player_lib)
             results.append(player_results(lib, intervals))
         else:
-            results.append((utils.NO_RESULT, 0, 0))
+            results.append((utils.GameResult.no_result, 0, 0))
 
     utils.print_results(results, players_info)
     return results
 
+
 if __name__ == "__main__":
-    start_numbers_game(["games/numbers/test.so", "NULL", "games/numbers/test.so"])
+    start_numbers_game(
+        ["games/numbers/test.so", "NULL", "games/numbers/test.so"])
