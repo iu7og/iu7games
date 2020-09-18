@@ -28,9 +28,9 @@ then
     else
         echo -e "\033[0;32mCORRECT SIGNATURE FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
     fi
-    SPAM="$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(system(.*)\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(fork()\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')n"
+    SPAM="$(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(system(.*)\)/\1/p')n
+    $(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(fork()\)/\1/p')n
+    $(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')n"
     SPAM=$(echo $SPAM | tr -d ' ')
     echo -e "\033[0;34mCHECK SPAM EXISTANCE\033[0m"
     if [ "$SPAM" = 'nnn' ]
