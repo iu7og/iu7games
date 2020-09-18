@@ -109,7 +109,7 @@ build_tr4v31game:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 build nonpractice | tee buildlog_teen48game.txt
+    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 build nonpractice | tee buildlog_tr4v31game.txt
   after_script:
     - rm -f *.so *.zip *.obj
   artifacts:
@@ -229,7 +229,7 @@ deploy_tr4v31game:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 release nonpractice | tee deploylog_teen48game.txt
+    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 release nonpractice | tee deploylog_tr4v31game.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
