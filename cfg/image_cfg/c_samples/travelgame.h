@@ -11,6 +11,6 @@ typedef struct
     int day;
 } Flight;
 
-int travel_game(int **result, FILE *flights, Flight route);
+int travel_game(int **result, FILE *const flights, const Flight route);
 
 #endif

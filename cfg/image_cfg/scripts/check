@@ -3,6 +3,7 @@ COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion -c -O3"
 COMPILE_COV_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion"
+SAMPLE_PATH_FLAG="-I$(dirname "$(dirname "$0")")/c_samples"
 COVERAGE_FLAGS="-fprofile-arcs -ftest-coverage"
 GAME_PATH="$1"
 
@@ -27,17 +28,15 @@ then
     else
         echo -e "\033[0;32mCORRECT SIGNATURE FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
     fi
-    SPAM="$(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(system(.*)\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(fork()\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\([_]\{0,2\}asm[_]\{0,2\}\)/\1/p')n
-    $(cpp ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(volatile\)/\1/p')n"
+    SPAM="$(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(system(.*)\)/\1/p')n
+    $(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(fork()\)/\1/p')n
+    $(cpp ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c | sed -n 's/\(exec.\{0,4\}(.*)\)/\1/p')n"
     SPAM=$(echo $SPAM | tr -d ' ')
     echo -e "\033[0;34mCHECK SPAM EXISTANCE\033[0m"
-    if [ "$SPAM" = 'nnnnn' ]
+    if [ "$SPAM" = 'nnn' ]
     then
         echo -e "\033[0;32mNO SPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
-        gcc ${COMPILE_FLAGS} -fpic ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
+        gcc ${COMPILE_FLAGS} -fpic ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
         gcc -shared -o ${GITLAB_USER_LOGIN}_$2_lib.so ${GITLAB_USER_LOGIN}_$2.o
     else
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
@@ -53,8 +52,8 @@ then
         then
             echo -e "\033[0;32m${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c FOUND\033[0m"
             echo -e "\033[0;34mSTART YOUR UNIT TESTING\033[0m"
-            gcc ${COMPILE_COV_FLAGS} -c -O3 ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c
-            gcc ${COMPILE_COV_FLAGS} ${COVERAGE_FLAGS} -c -O3 ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
+            gcc ${COMPILE_COV_FLAGS} -c -O3 ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c
+            gcc ${COMPILE_COV_FLAGS} ${COVERAGE_FLAGS} -c -O3 ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
             gcc -lgcov --coverage -o test.exe ${GITLAB_USER_LOGIN}_$2_test.o ${GITLAB_USER_LOGIN}_$2.o
             ./test.exe
             lcov -t "test" -o test.info -c -d .

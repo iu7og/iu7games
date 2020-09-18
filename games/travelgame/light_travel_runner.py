@@ -15,8 +15,8 @@ def light_travel_runner(player_lib_path):
         Запуск стратегии игрока на тестовых значениях.
     """
 
-    start_travel_game([player_lib_path])
-    print("\033[0;32mTRAVEL GAME: OKAY\033[0m")
+    solution, _, _ = start_travel_game([player_lib_path])[0]
+    print(f"\033[0;32mTRAVELGAME: OKAY\033[0m\nSOLUTION: {'OK' if solution == 0 else 'FAIL'}")
 
 
 if __name__ == "__main__":
