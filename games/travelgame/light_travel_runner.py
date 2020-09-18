@@ -1,5 +1,5 @@
 """
-    ===== LIGHT TR4V31 RUNNER v.1.0a =====
+    ===== LIGHT TR4V31 RUNNER v.1.1a =====
     Copyright (C) 2019 - 2020 IU7Games Team.
 
     Данный ранер запускает функцию travel_game игрока для проверки
