@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     strcpy(flight.origin, argv[2]);
     strcpy(flight.destination, argv[3]);
 
-    travel_game(&res, fin, flight);
+    travel_game(&res, (FILE *const) fin, (const Flight) flight);
 
     free(res);
     fclose(fin);
