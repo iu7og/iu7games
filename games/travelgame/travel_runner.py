@@ -25,6 +25,7 @@ import ctypes
 from random import randint
 from timeit import Timer
 from time import process_time_ns
+from os import path
 import games.utils.utils as utils
 
 TIMEIT_REPEATS = 10000
@@ -32,7 +33,7 @@ TIMEIT_REPEATS = 10000
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
 
-TESTS_PATH = "games/travelgame/tests"
+TESTS_PATH = path.abspath("games/travelgame/tests")
 FILE_FLIGHTS = "/flights.csv"
 
 SAMPLE_PATH = utils.Constants.sample_path + "/travelgame.c"
