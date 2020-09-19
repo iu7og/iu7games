@@ -3,7 +3,7 @@ COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion -c -O3"
 COMPILE_COV_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion"
-SAMPLE_PATH_FLAG="-I./cfg/image_cfg/c_samples"
+SAMPLE_PATH_FLAG="-I/cfg/image_cfg/c_samples"
 COVERAGE_FLAGS="-fprofile-arcs -ftest-coverage"
 GAME_PATH="$1"
 
