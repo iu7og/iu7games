@@ -98,7 +98,8 @@ def run_7equeencegame(results, mode):
     libs = []
 
     for rec in data:
-        lib_path = os.path.abspath(f"{choose_name(rec, mode)}_7equeence_lib.so")
+        lib_path = os.path.abspath(
+            f"{choose_name(rec, mode)}_7equeence_lib.so")
 
         if os.path.exists(lib_path):
             libs.append(lib_path)
@@ -201,7 +202,8 @@ def run_strgame(results, mode):
 
         print(f"{rec_split[1]}:")
 
-        lib_path = os.path.abspath(f"{choose_name(rec_split, mode)}_split_lib.so")
+        lib_path = os.path.abspath(
+            f"{choose_name(rec_split, mode)}_split_lib.so")
         test_path = os.path.abspath("games/strgame/tests/split")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -225,7 +227,8 @@ def run_strgame(results, mode):
                 )
             ]
 
-        lib_path = os.path.abspath(f"{choose_name(rec_strtok, mode)}_strtok_lib.so")
+        lib_path = os.path.abspath(
+            f"{choose_name(rec_strtok, mode)}_strtok_lib.so")
         test_path = os.path.abspath("games/strgame/tests/strtok")
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
@@ -284,7 +287,8 @@ def run_teen48game(results, mode):
             if rec_6x6[1] == rec_6x6_old[1]:
                 rating_6x6 = rec_6x6_old[3]
 
-        lib_path = os.path.abspath(f"{choose_name(rec_4x4, mode)}_teen48_lib.so")
+        lib_path = os.path.abspath(
+            f"{choose_name(rec_4x4, mode)}_teen48_lib.so")
 
         if os.path.exists(lib_path):
             libs_4x4.append((lib_path, rating_4x4))
@@ -327,7 +331,8 @@ def run_tr4v31game(results, mode):
 
     print("TR4V31GAME RESULTS\n")
 
-    results_def = travel_runner.start_travel_game(libs)
+    test_path = os.path.abspath("games/travelgame/tests")
+    results_def = travel_runner.start_travel_game(libs, test_path)
 
     for i, rec in enumerate(data):
         sign = worker.wiki.SIGN[1]
@@ -369,7 +374,8 @@ def start_competition(instance, game, group_name, stage, is_practice):
     if stage == "release":
         print(f"SEARCHING FOR {game.upper()}"
               " DEPLOY JOB TO COMPARE NEW RESULTS WITH PREVIOUS ONES")
-        deploy_job = worker.repo.get_deploy_job(IU7GAMES, game.lower(), "master")
+        deploy_job = worker.repo.get_deploy_job(
+            IU7GAMES, game.lower(), "master")
         if deploy_job is not None:
             print(f"{game.upper()} DEPLOY JOB FOUND."
                   " NEW RESULTS WILL BE AFFECTED BY PREVIOUS ONES\n")
@@ -417,4 +423,5 @@ def add_args():
 if __name__ == "__main__":
     ARGS = add_args()
 
-    start_competition(GIT_INST, ARGS.game, ARGS.group_name, ARGS.stage, ARGS.is_practice)
+    start_competition(GIT_INST, ARGS.game, ARGS.group_name,
+                      ARGS.stage, ARGS.is_practice)

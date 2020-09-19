@@ -174,7 +174,7 @@ def check_flights(player_count, c_pointer, array_flights, count_flights):
     return utils.GameResult.okay
 
 
-def player_results(lib_path, c_pointer, file_pointer, route, array_flights, rewind):
+def player_results(lib_path, test_path, c_pointer, file_pointer, route, array_flights, rewind):
     """
        Получение и обработка результатов игрока.
        Подсчет времени выполнения функции игрока
@@ -202,7 +202,7 @@ def player_results(lib_path, c_pointer, file_pointer, route, array_flights, rewi
     memory_leak_check_res = utils.memory_leak_check(
         SAMPLE_PATH, lib_path,
         [
-            TESTS_PATH + FILE_FLIGHTS,
+            test_path + FILE_FLIGHTS,
             str(route.origin, utils.Constants.utf_8),
             str(route.destination, utils.Constants.utf_8),
             str(route.month), str(route.day)
@@ -253,7 +253,7 @@ def get_c_functions():
     return fopen, rewind, fclose
 
 
-def start_travel_game(players_info):
+def start_travel_game(players_info, test_path):
     """
        Открытие библиотеки с функциями игроков.
        Подсчет времени выполнения их функций.
@@ -261,7 +261,7 @@ def start_travel_game(players_info):
     """
     utils.redirect_ctypes_stdout()
 
-    with open(TESTS_PATH + FILE_FLIGHTS, "r") as file_flights:
+    with open(test_path + FILE_FLIGHTS, "r") as file_flights:
         test_data = create_test(file_flights)
         file_flights.seek(0)
         array_flights = solution(file_flights, test_data)
@@ -271,7 +271,7 @@ def start_travel_game(players_info):
     fopen, rewind, fclose = get_c_functions()
 
     mode = init_string("r")
-    file_name = init_string(TESTS_PATH + FILE_FLIGHTS)
+    file_name = init_string(test_path + FILE_FLIGHTS)
 
     c_pointer = ctypes.POINTER(ctypes.c_int)()
     file_pointer = fopen(file_name, mode)
@@ -287,7 +287,7 @@ def start_travel_game(players_info):
         rewind(file_pointer)
 
         results.append(
-            player_results(player_lib, c_pointer, file_pointer, route,
+            player_results(player_lib, test_path, c_pointer, file_pointer, route,
                            array_flights, rewind)
         )
 
@@ -300,4 +300,4 @@ def start_travel_game(players_info):
 
 if __name__ == "__main__":
     start_travel_game(["games/travelgame/test.so", "NULL",
-                       "games/travelgame/test.so"])
+                       "games/travelgame/test.so"], "games/travelgame/tests")
