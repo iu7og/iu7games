@@ -3,7 +3,7 @@ COMPILE_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion -c -O3"
 COMPILE_COV_FLAGS="-Werror -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual \
 -Wconversion -Wenum-compare -Wfloat-equal -Wredundant-decls -Wsign-conversion"
-SAMPLE_PATH_FLAG="-I$(dirname "$(dirname "$0")")/c_samples"
+SAMPLE_PATH_FLAG="-I$(dirname "$(dirname "$(realpath "$0")")")/c_samples"
 COVERAGE_FLAGS="-fprofile-arcs -ftest-coverage"
 GAME_PATH="$1"
 
@@ -78,7 +78,7 @@ then
         cat temp.txt
         echo -e "\033[0;32mCHECK PASSED\033[0m\n"
         rm -f temp.txt
-    fi 
+    fi
 else
     echo -e "\033[0;31m${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c NOT FOUND\033[0m\n"
 fi
