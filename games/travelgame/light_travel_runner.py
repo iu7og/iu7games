@@ -22,4 +22,4 @@ def light_travel_runner(player_lib_path, test_path):
 
 if __name__ == "__main__":
     light_travel_runner(
-        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_tr4v31_lib.so", "games/travelgame/tests")
+        f"/sandbox/{os.environ['GITLAB_USER_LOGIN']}_tr4v31_lib.so", "/games/travelgame/tests")

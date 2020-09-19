@@ -299,4 +299,4 @@ def start_travel_game(players_info, test_path):
 
 if __name__ == "__main__":
     start_travel_game(["games/travelgame/test.so", "NULL",
-                       "games/travelgame/test.so"], "games/travelgame/tests")
+                       "games/travelgame/test.so"], "/games/travelgame/tests")
