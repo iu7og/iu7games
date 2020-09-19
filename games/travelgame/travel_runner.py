@@ -33,7 +33,6 @@ TIMEIT_REPEATS = 10000
 MAX_LEN_AIRPORTS_NAME = 4
 MAX_COUNT_FLIGHTS = 86395
 
-TESTS_PATH = path.abspath("games/travelgame/tests")
 FILE_FLIGHTS = "/flights.csv"
 
 SAMPLE_PATH = utils.Constants.sample_path + "/travelgame.c"
