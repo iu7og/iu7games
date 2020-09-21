@@ -30,6 +30,7 @@ RUN python -m pip install -r requirements.txt
 
 COPY cfg/image_cfg/scripts /scripts
 COPY cfg/image_cfg/libs/* /usr/lib/
+COPY cfg/image_cfg/c_samples /c_samples
 COPY games/ /games
 
 RUN mkdir /sandbox \
