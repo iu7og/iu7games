@@ -9,6 +9,7 @@
 import sys
 import os
 import subprocess
+import logging
 from dataclasses import dataclass
 from statistics import median, pvariance
 from functools import reduce
@@ -91,8 +92,9 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
+    subprocess.run(["rm", lib_path], check=True)
     path = lib_path.split('/')
-    subprocess.run(
+    process = subprocess.run(
         [
             "gcc",
             "--std=c99",
@@ -104,9 +106,17 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             sample_path,
             "-l:" + path[-1]
         ],
-        check=True
+        stderr=subprocess.PIPE,
+        check=False
     )
     del path
+
+    if process.returncode != 0:
+        logging.error('\n%s', process.stderr.decode(Constants.utf_8).rstrip())
+        logging.error("Sample path is %s", sample_path)
+        logging.error("Lib path is %s", lib_path)
+        logging.error("Sample args is %s\n", str(sample_args))
+        return -1
 
     process = subprocess.run(
         [
