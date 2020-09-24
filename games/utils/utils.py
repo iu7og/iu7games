@@ -44,7 +44,10 @@ class Constants:
     """
         Прочие константы утилит
     """
-    sample_path = os.path.abspath("./cfg/image_cfg/c_samples/")
+    sample_path = os.path.abspath("/c_samples")
+    memory_leak_executable_path = os.path.abspath(
+        "/games/utils/memory_leak_check.out"
+    )
     utf_8 = "utf-8"
     test_file = "/test_data.txt"
     strtok_delimiters = " ,.;:"
@@ -90,8 +93,6 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
-    executable = os.path.abspath("./games/utils/memory_leak_check.out")
-
     path = lib_path.split('/')
     subprocess.run(
         [
@@ -101,7 +102,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             "-L" + "/".join(path[:-1]),
             "-Wl,-rpath=" + "/".join(path[:-1]),
             "-o",
-            executable,
+            Constants.memory_leak_executable_path,
             sample_path,
             "-l:" + path[-1]
         ],
@@ -118,13 +119,13 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             "--show-leak-kinds=all",
             "--track-origins=yes",
             "--error-exitcode=1",
-            executable
+            Constants.memory_leak_executable_path
         ] + sample_args,
         stderr=subprocess.PIPE,
         check=False
     )
 
-    subprocess.run(["rm", executable], check=True)
+    subprocess.run(["rm", Constants.memory_leak_executable_path], check=True)
 
     check_res = process.returncode
     return -1 if check_res else int(next(filter(
