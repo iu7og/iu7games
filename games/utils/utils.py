@@ -14,6 +14,7 @@ from statistics import median, pvariance
 from functools import reduce
 from multiprocessing import Process, Value
 from psutil import virtual_memory
+import logging
 
 
 @dataclass
@@ -92,7 +93,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
     """
 
     path = lib_path.split('/')
-    subprocess.run(
+    process = subprocess.run(
         [
             "gcc",
             "--std=c99",
@@ -104,9 +105,17 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             sample_path,
             "-l:" + path[-1]
         ],
-        check=True
+        stderr=subprocess.PIPE,
+        check=False
     )
     del path
+
+    if (process.returncode != 0):
+        logging.error(process.stderr.decode(Constants.utf_8))
+        logging.error("Sample path is " + sample_path)
+        logging.error("Lib path is " + lib_path)
+        logging.error("Sample args is " + str(sample_args))
+        return -1
 
     process = subprocess.run(
         [
