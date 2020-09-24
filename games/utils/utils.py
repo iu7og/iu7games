@@ -44,10 +44,8 @@ class Constants:
     """
         Прочие константы утилит
     """
-    sample_path = os.path.abspath("/c_samples")
-    memory_leak_executable_path = os.path.abspath(
-        "/games/utils/memory_leak_check.out"
-    )
+    sample_path = "/c_samples"
+    memory_leak_executable_path = "/games/utils/memory_leak_check.out"
     utf_8 = "utf-8"
     test_file = "/test_data.txt"
     strtok_delimiters = " ,.;:"
