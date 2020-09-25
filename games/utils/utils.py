@@ -46,7 +46,7 @@ class Constants:
         Прочие константы утилит
     """
     sample_path = "/c_samples"
-    memory_leak_executable_path = "/games/utils/memory_leak_check.out"
+    memory_leak_executable_path = "/sandbox/memory_leak_check.out"
     utf_8 = "utf-8"
     test_file = "/test_data.txt"
     strtok_delimiters = " ,.;:"
@@ -92,7 +92,6 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         Возвращаемое значение - кол-во утечек
     """
 
-    subprocess.run(["rm", lib_path], check=True)
     path = lib_path.split('/')
     process = subprocess.run(
         [
@@ -132,6 +131,13 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         stderr=subprocess.PIPE,
         check=False
     )
+
+    if process.returncode != 0:
+        logging.error('\n%s', process.stderr.decode(Constants.utf_8).rstrip())
+        logging.error("Sample path is %s", sample_path)
+        logging.error("Lib path is %s", lib_path)
+        logging.error("Sample args is %s\n", str(sample_args))
+        return -1
 
     subprocess.run(["rm", Constants.memory_leak_executable_path], check=True)
 
