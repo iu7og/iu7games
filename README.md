@@ -54,6 +54,9 @@ build:
 
 ## Changelog
 
+## 2.1.0 (24.09.2020) 
+* Открытая шестая игра **TRAVELgame**.
+
 ### 2.0.0 (04.05.2020)
 *   Открыта пятая игра **TEEN48game**. Запуск **#STAIU7HOME Spring Algorithm Practice**
 
