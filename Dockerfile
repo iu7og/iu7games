@@ -15,6 +15,7 @@ RUN apk add --no-cache \
     perl-json \
     git \
     make \
+    valgrind \
     \
     && cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
     && echo "Europe/Moscow" > /etc/timezone
@@ -25,8 +26,13 @@ RUN git clone https://github.com/linux-test-project/lcov \
     && cd .. \
     && rm -rf lcov/
 
+RUN apk add --no-cache --virtual .tmp-build-deps \
+    snappy snappy-dev krb5-dev
+
 COPY cfg/image_cfg/requirements.txt /requirements.txt
 RUN python -m pip install -r requirements.txt
+
+RUN apk del .tmp-build-deps
 
 COPY cfg/image_cfg/scripts /scripts
 COPY cfg/image_cfg/libs/* /usr/lib/
