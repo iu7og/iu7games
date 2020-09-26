@@ -9,6 +9,7 @@
 import sys
 import os
 import subprocess
+import logging
 from dataclasses import dataclass
 from statistics import median, pvariance
 from functools import reduce
@@ -44,10 +45,8 @@ class Constants:
     """
         Прочие константы утилит
     """
-    sample_path = os.path.abspath("/c_samples")
-    memory_leak_executable_path = os.path.abspath(
-        "/games/utils/memory_leak_check.out"
-    )
+    sample_path = "/c_samples"
+    memory_leak_executable_path = "/sandbox/memory_leak_check.out"
     utf_8 = "utf-8"
     test_file = "/test_data.txt"
     strtok_delimiters = " ,.;:"
@@ -94,7 +93,7 @@ def memory_leak_check(sample_path, lib_path, sample_args):
     """
 
     path = lib_path.split('/')
-    subprocess.run(
+    process = subprocess.run(
         [
             "gcc",
             "--std=c99",
@@ -106,9 +105,17 @@ def memory_leak_check(sample_path, lib_path, sample_args):
             sample_path,
             "-l:" + path[-1]
         ],
-        check=True
+        stderr=subprocess.PIPE,
+        check=False
     )
     del path
+
+    if process.returncode != 0:
+        logging.error('\n%s', process.stderr.decode(Constants.utf_8).rstrip())
+        logging.error("Sample path is %s", sample_path)
+        logging.error("Lib path is %s", lib_path)
+        logging.error("Sample args is %s\n", str(sample_args))
+        return -1
 
     process = subprocess.run(
         [
@@ -124,6 +131,13 @@ def memory_leak_check(sample_path, lib_path, sample_args):
         stderr=subprocess.PIPE,
         check=False
     )
+
+    if process.returncode != 0:
+        logging.error('\n%s', process.stderr.decode(Constants.utf_8).rstrip())
+        logging.error("Sample path is %s", sample_path)
+        logging.error("Lib path is %s", lib_path)
+        logging.error("Sample args is %s\n", str(sample_args))
+        return -1
 
     subprocess.run(["rm", Constants.memory_leak_executable_path], check=True)
 
