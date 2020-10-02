@@ -18,13 +18,13 @@ class Achievement:
     """
         Класс с названиями достижений игрока
     """
-    strategy_lost = 'strategy_lost'
-    wrong_res = 'wrong_res'
-    habitue = 'habitue'
-    first_among_equals = 'first_among_equals'
-    the_night_is_still_young = 'the_night_is_still_young'
-    almost_there = 'almost_there'
-    automerge_king = 'automerge_king'
+    strategy_lost = "strategy_lost"
+    wrong_res = "wrong_res"
+    habitue = "habitue"
+    first_among_equals = "first_among_equals"
+    the_night_is_still_young = "the_night_is_still_young"
+    almost_there = "almost_there"
+    automerge_king = "automerge_king"
 
 
 @dataclass
@@ -37,8 +37,8 @@ class Error:
     wrong_res = -2
 
 
-ERROR_REGEX = r'^[а-яА-Я ]+$'
-WRONG_RES_REGEX = r'^\[\d\]+$'
+ERROR_REGEX = r"^[а-яА-Я ]+$"
+WRONG_RES_REGEX = r"^\[\d\]+$"
 
 
 def add_achievements_to_db() -> None:
@@ -52,44 +52,44 @@ def add_achievements_to_db() -> None:
         achievement.delete()
 
     models.Achievement(
-        name='И так сойдет...',
-        description='Получить статус "Отсутствует стратегия" в лидерборде одной из игр',
+        name="И так сойдет...",
+        description="Получить статус 'Отсутствует стратегия' в лидерборде одной из игр",
         states={Achievement.strategy_lost: 1}
     ).save()
 
     models.Achievement(
-        name='Но у меня работало...',
-        description='Получить статус "[0]" в лидерборде одной из игр',
+        name="Но у меня работало...",
+        description="Получить статус '[0]' в лидерборде одной из игр",
         states={Achievement.wrong_res: 1}
     ).save()
 
     models.Achievement(
-        name='Завсегдатай...',
-        description='Во всех играх есть рабочая стратегия',
+        name="Завсегдатай...",
+        description="Во всех играх есть рабочая стратегия",
         states={Achievement.habitue: 5}
     ).save()
 
     models.Achievement(
-        name='Почти получилось',
-        description='Занять 4-ое место в одной из игр',
+        name="Почти получилось",
+        description="Занять 4-ое место в одной из игр",
         states={Achievement.almost_there: 1}
     ).save()
 
     models.Achievement(
-        name='Ещё не вечер',
-        description='Занять 2-ое или 3-е место в одной из игр',
+        name="Ещё не вечер",
+        description="Занять 2-ое или 3-е место в одной из игр",
         states={Achievement.the_night_is_still_young: 1}
     ).save()
 
     models.Achievement(
-        name='Первый среди равных',
-        description='Занять 1-ое место в одной из игр',
+        name="Первый среди равных",
+        description="Занять 1-ое место в одной из игр",
         states={Achievement.first_among_equals: 1}
     ).save()
 
     models.Achievement(
-        name='Король автомержей',
-        description='Войти в тройку во всех играх',
+        name="Король автомержей",
+        description="Войти в тройку во всех играх",
         states={Achievement.automerge_king: 5}
     ).save()
 
@@ -167,43 +167,43 @@ def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
         elif error_code == Error.wrong_res:
             update_tracker(player, Achievement.wrong_res, 1)
 
-        positions = {'1': 0, '1_2_3': 0, '2_3': 0, '4': 0, 'other': 0}
+        positions = {"1": 0, "1_2_3": 0, "2_3": 0, "4": 0, "other": 0}
         for res in results:
 
             if res.error_code != Error.default_value:
                 continue
 
             if res.position == 0:
-                positions['1'] += 1
+                positions["1"] += 1
 
             if res.position in (0, 1, 2):
-                positions['1_2_3'] += 1
+                positions["1_2_3"] += 1
 
             if res.position in (1, 2):
-                positions['2_3'] += 1
+                positions["2_3"] += 1
 
             if res.position == 3:
-                positions['4'] += 1
+                positions["4"] += 1
 
-            positions['other'] += 1
+            positions["other"] += 1
 
         # Завсегдатай
-        update_tracker(player, Achievement.habitue, positions['other'])
+        update_tracker(player, Achievement.habitue, positions["other"])
 
         # Почти получилось
         update_tracker(player, Achievement.almost_there,
-                       1 if positions['4'] > 0 else 0)
+                       1 if positions["4"] > 0 else 0)
 
         # Ещё не вечер
         update_tracker(player, Achievement.the_night_is_still_young,
-                       1 if positions['2_3'] > 0 else 0)
+                       1 if positions["2_3"] > 0 else 0)
 
         # Король автомержей
-        update_tracker(player, Achievement.automerge_king, positions['1_2_3'])
+        update_tracker(player, Achievement.automerge_king, positions["1_2_3"])
 
         # Первый среди равных
         update_tracker(player, Achievement.first_among_equals,
-                       1 if positions['1'] > 0 else 0)
+                       1 if positions["1"] > 0 else 0)
 
     mg.connect()
 
