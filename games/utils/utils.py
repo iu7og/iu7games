@@ -61,8 +61,12 @@ def call_libary(player_lib, wrapper, argtype, stdval, *args):
 
     move = Value(argtype, stdval)
     proc = Process(target=wrapper, args=(player_lib, move, *args))
-    proc.start()
-    proc.join()
+
+    try:
+        proc.start()
+        proc.join()
+    except OSError as error:
+        print(f"Ctypes call error: {error}") # return out of memory?
 
     return move.value
 
