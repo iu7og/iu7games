@@ -15,54 +15,62 @@
 """
 
 import ctypes
+from dataclasses import dataclass
 from random import randint
 import games.utils.utils as utils
 
-ROWS = 20
-COLUMNS = 10
-MAX_LEN_FIGURE = 4
-COUNT_FIGURES = 7
-MIN_INDEX = 0
-MAX_INDEX = 9
 
-ASCII_X = 88
 
-POINTS = 10
-ADD_POINTS = 5
-MAX_SCORE = 1000
+@dataclass
+class Tetris:
+    """
+        Константы игры тетрис
+    """
+    rows = 20
+    columns = 10
+    height_figure = 4
+    count_figures = 7
+    min_move = 0
+    max_move = 9
+
+    ascii_x = 88
+    max_score = 1000
+    points = 10
+    bonus = 5
 
 
 def print_gamefield(c_strings):
     """
         Печать игрового поля.
     """
+    frame = "┏" + "━" * Tetris.columns + "┓"
+    print(f"\033[33m\nGAMEFIELD\033[0m")
+    print(f"\033[30m{frame}\033[0m")
 
-    print("\033[33m{}\033[0m" .format("\nGAMEFIELD:"))
-    print("\033[30m{}\033[0m" .format("┏" + "━" * COLUMNS + "┓"))
-
-    for i in range(ROWS):
+    for i in range(Tetris.rows):
         line = c_strings[i].value.decode(utils.Constants.utf_8)
-        print("\033[30m{}" .format("┃"), end="")
-        for j in range(COLUMNS):
-            if line[j] == 'J':
-                print("\033[31m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'I':
-                print("\033[32m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'O':
-                print("\033[33m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'L':
-                print("\033[34m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'Z':
-                print("\033[35m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'T':
-                print("\033[36m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'S':
-                print("\033[37m{}\033[0m" .format(line[j]), end="")
-            if line[j] == 'X':
-                print("\033[30m{}\033[0m" .format(line[j]), end="")
-        print("\033[30m{}\033[0m" .format("┃"))
+        print(f"\033[30m┃", end="")
+        for symbol in line:
+            if symbol == 'J':
+                print(f"\033[31m{symbol}\033[0m", end="")
+            if symbol == 'I':
+                print(f"\033[32m{symbol}\033[0m", end="")
+            if symbol == 'O':
+                print(f"\033[33m{symbol}\033[0m", end="")
+            if symbol == 'L':
+                print(f"\033[34m{symbol}\033[0m", end="")
+            if symbol == 'Z':
+                print(f"\033[35m{symbol}\033[0m", end="")
+            if symbol == 'T':
+                print(f"\033[36m{symbol}\033[0m", end="")
+            if symbol == 'S':
+                print(f"\033[37m{symbol}\033[0m", end="")
+            if symbol == 'X':
+                print(f"\033[30m{symbol}\033[0m", end="")
+        print(f"\033[30m┃")
 
-    print("\033[30m{}\033[0m" .format("┗" + "━" * COLUMNS + "┛"))
+    frame = "┗" + "━" * Tetris.columns + "┛"
+    print(f"\033[30m{frame}\033[0m")
 
 
 def scoring(count_full_lines):
@@ -72,7 +80,7 @@ def scoring(count_full_lines):
     points = 0
 
     for i in range(count_full_lines):
-        points += POINTS * i + POINTS
+        points += Tetris.points * i + Tetris.points
 
     return points
 
@@ -82,7 +90,7 @@ def remove_lines(c_strings, line, c_strings_copy):
         Удаление заполненных строк.
     """
     empty_line = [ctypes.create_string_buffer(
-        b'X' * COLUMNS) for i in range(ROWS)]
+        b'X' * Tetris.columns) for i in range(Tetris.rows)]
 
     for i in range(line, 0, -1):
         c_strings[i].value = c_strings[i - 1].value
@@ -97,12 +105,12 @@ def find_filled_lines(c_strings, c_strings_copy):
     """
 
     count = 0
-    i = ROWS - 1
+    i = Tetris.rows - 1
 
     while i > 0:
         fl = True
-        for j in range(COLUMNS):
-            if (c_strings[i].value)[j] == ASCII_X:
+        for j in range(Tetris.columns):
+            if (c_strings[i].value)[j] == Tetris.ascii_x:
                 fl = False
         if fl:
             count += 1
@@ -118,7 +126,7 @@ def copy(c_strings_copy, c_strings):
         Копирование игрового поля.
     """
 
-    for i in range(ROWS):
+    for i in range(Tetris.rows):
         c_strings_copy[i].value = c_strings[i].value
 
 
@@ -126,11 +134,11 @@ def print_now_score(player, points):
     """
         Печать текущих очков игрока.
     """
-    print("\033[33m{}\033[0m" .format("PLAYER: "), end="")
-    print("\033[37m{}\033[0m" .format(player))
+    print(f"\033[33mPLAYER: \033[0m", end="")
+    print(f"\033[37m{player}\033[0m")
 
-    print("\033[33m{}\033[0m" .format("NOW SCORE: "), end="")
-    print("\033[37m{}\033[0m" .format(str(points)))
+    print(f"\033[33mNOW SCORE: \033[0m", end="")
+    print(f"\033[37m{str(points)}\033[0m")
 
 
 def get_height_figure(figure):
@@ -139,10 +147,10 @@ def get_height_figure(figure):
     """
 
     max_height = 0
-    for j in range(MAX_LEN_FIGURE):
+    for j in range(Tetris.height_figure):
         now_height = 0
 
-        for i in range(MAX_LEN_FIGURE):
+        for i in range(Tetris.height_figure):
             if figure[i][j] != 'X':
                 now_height +=1
 
@@ -157,34 +165,34 @@ def shift_figure(matrix_figure):
         Сдвиг фигуры в матрице фигуры в левый угол.
     """
     i = 0
-    while i < MAX_LEN_FIGURE - 1:
+    while i < Tetris.height_figure - 1:
         count = 0
-        for j in range(MAX_LEN_FIGURE):
+        for j in range(Tetris.height_figure):
             if matrix_figure[i][j] == 'X':
                 count += 1
 
-        if count == MAX_LEN_FIGURE:
-            for k in range(MAX_LEN_FIGURE - 1):
-                for j in range(MAX_LEN_FIGURE):
+        if count == Tetris.height_figure:
+            for k in range(Tetris.height_figure - 1):
+                for j in range(Tetris.height_figure):
                     matrix_figure[k][j] = matrix_figure[k + 1][j]
-            for j in range(MAX_LEN_FIGURE):
-                matrix_figure[MAX_LEN_FIGURE - i - 1][j] = 'X'
+            for j in range(Tetris.height_figure):
+                matrix_figure[Tetris.height_figure - i - 1][j] = 'X'
         else:
             break
 
     j = 0
-    while j < MAX_LEN_FIGURE - 1:
+    while j < Tetris.height_figure - 1:
         count = 0
-        for i in range(MAX_LEN_FIGURE):
+        for i in range(Tetris.height_figure):
             if matrix_figure[i][j] == 'X':
                 count += 1
 
-        if count == MAX_LEN_FIGURE:
-            for k in range(MAX_LEN_FIGURE - 1):
-                for i in range(MAX_LEN_FIGURE):
+        if count == Tetris.height_figure:
+            for k in range(Tetris.height_figure - 1):
+                for i in range(Tetris.height_figure):
                     matrix_figure[i][k] = matrix_figure[i][k + 1]
-            for i in range(MAX_LEN_FIGURE):
-                matrix_figure[i][MAX_LEN_FIGURE - j - 1] = 'X'
+            for i in range(Tetris.height_figure):
+                matrix_figure[i][Tetris.height_figure - j - 1] = 'X'
         else:
             break
 
@@ -195,7 +203,7 @@ def rotate_figure(figure):
     """
         Поворот фигуры на 90 градусов по часовой стрелке.
     """
-    return [[figure[j][i] for j in range(MAX_LEN_FIGURE - 1, -1, -1)] for i in range(MAX_LEN_FIGURE)]
+    return [[figure[j][i] for j in range(Tetris.height_figure - 1, -1, -1)] for i in range(Tetris.height_figure)]
 
 
 def move_figure(move, angle, figure, c_strings):
@@ -203,7 +211,7 @@ def move_figure(move, angle, figure, c_strings):
         Ход в указанную игроком позицию.
     """
 
-    if angle.value not in [0, 3, 6, 9]:
+    if angle.value not in (0, 3, 6, 9):
         return False
 
     for i in range(angle.value // 3):
@@ -212,25 +220,20 @@ def move_figure(move, angle, figure, c_strings):
     figure = shift_figure(figure)
     height = get_height_figure(figure)
 
-    if (c_strings[0].value)[move] != ASCII_X:
+    if (c_strings[0].value)[move] != Tetris.ascii_x:
         return False
 
     free_position = 0
-    while (c_strings[free_position].value)[move] == ASCII_X:
+    while (c_strings[free_position].value)[move] == Tetris.ascii_x and free_position < Tetris.rows - 1:
         free_position += 1
 
-        if free_position == ROWS:
-            break
-
-    free_position -= 1
-
-    for i in range(MAX_LEN_FIGURE):
-        for j in range(MAX_LEN_FIGURE):
+    for i in range(Tetris.height_figure):
+        for j in range(Tetris.height_figure):
             if figure[i][j] != 'X':
-                if move + j > COLUMNS - 1 or free_position - (height - i - 1) < 0 or \
-                    free_position - (height - i - 1) > ROWS - 1:
+                if move + j > Tetris.columns - 1 or free_position - (height - i - 1) < 0 or \
+                    free_position - (height - i - 1) > Tetris.rows - 1:
                     return False
-                if (c_strings[free_position - (height - i - 1)].value)[move + j] != ASCII_X:
+                if (c_strings[free_position - (height - i - 1)].value)[move + j] != Tetris.ascii_x:
                     return False
 
                 replacement_string = list(c_strings[free_position - (height - i - 1)].value)
@@ -245,10 +248,10 @@ def check_player_move(move, c_strings, c_strings_copy):
        Проверка корректности возвращаемого игроком значения.
     """
 
-    if move < MIN_INDEX or move > MAX_INDEX:
+    if move < Tetris.min_move or move > Tetris.max_move:
         return False
 
-    for i in range(ROWS):
+    for i in range(Tetris.rows):
         if c_strings_copy[i].value != c_strings[i].value:
             return False
 
@@ -268,13 +271,13 @@ def print_figure(figure):
         Печать текущей фигуры.
     """
 
-    print("\033[33m{}\033[0m" .format("\nNEW FIGURE:"))
-    for i in range(MAX_LEN_FIGURE):
-        for j in range(MAX_LEN_FIGURE):
-            if (j == MAX_LEN_FIGURE - 1):
-                print(figure[i][j], end = "\n")
+    print(f"\033[33m\nNEW FIGURE:\033[0m")
+    for i in range(Tetris.height_figure):
+        for j in range(Tetris.height_figure):
+            if j == Tetris.height_figure - 1:
+                print(figure[i][j], end="\n")
             else:
-                print(figure[i][j], end = "")
+                print(figure[i][j], end="")
     print("")
 
 
@@ -284,12 +287,13 @@ def get_figure():
         Создание матрицы, представляющей фигуру.
     """
 
-    figures = ['J', 'I', 'O', 'L', 'Z', 'T', 'S']
+    figures_analogues = ('J', 'I', 'O', 'L', 'Z', 'T', 'S')
 
-    figure = figures[randint(0, COUNT_FIGURES - 1)]
+    figure = figures_analogues[randint(0, Tetris.count_figures - 1)]
 
-    matrix_figure = [['X'] * MAX_LEN_FIGURE for i in range(MAX_LEN_FIGURE)]
+    matrix_figure = [['X'] * Tetris.height_figure for i in range(Tetris.height_figure)]
 
+    # The borders - height and lenght of the figure
     if figure == 'J':
         for i in range(2):
             matrix_figure[2][i] = 'J'
@@ -338,10 +342,10 @@ def create_c_objects():
     """
 
     c_strings = [ctypes.create_string_buffer(
-        b'X' * COLUMNS) for i in range(ROWS)]
+        b'X' * Tetris.columns) for i in range(Tetris.rows)]
     c_strings_copy = [ctypes.create_string_buffer(
-        b'X' * COLUMNS) for i in range(ROWS)]
-    c_gamefield = (ctypes.c_char_p * ROWS)(*
+        b'X' * Tetris.columns) for i in range(Tetris.rows)]
+    c_gamefield = (ctypes.c_char_p * Tetris.rows)(*
     map(ctypes.addressof, c_strings))
 
     return c_strings, c_strings_copy, c_gamefield
@@ -393,7 +397,7 @@ def start_tetris_competition(players_info):
                 if not is_done:
                     print_now_score(player, points)
                     break
-                points += ADD_POINTS
+                points += Tetris.bonus
                 copy(c_strings_copy, c_strings)
 
                 count_full_line = find_filled_lines(c_strings, c_strings_copy)
@@ -405,7 +409,7 @@ def start_tetris_competition(players_info):
                 print_now_score(player, points)
                 print_gamefield(c_strings)
 
-                if points >= MAX_SCORE:
+                if points >= Tetris.max_score:
                     game = False
 
             else:
@@ -414,8 +418,8 @@ def start_tetris_competition(players_info):
 
         results.append(points)
 
-    print("\033[33m{}\033[0m" .format("RESULTS: "), end="")
-    print(results)
+    print(f"\033[33mRESULTS: {results}\033[0m")
+
     return results
 
 
