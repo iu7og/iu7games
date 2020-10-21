@@ -17,8 +17,7 @@ def light_tetris_runner(player_lib_path):
     """
 
     start_tetris_competition([player_lib_path])
-    print(
-        f"\033[0;32mTETRIS GAME: OKAY\033[0m")
+    print("\033[0;32mTETRIS GAME: OKAY\033[0m")
 
 
 if __name__ == "__main__":

@@ -19,19 +19,20 @@ from dataclasses import dataclass
 from random import randint
 import games.utils.utils as utils
 
+MIN_MOVE = 0
+MAX_MOVE = 9
+
+COUNT_FIGURES = 7
 
 
 @dataclass
 class Tetris:
     """
-        Константы игры тетрис
+        Константы игры тетрис.
     """
     rows = 20
     columns = 10
     height_figure = 4
-    count_figures = 7
-    min_move = 0
-    max_move = 9
 
     ascii_x = 88
     max_score = 1000
@@ -44,12 +45,12 @@ def print_gamefield(c_strings):
         Печать игрового поля.
     """
     frame = "┏" + "━" * Tetris.columns + "┓"
-    print(f"\033[33m\nGAMEFIELD\033[0m")
+    print("\033[33m\nGAMEFIELD\033[0m")
     print(f"\033[30m{frame}\033[0m")
 
     for i in range(Tetris.rows):
         line = c_strings[i].value.decode(utils.Constants.utf_8)
-        print(f"\033[30m┃", end="")
+        print("\033[30m┃", end="")
         for symbol in line:
             if symbol == 'J':
                 print(f"\033[31m{symbol}\033[0m", end="")
@@ -67,7 +68,7 @@ def print_gamefield(c_strings):
                 print(f"\033[37m{symbol}\033[0m", end="")
             if symbol == 'X':
                 print(f"\033[30m{symbol}\033[0m", end="")
-        print(f"\033[30m┃")
+        print("\033[30m┃")
 
     frame = "┗" + "━" * Tetris.columns + "┛"
     print(f"\033[30m{frame}\033[0m")
@@ -85,7 +86,7 @@ def scoring(count_full_lines):
     return points
 
 
-def remove_lines(c_strings, line, c_strings_copy):
+def remove_lines(c_strings, line):
     """
         Удаление заполненных строк.
     """
@@ -98,7 +99,7 @@ def remove_lines(c_strings, line, c_strings_copy):
     c_strings[0].value = empty_line[0].value
 
 
-def find_filled_lines(c_strings, c_strings_copy):
+def find_filled_lines(c_strings):
     """
         Подсчет заполненных строк.
         Их удаление.
@@ -108,13 +109,13 @@ def find_filled_lines(c_strings, c_strings_copy):
     i = Tetris.rows - 1
 
     while i > 0:
-        fl = True
+        full = True
         for j in range(Tetris.columns):
             if (c_strings[i].value)[j] == Tetris.ascii_x:
-                fl = False
-        if fl:
+                full = False
+        if full:
             count += 1
-            remove_lines(c_strings, i, c_strings_copy)
+            remove_lines(c_strings, i)
         else:
             i -= 1
 
@@ -134,10 +135,10 @@ def print_now_score(player, points):
     """
         Печать текущих очков игрока.
     """
-    print(f"\033[33mPLAYER: \033[0m", end="")
+    print("\033[33mPLAYER: \033[0m", end="")
     print(f"\033[37m{player}\033[0m")
 
-    print(f"\033[33mNOW SCORE: \033[0m", end="")
+    print("\033[33mNOW SCORE: \033[0m", end="")
     print(f"\033[37m{str(points)}\033[0m")
 
 
@@ -165,7 +166,8 @@ def shift_figure(matrix_figure):
         Сдвиг фигуры в матрице фигуры в левый угол.
     """
     i = 0
-    while i < Tetris.height_figure - 1:
+    count = Tetris.height_figure
+    while i < Tetris.height_figure - 1 and count == Tetris.height_figure:
         count = 0
         for j in range(Tetris.height_figure):
             if matrix_figure[i][j] == 'X':
@@ -177,11 +179,10 @@ def shift_figure(matrix_figure):
                     matrix_figure[k][j] = matrix_figure[k + 1][j]
             for j in range(Tetris.height_figure):
                 matrix_figure[Tetris.height_figure - i - 1][j] = 'X'
-        else:
-            break
 
     j = 0
-    while j < Tetris.height_figure - 1:
+    count = Tetris.height_figure
+    while j < Tetris.height_figure - 1 and count == Tetris.height_figure:
         count = 0
         for i in range(Tetris.height_figure):
             if matrix_figure[i][j] == 'X':
@@ -193,8 +194,6 @@ def shift_figure(matrix_figure):
                     matrix_figure[i][k] = matrix_figure[i][k + 1]
             for i in range(Tetris.height_figure):
                 matrix_figure[i][Tetris.height_figure - j - 1] = 'X'
-        else:
-            break
 
     return matrix_figure
 
@@ -203,7 +202,8 @@ def rotate_figure(figure):
     """
         Поворот фигуры на 90 градусов по часовой стрелке.
     """
-    return [[figure[j][i] for j in range(Tetris.height_figure - 1, -1, -1)] for i in range(Tetris.height_figure)]
+    return [[figure[j][i] for j in range(Tetris.height_figure - 1, -1, -1)] \
+        for i in range(Tetris.height_figure)]
 
 
 def move_figure(move, angle, figure, c_strings):
@@ -224,7 +224,8 @@ def move_figure(move, angle, figure, c_strings):
         return False
 
     free_position = 0
-    while (c_strings[free_position].value)[move] == Tetris.ascii_x and free_position < Tetris.rows - 1:
+    while (c_strings[free_position].value)[move] == Tetris.ascii_x and \
+        free_position < Tetris.rows - 1:
         free_position += 1
 
     for i in range(Tetris.height_figure):
@@ -248,7 +249,7 @@ def check_player_move(move, c_strings, c_strings_copy):
        Проверка корректности возвращаемого игроком значения.
     """
 
-    if move < Tetris.min_move or move > Tetris.max_move:
+    if move < MIN_MOVE or move > MAX_MOVE:
         return False
 
     for i in range(Tetris.rows):
@@ -271,7 +272,7 @@ def print_figure(figure):
         Печать текущей фигуры.
     """
 
-    print(f"\033[33m\nNEW FIGURE:\033[0m")
+    print("\033[33m\nNEW FIGURE:\033[0m")
     for i in range(Tetris.height_figure):
         for j in range(Tetris.height_figure):
             if j == Tetris.height_figure - 1:
@@ -289,7 +290,7 @@ def get_figure():
 
     figures_analogues = ('J', 'I', 'O', 'L', 'Z', 'T', 'S')
 
-    figure = figures_analogues[randint(0, Tetris.count_figures - 1)]
+    figure = figures_analogues[randint(0, COUNT_FIGURES - 1)]
 
     matrix_figure = [['X'] * Tetris.height_figure for i in range(Tetris.height_figure)]
 
@@ -298,7 +299,7 @@ def get_figure():
         for i in range(2):
             matrix_figure[2][i] = 'J'
         for i in range(2):
-            matrix_figure[i][1] = 'J'   
+            matrix_figure[i][1] = 'J'
 
     if figure == 'I':
         for i in range(4):
@@ -313,24 +314,24 @@ def get_figure():
         for i in range(1, 3):
             matrix_figure[2][i] = 'L'
         for i in range(3):
-            matrix_figure[i][0] = 'L' 
+            matrix_figure[i][0] = 'L'
 
     if figure == 'Z':
         for i in range(2):
             matrix_figure[0][i] = 'Z'
         for i in range(1, 3):
-            matrix_figure[1][i] = 'Z' 
+            matrix_figure[1][i] = 'Z'
 
     if figure == 'T':
         for i in range(3):
             matrix_figure[0][i] = 'T'
-        matrix_figure[1][1] = 'T' 
+        matrix_figure[1][1] = 'T'
 
     if figure == 'S':
         for i in range(1, 3):
             matrix_figure[0][i] = 'S'
         for i in range(2):
-            matrix_figure[1][i] = 'S' 
+            matrix_figure[1][i] = 'S'
 
     return figure, matrix_figure
 
@@ -389,18 +390,18 @@ def start_tetris_competition(players_info):
                 break
 
             move = player_lib.tetris_game(gamefield, c_figure, ctypes.byref(angle))
-            move_info = check_player_move(move, c_strings, c_strings_copy)
+            #move_info = check_player_move(move, c_strings, c_strings_copy)
 
-            if move_info:
-                is_done = move_figure(move, angle, matrix_figure, c_strings)
+            if check_player_move(move, c_strings, c_strings_copy):
 
-                if not is_done:
+                if not move_figure(move, angle, matrix_figure, c_strings):
                     print_now_score(player, points)
                     break
+
                 points += Tetris.bonus
                 copy(c_strings_copy, c_strings)
 
-                count_full_line = find_filled_lines(c_strings, c_strings_copy)
+                count_full_line = find_filled_lines(c_strings)
 
                 if count_full_line:
                     copy(c_strings_copy, c_strings)
@@ -424,4 +425,5 @@ def start_tetris_competition(players_info):
 
 
 if __name__ == "__main__":
-    start_tetris_competition(["games/tetrisgame/Anna.so", "NULL", "games/tetrisgame/Oleg.so", "games/tetrisgame/Misha.so"])
+    start_tetris_competition(["games/tetrisgame/Anna.so", "NULL",
+                              "games/tetrisgame/Oleg.so", "games/tetrisgame/Misha.so"])
