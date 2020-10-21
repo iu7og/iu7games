@@ -19,11 +19,6 @@ from dataclasses import dataclass
 from random import randint
 import games.utils.utils as utils
 
-MIN_MOVE = 0
-MAX_MOVE = 9
-
-COUNT_FIGURES = 7
-
 
 @dataclass
 class Tetris:
@@ -33,8 +28,12 @@ class Tetris:
     rows = 20
     columns = 10
     height_figure = 4
+    count_figures = 7
+    min_move = 0
+    max_move = 9
 
     ascii_x = 88
+
     max_score = 1000
     points = 10
     bonus = 5
@@ -153,7 +152,7 @@ def get_height_figure(figure):
 
         for i in range(Tetris.height_figure):
             if figure[i][j] != 'X':
-                now_height +=1
+                now_height += 1
 
         if now_height > max_height:
             max_height = now_height
@@ -249,7 +248,7 @@ def check_player_move(move, c_strings, c_strings_copy):
        Проверка корректности возвращаемого игроком значения.
     """
 
-    if move < MIN_MOVE or move > MAX_MOVE:
+    if move < Tetris.min_move or move > Tetris.max_move:
         return False
 
     for i in range(Tetris.rows):
@@ -290,7 +289,7 @@ def get_figure():
 
     figures_analogues = ('J', 'I', 'O', 'L', 'Z', 'T', 'S')
 
-    figure = figures_analogues[randint(0, COUNT_FIGURES - 1)]
+    figure = figures_analogues[randint(0, Tetris.count_figures - 1)]
 
     matrix_figure = [['X'] * Tetris.height_figure for i in range(Tetris.height_figure)]
 
