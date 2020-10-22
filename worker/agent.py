@@ -17,6 +17,7 @@ from games.xogame import xo_runner
 from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
 from games.travelgame import travel_runner
+from games.tetrisgame import tetris_runner
 
 
 SIGMA_COEF = 3
@@ -359,6 +360,47 @@ def run_tr4v31game(results, mode):
     return data
 
 
+def run_t3tr15game(results, mode):
+    """
+        Старт T3RT15game.
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    results_old = []
+
+    if os.path.exists("tbdump_t3tr15game.obj"):
+        results_dump = open("tbdump_t3tr15game.obj", "rb")
+        results_old = pickle.load(results_dump)
+
+    for rec in data:
+        rating = 0
+
+        for rec_old in results_old:
+            if rec[1] == rec_old[1]:
+                rating = rec_old[3]
+
+        lib_path = os.path.abspath(
+            f"{choose_name(rec, mode)}_t3tr15_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append((lib_path, rating))
+        else:
+            libs.append(("NULL", rating))
+
+    print("T3TR15 RESULTS\n")
+    results = tetris_runner.start_tetris_competition(libs)
+
+    i = 0
+    for rec in data:
+        rec.insert(3, results[i])
+        i += 1
+
+    return data
+
+
 def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
@@ -397,6 +439,8 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults, sresults = run_teen48game(results, is_practice)
     elif game.startswith("TR4V31game"):
         fresults = run_tr4v31game(results, is_practice)
+    elif game.startswith("T3TR15game"):
+        fresults = run_t3tr15game(results, is_practice)
 
     if stage == "release":
         worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
