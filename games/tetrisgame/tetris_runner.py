@@ -389,7 +389,6 @@ def start_tetris_competition(players_info):
                 break
 
             move = player_lib.tetris_game(gamefield, c_figure, ctypes.byref(angle))
-            #move_info = check_player_move(move, c_strings, c_strings_copy)
 
             if check_player_move(move, c_strings, c_strings_copy):
 
