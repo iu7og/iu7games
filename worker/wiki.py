@@ -293,7 +293,7 @@ def handle_t3tr15game(fresults):
     """
 
     results = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                             "T3TR15game", "")
+                         "T3TR15game", "")
 
     with open(os.path.abspath("templates/t3tr15game.template")) as template:
         tmp = template.read()
