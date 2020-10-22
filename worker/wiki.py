@@ -158,8 +158,8 @@ def form_table(results, sort_keys, output_params, game, compet):
 
     results_old = []
 
-    if os.path.exists(f"tbdump_{game.lower()}_{compet}.obj"):
-        results_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "rb")
+    if os.path.exists(f"tbdump_{game.lower()}{compet}.obj"):
+        results_dump = open(f"tbdump_{game.lower()}{compet}.obj", "rb")
         results_old = pickle.load(results_dump)
 
     prize = {1: "🥇", 2: "🥈", 3: "🥉"}
@@ -176,7 +176,7 @@ def form_table(results, sort_keys, output_params, game, compet):
 
         new_rec[0] = place
 
-    results_dump = open(f"tbdump_{game.lower()}_{compet}.obj", "wb")
+    results_dump = open(f"tbdump_{game.lower()}{compet}.obj", "wb")
     pickle.dump(results_new, results_dump)
 
     return results_new
@@ -220,9 +220,9 @@ def handle_xogame(fresults, sresults):
     """
 
     results_3x3 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                             "XOgame", "3x3")
+                             "XOgame", "_3x3")
     results_5x5 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                             "XOgame", "5x5")
+                             "XOgame", "_5x5")
 
     with open(os.path.abspath("templates/xogame.template")) as template:
         tmp = template.read()
@@ -239,9 +239,9 @@ def handle_strgame(fresults, sresults):
     """
 
     results_split = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                               "STRgame", "split")
+                               "STRgame", "_split")
     results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
-                                "STRgame", "strtok")
+                                "STRgame", "_strtok")
 
     with open(os.path.abspath("templates/strgame.template")) as template:
         tmp = template.read()
@@ -258,9 +258,9 @@ def handle_teen48game(fresults, sresults):
     """
 
     results_4x4 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                             "TEEN48game", "4x4")
+                             "TEEN48game", "_4x4")
     results_6x6 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
-                             "TEEN48game", "6x6")
+                             "TEEN48game", "_6x6")
 
     with open(os.path.abspath("templates/teen48game.template")) as template:
         tmp = template.read()
