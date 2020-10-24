@@ -120,8 +120,8 @@ def params_sort(results, sort_keys, output_params, game):
         Сортировка результатов в зависимости от игры.
     """
 
-    timedep_games = ["NUM63RSgame", "7EQUEENCEgame", "STRgame", "TR4V31game"]
-    timedepless_games = ["XOgame", "TEEN48game", "T3TR15game"]
+    timedep_games = ("NUM63RSgame", "7EQUEENCEgame", "STRgame", "TR4V31game")
+    timedepless_games = ("XOgame", "TEEN48game", "T3TR15game")
 
     if game in timedep_games:
         results = sorted(results, key=cmp_to_key(dispcmp), reverse=True)
@@ -140,7 +140,7 @@ def params_sort(results, sort_keys, output_params, game):
             if rec[sort_keys[0]] == output_params[0]:
                 if game == "XOgame":
                     rec[sort_keys[0]] = 1000
-                if game in ["TEEN48game", "T3TR15game"]:
+                if game in ("TEEN48game", "T3TR15game"):
                     rec[sort_keys[0]] = 0
             rec[SINGLE_TIME_COL] = rec[SINGLE_TIME_COL].strftime(
                 "%H:%M:%S %d.%m.%Y")
@@ -159,8 +159,8 @@ def form_table(results, sort_keys, output_params, game, compet):
     results_old = []
 
     if os.path.exists(f"tbdump_{game.lower()}{compet}.obj"):
-        results_dump = open(f"tbdump_{game.lower()}{compet}.obj", "rb")
-        results_old = pickle.load(results_dump)
+        with open(f"tbdump_{game.lower()}{compet}.obj", "rb") as results_dump:
+            results_old = pickle.load(results_dump)
 
     prize = {1: "🥇", 2: "🥈", 3: "🥉"}
 
@@ -176,8 +176,8 @@ def form_table(results, sort_keys, output_params, game, compet):
 
         new_rec[0] = place
 
-    results_dump = open(f"tbdump_{game.lower()}{compet}.obj", "wb")
-    pickle.dump(results_new, results_dump)
+    with open(f"tbdump_{game.lower()}{compet}.obj", "wb") as results_dump:
+        pickle.dump(results_new, results_dump)
 
     return results_new
 

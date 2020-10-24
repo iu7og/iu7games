@@ -372,8 +372,8 @@ def run_t3tr15game(results, mode):
     results_old = []
 
     if os.path.exists("tbdump_t3tr15game.obj"):
-        results_dump = open("tbdump_t3tr15game.obj", "rb")
-        results_old = pickle.load(results_dump)
+        with open("tbdump_t3tr15game.obj", "rb") as results_dump:
+            results_old = pickle.load(results_dump)
 
     for rec in data:
         rating = 0
@@ -393,10 +393,8 @@ def run_t3tr15game(results, mode):
     print("T3TR15 RESULTS\n")
     results = tetris_runner.start_tetris_competition(libs)
 
-    i = 0
-    for rec in data:
+    for i, rec in enumerate(data):
         rec.insert(3, results[i])
-        i += 1
 
     return data
 
