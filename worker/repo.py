@@ -9,9 +9,15 @@ import hashlib
 import gitlab
 
 from dateutil import parser
+from dataclasses import dataclass
 
-COLLECTED = 1
-BAD_CALL = 2
+@dataclass
+class Repo:
+    """
+        Константы repo.
+    """
+    collected = 1
+    bad_call = 2
 
 
 def get_group(instance, name):
@@ -136,11 +142,11 @@ def get_artifacts(project, job):
 
         subprocess.run(["unzip", "-qo", zip_arts], check=True)
     except (gitlab.exceptions.GitlabGetError, subprocess.CalledProcessError):
-        return BAD_CALL
+        return Repo.bad_call
 
     os.unlink(zip_arts)
 
-    return COLLECTED
+    return Repo.collected
 
 
 def get_group_artifacts(instance, game, group_name):
@@ -194,9 +200,9 @@ def get_group_artifacts(instance, game, group_name):
             print(f"CORRECT CI FOUND FOR {user_result[2]}")
             status = get_artifacts(project, job)
 
-            if status == COLLECTED:
+            if status == Repo.collected:
                 print(f"ARTIFACTS FOR {user_result[2]} ARE COLLECTED")
-            elif status == BAD_CALL:
+            elif status == Repo.bad_call:
                 print(f"THERE ARE NO ARTIFACTS FOR {user_result[2]}")
         else:
             print(f"THERE IS NO DEVELOPER FOR {project.name}")

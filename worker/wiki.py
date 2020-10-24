@@ -9,29 +9,35 @@ import operator
 from datetime import datetime
 from copy import deepcopy
 from functools import cmp_to_key
+from dataclasses import dataclass
 
 from jinja2 import Template
 import intervals
 import gitlab
 
-DOUBLE_TESTS_COL = 3
-DOUBLE_RES_COL = 4
-DOUBLE_TIME_COL = 5
-DOUBLE_SORT_KEYS = (DOUBLE_TESTS_COL, DOUBLE_RES_COL)
+@dataclass
+class Wiki:
+    """
+        Константы wiki.
+    """
+    double_tests_col = 3
+    double_res_col = 4
+    double_time_col = 5
+    double_sort_keys = (double_tests_col, double_res_col)
 
-SINGLE_RES_COL = 3
-SINGLE_TIME_COL = 4
-SINGLE_SORT_KEYS = (SINGLE_RES_COL, )
+    single_res_col = 3
+    single_time_col = 4
+    single_sort_keys = (single_res_col, )
 
-GT = 1
-LT = -1
+    gt = 1
+    lt = -1
 
-NO_RESULT = -1337
-MSG = "Отсутствует стратегия"
-OUTPUT_PARAMS = (NO_RESULT, MSG)
+    no_result = -1337
+    msg = "Отсутствует стратегия"
+    output_params = (no_result, msg)
 
-POS_CHANGE = ("🔺", "🔻")
-SIGN = ("✅", "❌")
+    pos_change = ("🔺", "🔻")
+    sign = ("✅", "❌")
 
 
 def create_page(project, title, content):
@@ -86,16 +92,16 @@ def dispcmp(frec, srec):
         Компаратор, учитывающий временное отклонение выполнения.
     """
 
-    if frec[DOUBLE_RES_COL] < srec[DOUBLE_RES_COL]:
-        return GT
-    if frec[DOUBLE_RES_COL] > srec[DOUBLE_RES_COL]:
-        return LT
-    if frec[DOUBLE_RES_COL].overlaps(srec[DOUBLE_RES_COL]):
-        if frec[DOUBLE_TIME_COL] < srec[DOUBLE_TIME_COL]:
-            return GT
-        return LT
+    if frec[Wiki.double_res_col] < srec[Wiki.double_res_col]:
+        return Wiki.gt
+    if frec[Wiki.double_res_col] > srec[Wiki.double_res_col]:
+        return Wiki.lt
+    if frec[Wiki.double_res_col].overlaps(srec[Wiki.double_res_col]):
+        if frec[Wiki.double_time_col] < srec[Wiki.double_time_col]:
+            return Wiki.gt
+        return Wiki.lt
 
-    return GT
+    return Wiki.gt
 
 
 def equalcmp(frec, srec):
@@ -103,16 +109,16 @@ def equalcmp(frec, srec):
         Компаратор, учитывающий равенство полученных очков.
     """
 
-    if frec[SINGLE_RES_COL] < srec[SINGLE_RES_COL]:
-        return GT
-    if frec[SINGLE_RES_COL] > srec[SINGLE_RES_COL]:
-        return LT
-    if frec[SINGLE_RES_COL] == srec[SINGLE_RES_COL]:
-        if frec[SINGLE_TIME_COL] < srec[SINGLE_TIME_COL]:
-            return GT
-        return LT
+    if frec[Wiki.single_res_col] < srec[Wiki.single_res_col]:
+        return Wiki.gt
+    if frec[Wiki.single_res_col] > srec[Wiki.single_res_col]:
+        return Wiki.lt
+    if frec[Wiki.single_res_col] == srec[Wiki.single_res_col]:
+        if frec[Wiki.single_time_col] < srec[Wiki.single_time_col]:
+            return Wiki.gt
+        return Wiki.lt
 
-    return GT
+    return Wiki.gt
 
 
 def params_sort(results, sort_keys, output_params, game):
@@ -130,7 +136,7 @@ def params_sort(results, sort_keys, output_params, game):
         for rec in results:
             if rec[sort_keys[1]] == intervals.closed(1337, intervals.inf):
                 rec[sort_keys[1]] = output_params[1]
-            rec[DOUBLE_TIME_COL] = rec[DOUBLE_TIME_COL].strftime(
+            rec[Wiki.double_time_col] = rec[Wiki.double_time_col].strftime(
                 "%H:%M:%S %d.%m.%Y")
 
     if game in timedepless_games:
@@ -142,7 +148,7 @@ def params_sort(results, sort_keys, output_params, game):
                     rec[sort_keys[0]] = 1000
                 if game in ("TEEN48game", "T3TR15game"):
                     rec[sort_keys[0]] = 0
-            rec[SINGLE_TIME_COL] = rec[SINGLE_TIME_COL].strftime(
+            rec[Wiki.single_time_col] = rec[Wiki.single_time_col].strftime(
                 "%H:%M:%S %d.%m.%Y")
 
     return results
@@ -170,9 +176,9 @@ def form_table(results, sort_keys, output_params, game, compet):
         for ind_old, old_rec in enumerate(results_old):
             if new_rec[1] == old_rec[1]:
                 if ind_new > ind_old:
-                    place += f"{POS_CHANGE[1]}-{ind_new - ind_old}"
+                    place += f"{Wiki.pos_change[1]}-{ind_new - ind_old}"
                 elif ind_new < ind_old:
-                    place += f"{POS_CHANGE[0]}+{ind_old - ind_new}"
+                    place += f"{Wiki.pos_change[0]}+{ind_old - ind_new}"
 
         new_rec[0] = place
 
@@ -187,7 +193,7 @@ def handle_num63rsgame(fresults):
         Обновление таблицы для NUM63RSgame.
     """
 
-    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+    results = form_table(fresults, Wiki.double_sort_keys, Wiki.output_params,
                          "NUM63RSgame", "")
 
     with open(os.path.abspath("templates/num63rsgame.template")) as template:
@@ -203,7 +209,7 @@ def handle_7equeencegame(fresults):
         Обновление таблицы для 7EQUEENCEgame.
     """
 
-    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+    results = form_table(fresults, Wiki.double_sort_keys, Wiki.output_params,
                          "7EQUEENCEgame", "")
 
     with open(os.path.abspath("templates/7equeencegame.template")) as template:
@@ -219,9 +225,9 @@ def handle_xogame(fresults, sresults):
         Обновление таблицы для XOgame.
     """
 
-    results_3x3 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_3x3 = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
                              "XOgame", "_3x3")
-    results_5x5 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_5x5 = form_table(sresults, Wiki.single_sort_keys, Wiki.output_params,
                              "XOgame", "_5x5")
 
     with open(os.path.abspath("templates/xogame.template")) as template:
@@ -238,9 +244,9 @@ def handle_strgame(fresults, sresults):
         Обновление таблицы для STRgame.
     """
 
-    results_split = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_split = form_table(fresults, Wiki.double_sort_keys, Wiki.output_params,
                                "STRgame", "_split")
-    results_strtok = form_table(sresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_strtok = form_table(sresults, Wiki.double_sort_keys, Wiki.output_params,
                                 "STRgame", "_strtok")
 
     with open(os.path.abspath("templates/strgame.template")) as template:
@@ -257,9 +263,9 @@ def handle_teen48game(fresults, sresults):
         Обновление таблицы для TEEN48game.
     """
 
-    results_4x4 = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_4x4 = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
                              "TEEN48game", "_4x4")
-    results_6x6 = form_table(sresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+    results_6x6 = form_table(sresults, Wiki.single_sort_keys, Wiki.output_params,
                              "TEEN48game", "_6x6")
 
     with open(os.path.abspath("templates/teen48game.template")) as template:
@@ -276,7 +282,7 @@ def handle_tr4v31game(fresults):
         Обновление таблицы для TR4V31game.
     """
 
-    results = form_table(fresults, DOUBLE_SORT_KEYS, OUTPUT_PARAMS,
+    results = form_table(fresults, Wiki.double_sort_keys, Wiki.output_params,
                          "TR4V31game", "")
 
     with open(os.path.abspath("templates/tr4v31game.template")) as template:
@@ -292,7 +298,7 @@ def handle_t3tr15game(fresults):
         Обновление таблицы для T3TR15game.
     """
 
-    results = form_table(fresults, SINGLE_SORT_KEYS, OUTPUT_PARAMS,
+    results = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
                          "T3TR15game", "")
 
     with open(os.path.abspath("templates/t3tr15game.template")) as template:
