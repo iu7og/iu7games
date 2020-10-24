@@ -223,9 +223,12 @@ def move_figure(move, angle, figure, c_strings):
         return False
 
     free_position = 0
-    while (c_strings[free_position].value)[move] == Tetris.ascii_x and \
-        free_position < Tetris.rows - 1:
+    while (c_strings[free_position].value)[move] == Tetris.ascii_x:
         free_position += 1
+
+        if free_position == Tetris.rows:
+            break
+    free_position -= 1
 
     for i in range(Tetris.height_figure):
         for j in range(Tetris.height_figure):
