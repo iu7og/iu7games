@@ -141,7 +141,7 @@ def print_now_score(player, points):
     print(f"\033[37m{str(points)}\033[0m")
 
 
-def try_move(figure, height, c_strings, move, free_position):
+def try_move(figure, c_strings, move, free_position):
     """
         Попытка поставить фигуру в свбодную позицию
         в указанном столбце.
@@ -157,7 +157,6 @@ def try_move(figure, height, c_strings, move, free_position):
                     return False
     return True
 
- 
 
 def get_free_position(c_strings, move):
     """
@@ -172,25 +171,6 @@ def get_free_position(c_strings, move):
     free_position -= 1
 
     return free_position
-
-
-def get_height_figure(figure):
-    """
-        Подсчет высоты фигуры.
-    """
-
-    max_height = 0
-    for j in range(Tetris.height_figure):
-        now_height = 0
-
-        for i in range(Tetris.height_figure):
-            if figure[i][j] != 'X':
-                now_height += 1
-
-        if now_height > max_height:
-            max_height = now_height
-
-    return max_height
 
 
 def shift_figure(matrix_figure):
@@ -250,17 +230,16 @@ def move_figure(move, angle, figure, c_strings):
         figure = rotate_figure(figure)
 
     figure = shift_figure(figure)
-    height = get_height_figure(figure)
 
     if (c_strings[0].value)[move] != Tetris.ascii_x:
         return False
 
     free_position = get_free_position(c_strings, move)
     is_moved = False
-    
+
     while not is_moved:
 
-        if try_move(figure, height, c_strings, move, free_position):
+        if try_move(figure, c_strings, move, free_position):
             is_moved = True
 
             for i in range(Tetris.height_figure):
