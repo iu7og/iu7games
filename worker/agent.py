@@ -6,6 +6,7 @@ import os
 import argparse
 import pickle
 from copy import deepcopy
+from dataclasses import dataclass
 
 import gitlab
 import intervals
@@ -17,15 +18,21 @@ from games.xogame import xo_runner
 from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
 from games.travelgame import travel_runner
+from games.tetrisgame import tetris_runner
 
 
-SIGMA_COEF = 3
+@dataclass
+class Agent:
+    """
+        Константы agent.
+    """
+    sigma_coef = 3
 
-GIT_INST = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
-GIT_INST.auth()
+    git_inst = gitlab.Gitlab.from_config("gitiu7", ["cfg/api_config.cfg"])
+    git_inst.auth()
 
-IU7GAMES_ID = 2546
-IU7GAMES = GIT_INST.projects.get(IU7GAMES_ID)
+    iu7games_id = 2546
+    iu7games = git_inst.projects.get(iu7games_id)
 
 
 def choose_name(rec, mode):
@@ -64,23 +71,23 @@ def run_num63rsgame(results, mode):
     results_def = numbers_runner.start_numbers_game(libs)
 
     for i, rec in enumerate(data):
-        sign = worker.wiki.SIGN[1]
-        if results_def[i][0] == worker.wiki.NO_RESULT:
+        sign = worker.wiki.Wiki.sign[1]
+        if results_def[i][0] == worker.wiki.Wiki.no_result:
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    abs(worker.wiki.NO_RESULT),
+                    abs(worker.wiki.Wiki.no_result),
                     intervals.inf
                 )
             ]
         else:
-            sign = worker.wiki.SIGN[results_def[i][0] != 0]
+            sign = worker.wiki.Wiki.sign[results_def[i][0] != 0]
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    round(results_def[i][1] - SIGMA_COEF *
+                    round(results_def[i][1] - Agent.sigma_coef *
                           results_def[i][2], 7),
-                    round(results_def[i][1] + SIGMA_COEF *
+                    round(results_def[i][1] + Agent.sigma_coef *
                           results_def[i][2], 7)
                 )
             ]
@@ -110,23 +117,23 @@ def run_7equeencegame(results, mode):
     results_def = sequence_runner.start_sequence_game(libs)
 
     for i, rec in enumerate(data):
-        sign = worker.wiki.SIGN[1]
-        if results_def[i][0] == worker.wiki.NO_RESULT:
+        sign = worker.wiki.Wiki.sign[1]
+        if results_def[i][0] == worker.wiki.Wiki.no_result:
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    abs(worker.wiki.NO_RESULT),
+                    abs(worker.wiki.Wiki.no_result),
                     intervals.inf
                 )
             ]
         else:
-            sign = worker.wiki.SIGN[results_def[i][0] != 0]
+            sign = worker.wiki.Wiki.sign[results_def[i][0] != 0]
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    round(results_def[i][1] - SIGMA_COEF *
+                    round(results_def[i][1] - Agent.sigma_coef *
                           results_def[i][2], 7),
-                    round(results_def[i][1] + SIGMA_COEF *
+                    round(results_def[i][1] + Agent.sigma_coef *
                           results_def[i][2], 7)
                 )
             ]
@@ -208,21 +215,21 @@ def run_strgame(results, mode):
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
             split_res = split_runner.start_split(lib_path, test_path)
-            sign = worker.wiki.SIGN[0]
+            sign = worker.wiki.Wiki.sign[0]
             if split_res[0] != 0:
-                sign = worker.wiki.SIGN[1]
+                sign = worker.wiki.Wiki.sign[1]
             rec_split[3:3] = [
                 sign,
                 intervals.closed(
-                    round(split_res[1] - SIGMA_COEF * split_res[2], 7),
-                    round(split_res[1] + SIGMA_COEF * split_res[2], 7)
+                    round(split_res[1] - Agent.sigma_coef * split_res[2], 7),
+                    round(split_res[1] + Agent.sigma_coef * split_res[2], 7)
                 )
             ]
         else:
             rec_split[3:3] = [
-                worker.wiki.SIGN[1],
+                worker.wiki.Wiki.sign[1],
                 intervals.closed(
-                    abs(worker.wiki.NO_RESULT),
+                    abs(worker.wiki.Wiki.no_result),
                     intervals.inf
                 )
             ]
@@ -233,21 +240,21 @@ def run_strgame(results, mode):
 
         if os.path.exists(lib_path) and os.path.exists(test_path):
             strtok_res = strtok_runner.start_strtok(lib_path, test_path)
-            sign = worker.wiki.SIGN[0]
+            sign = worker.wiki.Wiki.sign[0]
             if strtok_res[0] != 0:
-                sign = worker.wiki.SIGN[1]
+                sign = worker.wiki.Wiki.sign[1]
             rec_strtok[3:3] = [
                 sign,
                 intervals.closed(
-                    round(strtok_res[1] - SIGMA_COEF * strtok_res[2], 7),
-                    round(strtok_res[1] + SIGMA_COEF * strtok_res[2], 7)
+                    round(strtok_res[1] - Agent.sigma_coef * strtok_res[2], 7),
+                    round(strtok_res[1] + Agent.sigma_coef * strtok_res[2], 7)
                 )
             ]
         else:
             rec_strtok[3:3] = [
-                worker.wiki.SIGN[1],
+                worker.wiki.Wiki.sign[1],
                 intervals.closed(
-                    abs(worker.wiki.NO_RESULT),
+                    abs(worker.wiki.Wiki.no_result),
                     intervals.inf
                 )
             ]
@@ -335,26 +342,65 @@ def run_tr4v31game(results, mode):
     results_def = travel_runner.start_travel_game(libs, test_path)
 
     for i, rec in enumerate(data):
-        sign = worker.wiki.SIGN[1]
-        if results_def[i][0] == worker.wiki.NO_RESULT:
+        sign = worker.wiki.Wiki.sign[1]
+        if results_def[i][0] == worker.wiki.Wiki.no_result:
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    abs(worker.wiki.NO_RESULT),
+                    abs(worker.wiki.Wiki.no_result),
                     intervals.inf
                 )
             ]
         else:
-            sign = worker.wiki.SIGN[results_def[i][0] != 0]
+            sign = worker.wiki.Wiki.sign[results_def[i][0] != 0]
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    round(results_def[i][1] - SIGMA_COEF *
+                    round(results_def[i][1] - Agent.sigma_coef *
                           results_def[i][2], 7),
-                    round(results_def[i][1] + SIGMA_COEF *
+                    round(results_def[i][1] + Agent.sigma_coef *
                           results_def[i][2], 7)
                 )
             ]
+
+    return data
+
+
+def run_t3tr15game(results, mode):
+    """
+        Старт T3RT15game.
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    results_old = []
+
+    if os.path.exists("tbdump_t3tr15game.obj"):
+        with open("tbdump_t3tr15game.obj", "rb") as results_dump:
+            results_old = pickle.load(results_dump)
+
+    for rec in data:
+        rating = 0
+
+        for rec_old in results_old:
+            if rec[1] == rec_old[1]:
+                rating = rec_old[3]
+
+        lib_path = os.path.abspath(
+            f"{choose_name(rec, mode)}_t3tr15_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append((lib_path, rating))
+        else:
+            libs.append(("NULL", rating))
+
+    print("T3TR15 RESULTS\n")
+    results = tetris_runner.start_tetris_competition(libs)
+
+    for i, rec in enumerate(data):
+        rec.insert(3, results[i])
 
     return data
 
@@ -375,11 +421,11 @@ def start_competition(instance, game, group_name, stage, is_practice):
         print(f"SEARCHING FOR {game.upper()}"
               " DEPLOY JOB TO COMPARE NEW RESULTS WITH PREVIOUS ONES")
         deploy_job = worker.repo.get_deploy_job(
-            IU7GAMES, game.lower(), "master")
+            Agent.iu7games, game.lower(), "master")
         if deploy_job is not None:
             print(f"{game.upper()} DEPLOY JOB FOUND."
                   " NEW RESULTS WILL BE AFFECTED BY PREVIOUS ONES\n")
-            worker.repo.get_artifacts(IU7GAMES, deploy_job)
+            worker.repo.get_artifacts(Agent.iu7games, deploy_job)
         else:
             print(f"{game.upper()} DEPLOY JOB NOT FOUND. FRESH START\n")
     elif stage == "build":
@@ -397,9 +443,11 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults, sresults = run_teen48game(results, is_practice)
     elif game.startswith("TR4V31game"):
         fresults = run_tr4v31game(results, is_practice)
+    elif game.startswith("T3TR15game"):
+        fresults = run_t3tr15game(results, is_practice)
 
     if stage == "release":
-        worker.wiki.update_wiki(IU7GAMES, game, fresults, sresults)
+        worker.wiki.update_wiki(Agent.iu7games, game, fresults, sresults)
         print(f"\nWIKI PAGE FOR {game.upper()} UPDATED SUCCESSFULLY")
     elif stage == "build":
         print("\nBUILD PASSED")
@@ -423,5 +471,5 @@ def add_args():
 if __name__ == "__main__":
     ARGS = add_args()
 
-    start_competition(GIT_INST, ARGS.game, ARGS.group_name,
+    start_competition(Agent.git_inst, ARGS.game, ARGS.group_name,
                       ARGS.stage, ARGS.is_practice)
