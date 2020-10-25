@@ -1,5 +1,5 @@
 """
-    ===== T3TR15 RUNNER v.1.1.a =====
+    ===== T3TR15 RUNNER v.2.1.b =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
@@ -141,6 +141,39 @@ def print_now_score(player, points):
     print(f"\033[37m{str(points)}\033[0m")
 
 
+def try_move(figure, height, c_strings, move, free_position):
+    """
+        Попытка поставить фигуру в свбодную позицию
+        в указанном столбце.
+    """
+
+    for i in range(Tetris.height_figure):
+        for j in range(Tetris.height_figure):
+            if figure[i][j] != 'X':
+                if move + j > Tetris.columns - 1 or free_position + i < 0 or \
+                    free_position + i > Tetris.rows - 1:
+                    return False
+                if (c_strings[free_position + i].value)[move + j] != Tetris.ascii_x:
+                    return False
+    return True
+
+ 
+
+def get_free_position(c_strings, move):
+    """
+        Получить свободную позицию столбца.
+    """
+    free_position = 0
+    while (c_strings[free_position].value)[move] == Tetris.ascii_x:
+        free_position += 1
+
+        if free_position == Tetris.rows:
+            break
+    free_position -= 1
+
+    return free_position
+
+
 def get_height_figure(figure):
     """
         Подсчет высоты фигуры.
@@ -222,26 +255,25 @@ def move_figure(move, angle, figure, c_strings):
     if (c_strings[0].value)[move] != Tetris.ascii_x:
         return False
 
-    free_position = 0
-    while (c_strings[free_position].value)[move] == Tetris.ascii_x:
-        free_position += 1
+    free_position = get_free_position(c_strings, move)
+    is_moved = False
+    
+    while not is_moved:
 
-        if free_position == Tetris.rows:
-            break
-    free_position -= 1
+        if try_move(figure, height, c_strings, move, free_position):
+            is_moved = True
 
-    for i in range(Tetris.height_figure):
-        for j in range(Tetris.height_figure):
-            if figure[i][j] != 'X':
-                if move + j > Tetris.columns - 1 or free_position - (height - i - 1) < 0 or \
-                    free_position - (height - i - 1) > Tetris.rows - 1:
-                    return False
-                if (c_strings[free_position - (height - i - 1)].value)[move + j] != Tetris.ascii_x:
-                    return False
+            for i in range(Tetris.height_figure):
+                for j in range(Tetris.height_figure):
+                    if figure[i][j] != 'X':
+                        replacement_string = list(c_strings[free_position + i].value)
+                        replacement_string[move + j] = ord(figure[i][j])
+                        c_strings[free_position + i].value = bytes(replacement_string)
+        else:
+            free_position -= 1
 
-                replacement_string = list(c_strings[free_position - (height - i - 1)].value)
-                replacement_string[move + j] = ord(figure[i][j])
-                c_strings[free_position - (height - i - 1)].value = bytes(replacement_string)
+        if free_position == -1:
+            return False
 
     return True
 
@@ -313,7 +345,7 @@ def get_figure():
                 matrix_figure[i][j] = 'O'
 
     if figure == 'L':
-        for i in range(1, 3):
+        for i in range(1, 2):
             matrix_figure[2][i] = 'L'
         for i in range(3):
             matrix_figure[i][0] = 'L'
@@ -392,7 +424,6 @@ def start_tetris_competition(players_info):
                 break
 
             move = player_lib.tetris_game(gamefield, c_figure, ctypes.byref(angle))
-            #move_info = check_player_move(move, c_strings, c_strings_copy)
 
             if check_player_move(move, c_strings, c_strings_copy):
 
@@ -427,5 +458,5 @@ def start_tetris_competition(players_info):
 
 
 if __name__ == "__main__":
-    start_tetris_competition(["games/tetrisgame/Anna.so", "NULL",
-                              "games/tetrisgame/Oleg.so", "games/tetrisgame/Misha.so"])
+    start_tetris_competition(["games/tetrisgame/Oleg.so", "NULL",
+                              "games/tetrisgame/test.so"])
