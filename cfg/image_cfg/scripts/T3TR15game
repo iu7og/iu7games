@@ -1,0 +1,5 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check T3TR15game/ t3tr15 \
+"int tetris_game(char \*\*bf, const char figure, int \*const angle)" \
+tetrisgame "light_tetris_runner.py"
