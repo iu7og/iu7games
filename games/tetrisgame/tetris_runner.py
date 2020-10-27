@@ -377,11 +377,11 @@ def start_tetris_competition(players_info):
     results = []
 
     for player in players_info:
-        if player == "NULL":
+        if player[0] == "NULL":
             results.append(utils.GameResult.no_result)
             continue
 
-        player_lib = ctypes.CDLL(player)
+        player_lib = ctypes.CDLL(player[0])
 
         c_strings, c_strings_copy, gamefield = create_c_objects()
         angle = ctypes.c_int()
@@ -407,7 +407,7 @@ def start_tetris_competition(players_info):
             if check_player_move(move, c_strings, c_strings_copy):
 
                 if not move_figure(move, angle, matrix_figure, c_strings):
-                    print_now_score(player, points)
+                    print_now_score(player[0], points)
                     break
 
                 points += Tetris.bonus
@@ -419,17 +419,17 @@ def start_tetris_competition(players_info):
                     copy(c_strings_copy, c_strings)
                     points += scoring(count_full_line)
 
-                print_now_score(player, points)
+                print_now_score(player[0], points)
                 print_gamefield(c_strings)
 
                 if points >= Tetris.max_score:
                     game = False
 
             else:
-                print_now_score(player, points)
+                print_now_score(player[0], points)
                 game = False
 
-        results.append(points)
+        results.append(points if points > player[1] else player[1])
 
     print(f"\033[33mRESULTS: {results}\033[0m")
 
@@ -437,5 +437,5 @@ def start_tetris_competition(players_info):
 
 
 if __name__ == "__main__":
-    start_tetris_competition(["games/tetrisgame/Oleg.so", "NULL",
-                              "games/tetrisgame/test.so"])
+    start_tetris_competition([("games/tetrisgame/Oleg.so", 0), ("NULL", 50),
+                              ("games/tetrisgame/test.so", 0)])

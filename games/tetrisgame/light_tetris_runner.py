@@ -16,7 +16,7 @@ def light_tetris_runner(player_lib_path):
         Запуск стратегии игрока.
     """
 
-    start_tetris_competition([player_lib_path])
+    start_tetris_competition([(player_lib_path, 0)])
     print("\033[0;32mTETRIS GAME: OKAY\033[0m")
 
 
