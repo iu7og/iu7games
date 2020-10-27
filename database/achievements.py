@@ -11,6 +11,7 @@ from typing import List, Dict
 import re
 import mongoengine as mg
 import models
+from config import Config
 
 
 @dataclass
@@ -46,7 +47,13 @@ def add_achievements_to_db() -> None:
         Добавление полного списка достижений в БД
     """
 
-    mg.connect()
+    mg.connect(
+        db=Config.db_name,
+        username=Config.db_user,
+        password=Config.db_pass,
+        host=Config.db_ip,
+        alias=Config.main_db_alias
+    )
 
     for achievement in models.Achievement.objects():
         achievement.delete()
@@ -93,7 +100,7 @@ def add_achievements_to_db() -> None:
         states={Achievement.automerge_king: 5}
     ).save()
 
-    mg.disconnect()
+    mg.disconnect(alias=Config.main_db_alias)
 
 
 def update_players_results(game_name: str, results: List[List[str]]) -> None:
@@ -102,7 +109,13 @@ def update_players_results(game_name: str, results: List[List[str]]) -> None:
         Использует сырые данные прогона (до преобразования в таблицу для Wiki)
     """
 
-    mg.connect()
+    mg.connect(
+        db=Config.db_name,
+        username=Config.db_user,
+        password=Config.db_pass,
+        host=Config.db_ip,
+        alias=Config.main_db_alias
+    )
 
     game = models.Game.objects(name=game_name).first()
 
@@ -134,7 +147,7 @@ def update_players_results(game_name: str, results: List[List[str]]) -> None:
 
         player_res.save()
 
-    mg.disconnect()
+    mg.disconnect(alias=Config.main_db_alias)
 
 
 def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
@@ -205,7 +218,13 @@ def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
         update_tracker(player, Achievement.first_among_equals,
                        1 if positions["1"] > 0 else 0)
 
-    mg.connect()
+    mg.connect(
+        db=Config.db_name,
+        username=Config.db_user,
+        password=Config.db_pass,
+        host=Config.db_ip,
+        alias=Config.main_db_alias
+    )
 
     game = models.Game.objects(name=game_name).first()
 
@@ -216,7 +235,7 @@ def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
 
         player.save()
 
-    mg.disconnect()
+    mg.disconnect(alias=Config.main_db_alias)
 
 
 def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
@@ -227,7 +246,13 @@ def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
 
     result = {}
 
-    mg.connect()
+    mg.connect(
+        db=Config.db_name,
+        username=Config.db_user,
+        password=Config.db_pass,
+        host=Config.db_ip,
+        alias=Config.main_db_alias
+    )
 
     achievements = models.Achievement.objects()
 
@@ -237,6 +262,6 @@ def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
         result[gitlab_id] = [achievement.name for achievement in achievements
                              if player.trackers.items() >= achievement.states.items()]
 
-    mg.disconnect()
+    mg.disconnect(alias=Config.main_db_alias)
 
     return result
