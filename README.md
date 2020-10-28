@@ -12,6 +12,8 @@
 *   `XOgame`
 *   `STRgame`
 *   `TEEN48game`
+*   `TR4V31game`
+*   `T3TR15game`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
@@ -36,7 +38,8 @@ build:
 *   [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STRgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания)
-*   [Правила **TRAVELgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
+*   [Правила **TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
+*   [Правила **T3TR51game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Greeting)
 
 Вы восхитительны! Можно начинать соревноваться!
 
