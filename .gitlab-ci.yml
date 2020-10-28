@@ -240,22 +240,22 @@ codestyle:
 #   only:
 #     - schedules
 
-deploy_tr4v31game:
-  stage: deploy
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 release nonpractice | tee deploylog_tr4v31game.txt
-  after_script:
-    - rm -f *.so *.zip
-  artifacts:
-    paths:
-      - deploylog_tr4v31game.txt
-      - ./*.obj
-    when: always
-    expire_in: 30 days
-  only:
-    - schedules
+#deploy_tr4v31game:
+  #stage: deploy
+  #image: hackfeed/iu7games
+  #script:
+    #- sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    #- PYTHONPATH='.' python worker/agent.py TR4V31game iu7-games-2020 release nonpractice | tee deploylog_tr4v31game.txt
+  #after_script:
+    #- rm -f *.so *.zip
+  #artifacts:
+    #paths:
+      #- deploylog_tr4v31game.txt
+      #- ./*.obj
+    #when: always
+    #expire_in: 30 days
+  #only:
+    #- schedules
 
 deploy_t3tr15game:
   stage: deploy

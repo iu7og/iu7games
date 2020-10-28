@@ -53,8 +53,12 @@ build:
 *   [**TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TEEN48game-Leaderboard)
 *   [**TEEN48game Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TEEN48game_practice-Leaderboard)
 *   [**TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Leaderboard)
+*   [**T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Leaderboard)
 
 ## Changelog
+
+## 2.2.0 (28.09.2020)
+* Открытая седьмая игра **T3TR15game**.
 
 ## 2.1.0 (24.09.2020) 
 * Открытая шестая игра **TRAVELgame**.
