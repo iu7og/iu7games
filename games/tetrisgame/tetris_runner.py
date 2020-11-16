@@ -34,7 +34,7 @@ class Tetris:
 
     ascii_x = 88
 
-    max_score = 1000
+    max_score = 25000
     points = 10
     bonus = 5
 
