@@ -7,7 +7,7 @@
 
 from dataclasses import dataclass
 from functools import reduce
-from typing import List, Dict
+from typing import List
 import re
 import mongoengine as mg
 import models
@@ -38,8 +38,49 @@ class Error:
     wrong_res = -2
 
 
-ERROR_REGEX = r"^[а-яА-Я ]+$"
-WRONG_RES_REGEX = r"^\[\d\]+$"
+@dataclass
+class PlayerInfo:
+    """
+        Представление информации об игроке
+    """
+    name: str
+    gitlab_id: str
+
+    def __init__(self, name: str, gitlab_id: str):
+        self.name = name
+        self.gitlab_id = gitlab_id
+
+
+@dataclass
+class PlayerResult:
+    """
+        Представление результата игрока
+    """
+    place: int
+    gitlab_id: str
+    name: str
+    corrupted_strategy: bool
+    wrong_result: bool
+
+    def __init__(self, place: int, gitlab_id: str, name: str, corrupted_strategy: bool, wrong_result: bool):
+        self.place = place
+        self.gitlab_id = gitlab_id
+        self.name = name
+        self.corrupted_strategy = corrupted_strategy
+        self.wrong_result = wrong_result
+
+
+@dataclass
+class PlayerAchievemts:
+    """
+        Представление списка достижений игрока
+    """
+    gitlab_id: str
+    achievements: List[str]
+
+    def __init__(self, gitlab_id: str, achievements: List[str]):
+        self.gitlab_id = gitlab_id
+        self.achievements = achievements
 
 
 def add_achievements_to_db() -> None:
@@ -103,10 +144,9 @@ def add_achievements_to_db() -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
-def update_players_results(game_name: str, results: List[List[str]]) -> None:
+def update_players_results(game_name: str, results: List[PlayerResult]) -> None:
     """
-        Обновление результатов игр у игроков.
-        Использует сырые данные прогона (до преобразования в таблицу для Wiki)
+        Обновление результатов игр у игроков
     """
 
     mg.connect(
@@ -124,10 +164,13 @@ def update_players_results(game_name: str, results: List[List[str]]) -> None:
         game.save()
 
     for result in results:
-        player = models.Player.objects(gitlab_id=result[2]).first()
+        player = models.Player.objects(gitlab_id=result.gitlab_id).first()
 
         if player is None:
-            player = models.Player(gitlab_id=result[2], name=result[1])
+            player = models.Player(
+                gitlab_id=result.gitlab_id,
+                name=result.name
+            )
             player.save()
 
         player_res = models.GameResult.objects(
@@ -136,11 +179,11 @@ def update_players_results(game_name: str, results: List[List[str]]) -> None:
         if player_res is None:
             player_res = models.GameResult(game=game, player=player)
 
-        player_res.position = result[0]
+        player_res.position = result.place
 
-        if re.match(ERROR_REGEX, result[4]):
+        if result.corrupted_strategy:
             player_res.error_code = Error.strategy_lost
-        elif re.match(WRONG_RES_REGEX, result[4]):
+        elif result.wrong_result:
             player_res.error_code = Error.wrong_res
         else:
             player_res.error_code = Error.default_value
@@ -150,11 +193,9 @@ def update_players_results(game_name: str, results: List[List[str]]) -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
-def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
+def update_players_trackers(game_name: str, users: List[PlayerInfo]) -> None:
     """
-        Обновление трекеров достижений у игроков.
-        game_name - название игры
-        users - list, содержащий пары [gitlab_id, name]
+        Обновление трекеров достижений у игроков
     """
     def update_tracker(player, tracker, value, increase=False):
         """
@@ -229,7 +270,10 @@ def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
     game = models.Game.objects(name=game_name).first()
 
     for user in users:
-        player = models.Player.objects(gitlab_id=user[0]).first()
+        player = models.Player.objects(
+            gitlab_id=user.gitlab_id,
+            name=user.name
+        ).first()
 
         check_trackers(game, player, models.GameResult.objects(player=player))
 
@@ -238,13 +282,13 @@ def update_players_trackers(game_name: str, users: List[List[str]]) -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
-def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
+def get_players_achievements(players_ids: List[str]) -> List[PlayerAchievemts]:
     """
         Получение выполненных достижений по списку
         gitlab_id игроков
     """
 
-    result = {}
+    result = []
 
     mg.connect(
         db=Config.db_name,
@@ -258,9 +302,15 @@ def get_players_achievements(players_ids: List[str]) -> Dict[str, List[str]]:
 
     for gitlab_id in players_ids:
         player = models.Player.objects(gitlab_id=gitlab_id).first()
-
-        result[gitlab_id] = [achievement.name for achievement in achievements
-                             if player.trackers.items() >= achievement.states.items()]
+        result.append(
+            PlayerAchievemts(
+                gitlab_id,
+                [
+                    achievement.name for achievement in achievements
+                    if player.trackers.items() >= achievement.states.items()
+                ]
+            )
+        )
 
     mg.disconnect(alias=Config.main_db_alias)
 
