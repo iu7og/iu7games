@@ -2,6 +2,7 @@
     Агент для запуска соревнований IU7Games Project.
 """
 
+from typing import List
 import os
 import argparse
 import pickle
@@ -12,6 +13,8 @@ import gitlab
 import intervals
 import worker.wiki
 import worker.repo
+from database import achievements
+from games.utils import utils
 from games.numbers import numbers_runner
 from games.sequence import sequence_runner
 from games.xogame import xo_runner
@@ -33,6 +36,14 @@ class Agent:
 
     iu7games_id = 2546
     iu7games = git_inst.projects.get(iu7games_id)
+
+
+def update_achievemets(game_name: str, results: List[achievements.PlayerResult]):
+    achievements.update_players_results(game_name, results)
+    achievements.update_players_trackers(
+        game_name,
+        [achievements.PlayerInfo(res.name, res.gitlab_id) for res in results]
+    )
 
 
 def choose_name(rec, mode):
@@ -445,6 +456,19 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults = run_tr4v31game(results, is_practice)
     elif game.startswith("T3TR15game"):
         fresults = run_t3tr15game(results, is_practice)
+        try:
+            update_achievemets(
+                "T3TR15game",
+                [
+                    achievements.PlayerResult(
+                        i[0], i[2], i[1], utils.GameResult.no_result == i[3], 0 == i[3]
+                    )
+                    for i in fresults
+                ]
+            )
+        except Exception as e:
+            print("Во время обработки достижений что-то пошло не так")
+            print(e)
 
     if stage == "release":
         worker.wiki.update_wiki(Agent.iu7games, game, fresults, sresults)

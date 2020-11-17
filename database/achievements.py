@@ -10,8 +10,8 @@ from functools import reduce
 from typing import List
 import re
 import mongoengine as mg
-import models
-from config import Config
+import database.models as models
+from database.config import Config
 
 
 @dataclass

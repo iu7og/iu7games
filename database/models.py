@@ -6,7 +6,7 @@
 """
 
 import mongoengine as mg
-from config import Config
+from database.config import Config
 
 
 class Player(mg.Document):
