@@ -39,6 +39,9 @@ class Agent:
 
 
 def update_achievemets(game_name: str, results: List[achievements.PlayerResult]):
+    """
+        Обновление достижений игроков
+    """
     achievements.update_players_results(game_name, results)
     achievements.update_players_trackers(
         game_name,
@@ -461,14 +464,18 @@ def start_competition(instance, game, group_name, stage, is_practice):
                 "T3TR15game",
                 [
                     achievements.PlayerResult(
-                        i[0], i[2], i[1], utils.GameResult.no_result == i[3], 0 == i[3]
+                        i[0],
+                        i[2],
+                        i[1],
+                        utils.GameResult.no_result == i[3],
+                        i[3] == 0
                     )
                     for i in fresults
                 ]
             )
-        except Exception as e:
+        except Exception as err:
             print("Во время обработки достижений что-то пошло не так")
-            print(e)
+            print(err)
 
     if stage == "release":
         worker.wiki.update_wiki(Agent.iu7games, game, fresults, sresults)

@@ -8,7 +8,6 @@
 from dataclasses import dataclass
 from functools import reduce
 from typing import List
-import re
 import mongoengine as mg
 import database.models as models
 from database.config import Config
@@ -62,7 +61,8 @@ class PlayerResult:
     corrupted_strategy: bool
     wrong_result: bool
 
-    def __init__(self, place: int, gitlab_id: str, name: str, corrupted_strategy: bool, wrong_result: bool):
+    def __init__(self, place: int, gitlab_id: str, name: str,
+                 corrupted_strategy: bool, wrong_result: bool):
         self.place = place
         self.gitlab_id = gitlab_id
         self.name = name
