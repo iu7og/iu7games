@@ -96,50 +96,47 @@ def add_achievements_to_db() -> None:
         alias=Config.main_db_alias
     )
 
-    for achievement in models.Achievement.objects():
-        achievement.delete()
+    models.Achievement.objects().delete()
 
-    models.Achievement(
-        name="И так сойдет...",
-        description="Получить статус 'Отсутствует стратегия' в лидерборде одной из игр",
-        states={Achievement.strategy_lost: 1}
-    ).save()
-
-    models.Achievement(
-        name="Но у меня работало...",
-        description="Получить статус '[0]' в лидерборде одной из игр",
-        states={Achievement.wrong_res: 1}
-    ).save()
-
-    models.Achievement(
-        name="Завсегдатай...",
-        description="Во всех играх есть рабочая стратегия",
-        states={Achievement.habitue: 5}
-    ).save()
-
-    models.Achievement(
-        name="Почти получилось",
-        description="Занять 4-ое место в одной из игр",
-        states={Achievement.almost_there: 1}
-    ).save()
-
-    models.Achievement(
-        name="Ещё не вечер",
-        description="Занять 2-ое или 3-е место в одной из игр",
-        states={Achievement.the_night_is_still_young: 1}
-    ).save()
-
-    models.Achievement(
-        name="Первый среди равных",
-        description="Занять 1-ое место в одной из игр",
-        states={Achievement.first_among_equals: 1}
-    ).save()
-
-    models.Achievement(
-        name="Король автомержей",
-        description="Войти в тройку во всех играх",
-        states={Achievement.automerge_king: 5}
-    ).save()
+    models.Achievement.objects.insert(
+        [
+            models.Achievement(
+                name="И так сойдет...",
+                description="Получить статус 'Отсутствует стратегия' в лидерборде одной из игр",
+                states={Achievement.strategy_lost: 1}
+            ),
+            models.Achievement(
+                name="Но у меня работало...",
+                description="Получить статус '[0]' в лидерборде одной из игр",
+                states={Achievement.wrong_res: 1}
+            ),
+            models.Achievement(
+                name="Завсегдатай...",
+                description="Во всех играх есть рабочая стратегия",
+                states={Achievement.habitue: 5}
+            ),
+            models.Achievement(
+                name="Почти получилось",
+                description="Занять 4-ое место в одной из игр",
+                states={Achievement.almost_there: 1}
+            ),
+            models.Achievement(
+                name="Ещё не вечер",
+                description="Занять 2-ое или 3-е место в одной из игр",
+                states={Achievement.the_night_is_still_young: 1}
+            ),
+            models.Achievement(
+                name="Первый среди равных",
+                description="Занять 1-ое место в одной из игр",
+                states={Achievement.first_among_equals: 1}
+            ),
+            models.Achievement(
+                name="Король автомержей",
+                description="Войти в тройку во всех играх",
+                states={Achievement.automerge_king: 5}
+            )
+        ]
+    )
 
     mg.disconnect(alias=Config.main_db_alias)
 
