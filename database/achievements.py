@@ -6,7 +6,6 @@
 """
 
 from dataclasses import dataclass
-from functools import reduce
 from typing import List
 import mongoengine as mg
 import database.models as models
@@ -190,71 +189,61 @@ def update_players_results(game_name: str, results: List[PlayerResult]) -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
+def update_tracker(player: models.Player, tracker: str, value: int, increase=False):
+    """
+        Обновление конкретного трекера у игрока
+    """
+    if increase and tracker in player.trackers:
+        player.trackers[tracker] += value
+    else:
+        player.trackers[tracker] = value
+
+
+def check_trackers(player: models.Player, result: models.GameResult):
+    """
+        Обновление трекеров игрока, не зависящих от других игроков
+    """
+
+    if result.error_code == Error.strategy_lost:
+        update_tracker(player, Achievement.strategy_lost, 1)
+    elif result.error_code == Error.wrong_res:
+        update_tracker(player, Achievement.wrong_res, 1)
+
+    positions = {"1": 0, "1_2_3": 0, "2_3": 0, "4": 0, "other": 0}
+    for res in result:
+        if res.error_code != Error.default_value:
+            continue
+
+        if res.position == 0:
+            positions["1"] += 1
+
+        if res.position in (0, 1, 2):
+            positions["1_2_3"] += 1
+
+        if res.position in (1, 2):
+            positions["2_3"] += 1
+
+        if res.position == 3:
+            positions["4"] += 1
+
+        positions["other"] += 1
+
+    update_tracker(player, Achievement.habitue, positions["other"])
+    update_tracker(player, Achievement.almost_there,
+                   1 if positions["4"] > 0 else 0)
+    update_tracker(player, Achievement.the_night_is_still_young,
+                   1 if positions["2_3"] > 0 else 0)
+    update_tracker(player, Achievement.automerge_king, positions["1_2_3"])
+    update_tracker(player, Achievement.first_among_equals,
+                   1 if positions["1"] > 0 else 0)
+
+    return player
+
+
 def update_players_trackers(game_name: str, users: List[PlayerInfo]) -> None:
     """
         Обновление трекеров достижений у игроков
     """
-    def update_tracker(player, tracker, value, increase=False):
-        """
-            Обновление конкретного трекера у игрока
-        """
-        if increase and tracker in player.trackers:
-            player.trackers[tracker] += value
-        else:
-            player.trackers[tracker] = value
-
-    def check_trackers(game, player, results):
-        """
-            Обновление трекеров игрока, не зависящих от других игроков
-        """
-
-        error_code = reduce(lambda x, y: x if x.game ==
-                            game else y, results).error_code
-
-        # И так сойдет
-        if error_code == Error.strategy_lost:
-            update_tracker(player, Achievement.strategy_lost, 1)
-        # Но у меня работало
-        elif error_code == Error.wrong_res:
-            update_tracker(player, Achievement.wrong_res, 1)
-
-        positions = {"1": 0, "1_2_3": 0, "2_3": 0, "4": 0, "other": 0}
-        for res in results:
-
-            if res.error_code != Error.default_value:
-                continue
-
-            if res.position == 0:
-                positions["1"] += 1
-
-            if res.position in (0, 1, 2):
-                positions["1_2_3"] += 1
-
-            if res.position in (1, 2):
-                positions["2_3"] += 1
-
-            if res.position == 3:
-                positions["4"] += 1
-
-            positions["other"] += 1
-
-        # Завсегдатай
-        update_tracker(player, Achievement.habitue, positions["other"])
-
-        # Почти получилось
-        update_tracker(player, Achievement.almost_there,
-                       1 if positions["4"] > 0 else 0)
-
-        # Ещё не вечер
-        update_tracker(player, Achievement.the_night_is_still_young,
-                       1 if positions["2_3"] > 0 else 0)
-
-        # Король автомержей
-        update_tracker(player, Achievement.automerge_king, positions["1_2_3"])
-
-        # Первый среди равных
-        update_tracker(player, Achievement.first_among_equals,
-                       1 if positions["1"] > 0 else 0)
 
     mg.connect(
         db=Config.db_name,
@@ -266,15 +255,18 @@ def update_players_trackers(game_name: str, users: List[PlayerInfo]) -> None:
 
     game = models.Game.objects(name=game_name).first()
 
-    for user in users:
-        player = models.Player.objects(
-            gitlab_id=user.gitlab_id,
-            name=user.name
-        ).first()
+    players = models.Player.objects(gitlab_id__in=[u.gitlab_id for u in users])
 
-        check_trackers(game, player, models.GameResult.objects(player=player))
+    results = models.GameResult.objects(game=game, player__in=players)
 
-        player.save()
+    for player in players:
+        check_trackers(
+            player,
+            next(
+                (i for i in range(results) if i.player == player),
+                None
+            )
+        ).save()
 
     mg.disconnect(alias=Config.main_db_alias)
 
