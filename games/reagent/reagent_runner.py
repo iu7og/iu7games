@@ -76,28 +76,30 @@ def splash_bomb(move, c_strings, field_size):
     """
 
     count_explosions = 0
+    row = move // field_size
+    column = move % field_size
 
-    reagent = (c_strings[move // field_size].value)[move % field_size]
-    replacement_string = list(c_strings[move // field_size].value)
+    reagent = (c_strings[row].value)[column]
+    replacement_string = list(c_strings[row].value)
 
     if reagent == Reagent.ascii_a:
-        replacement_string[move % field_size] = Reagent.ascii_b
-        c_strings[move // field_size].value = bytes(replacement_string)
+        replacement_string[column] = Reagent.ascii_b
+        c_strings[row].value = bytes(replacement_string)
     elif reagent == Reagent.ascii_b:
-        replacement_string[move % field_size] = Reagent.ascii_o
+        replacement_string[column] = Reagent.ascii_o
         count_explosions += 1
-        c_strings[move // field_size].value = bytes(replacement_string)
+        c_strings[row].value = bytes(replacement_string)
 
-        if move % field_size - 1 >= Reagent.min_move:
+        if column - 1 >= Reagent.min_move:
             count_explosions += splash_bomb(move - 1, c_strings, field_size)
 
-        if move % field_size + 1 < field_size:
+        if column + 1 < field_size:
             count_explosions += splash_bomb(move + 1, c_strings, field_size)
 
-        if move // field_size - 1 >= Reagent.min_move:
+        if row - 1 >= Reagent.min_move:
             count_explosions += splash_bomb(move - field_size, c_strings, field_size)
 
-        if move // field_size + 1  < field_size:
+        if row + 1  < field_size:
             count_explosions += splash_bomb(move + field_size, c_strings, field_size)
 
     return count_explosions
