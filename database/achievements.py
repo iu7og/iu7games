@@ -140,55 +140,6 @@ def add_achievements_to_db() -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
-def update_players_results(game_name: str, results: List[PlayerResult]) -> None:
-    """
-        Обновление результатов игр у игроков
-    """
-
-    mg.connect(
-        db=Config.db_name,
-        username=Config.db_user,
-        password=Config.db_pass,
-        host=Config.db_ip,
-        alias=Config.main_db_alias
-    )
-
-    game = models.Game.objects(name=game_name).first()
-
-    if game is None:
-        game = models.Game(name=game_name)
-        game.save()
-
-    for result in results:
-        player = models.Player.objects(gitlab_id=result.gitlab_id).first()
-
-        if player is None:
-            player = models.Player(
-                gitlab_id=result.gitlab_id,
-                name=result.name
-            )
-            player.save()
-
-        player_res = models.GameResult.objects(
-            game=game, player=player).first()
-
-        if player_res is None:
-            player_res = models.GameResult(game=game, player=player)
-
-        player_res.position = result.place
-
-        if result.corrupted_strategy:
-            player_res.error_code = Error.strategy_lost
-        elif result.wrong_result:
-            player_res.error_code = Error.wrong_res
-        else:
-            player_res.error_code = Error.default_value
-
-        player_res.save()
-
-    mg.disconnect(alias=Config.main_db_alias)
-
-
 def update_tracker(player: models.Player, tracker: str, value: int, increase=False):
     """
         Обновление конкретного трекера у игрока
@@ -271,6 +222,83 @@ def update_players_trackers(game_name: str, users: List[PlayerInfo]) -> None:
     mg.disconnect(alias=Config.main_db_alias)
 
 
+def update_players_results(game_name: str, results: List[PlayerResult]) -> None:
+    """
+        Обновление результатов игр у игроков
+    """
+
+    mg.connect(
+        db=Config.db_name,
+        username=Config.db_user,
+        password=Config.db_pass,
+        host=Config.db_ip,
+        alias=Config.main_db_alias
+    )
+
+    game = models.Game.objects(name=game_name).first()
+
+    if game is None:
+        game = models.Game(name=game_name)
+        game.save()
+
+    players = models.Player.objects(
+        gitlab_id__in=[i.gitlab_id for i in results]
+    )
+
+    new_players = [
+        models.Player(
+            gitlab_id=res.gitlab_id,
+            name=res.name
+        )
+        for res in [i for i in results if i.gitlab_id not in [
+            j.gitlab_id for j in players]
+        ]
+    ]
+    models.Player.objects.insert(new_players)
+
+    players += new_players
+
+    found_res = models.GameResult.objects(game=game, player__in=players)
+    new_res = [
+        models.GameResult(game=game, player=i)
+        for i in [j for j in players if j not in [
+            k.player for k in found_res]
+        ]
+    ]
+    models.GameResult.objects.insert(new_res)
+
+    found_res += new_res
+
+    for result in results:
+        player = next(
+            (
+                x for x in players if x.gitlab_id == result.gitlab_id
+            )
+        )
+        player_res = next(
+            (
+                x for x in found_res if x.game ==
+                game and x.player == player
+            )
+        )
+
+        player_res.position = result.place
+
+        if result.corrupted_strategy:
+            player_res.error_code = Error.strategy_lost
+        elif result.wrong_result:
+            player_res.error_code = Error.wrong_res
+        else:
+            player_res.error_code = Error.default_value
+
+        player_res.save()
+
+    mg.disconnect(alias=Config.main_db_alias)
+
+    update_players_trackers(
+        game_name, [PlayerInfo(i.name, i.gitlab_id) for i in results])
+
+
 def get_players_achievements(players_ids: List[str]) -> List[PlayerAchievemts]:
     """
         Получение выполненных достижений по списку
@@ -289,18 +317,19 @@ def get_players_achievements(players_ids: List[str]) -> List[PlayerAchievemts]:
 
     achievements = models.Achievement.objects()
 
-    for gitlab_id in players_ids:
-        player = models.Player.objects(gitlab_id=gitlab_id).first()
+    players = models.Player.objects(gitlab_id__in=players_ids)
+
+    mg.disconnect(alias=Config.main_db_alias)
+
+    for player in players:
         result.append(
             PlayerAchievemts(
-                gitlab_id,
+                player.gitlab_id,
                 [
                     achievement.name for achievement in achievements
                     if player.trackers.items() >= achievement.states.items()
                 ]
             )
         )
-
-    mg.disconnect(alias=Config.main_db_alias)
 
     return result
