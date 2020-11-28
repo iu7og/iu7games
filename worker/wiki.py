@@ -348,7 +348,7 @@ def update_wiki(project, game, fresults, sresults):
         "STRgame_practice Leaderboard": "STRgame_practice-Leaderboard",
         "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard",
         "TR4V31game_practice Leaderboard": "TR4V31game_practice-Leaderboard",
-        "T3TR15game_practice Leaderboard": "T3TR15game_practice-Leaderboard"
+        "T3TR15game_practice Leaderboard": "T3TR15game_practice-Leaderboard",
         "R3463NTgame_practice Leaderboard": "R3463NTgame_practice-Leaderboard"
     }
 
