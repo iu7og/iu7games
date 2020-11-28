@@ -1,22 +1,22 @@
 """
-    ===== R3463NT RUNNER v.1.1.a =====
+    ===== R3463NT RUNNER v.1.2.b =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
     - Данный скрипт предназначен для проведения
       игры reagent. Правила игры:
 
-    - В каждой клетке поля размером NxN лежит либо реактив A,
-      либо реактив B, либо O - отсутствие реактива.
+    - В каждой клетке поля размером NxN (N = 10 или N = 20) лежит
+      либо реактив A, либо реактив B, либо O - отсутствие реактива.
     - За ход можно положить в некоторую непустую клетку реактив A,
-      причем преобразование вещества идет так: A+A->B, B+A->0
-    - При этом в результате последней реакции происходит взрыв,
-      а в соседние непустые клетки по сторонам света,
-      попадает по порции реактива A.
+      причем преобразование вещества идет так: A+A->B, B+A->0.
+    - При этом в результате последней реакции происходит взрыв, а в
+      соседние непустые клетки по сторонам света, попадает по порции
+      реактива A.
     - Необходимо очистить поле.
 
-    - В соревновании принимают участие фукнции,
-      имеющие следующую сигнатуру:
+    - В соревновании принимают участие фукнции, имеющие следующую 
+      сигнатуру:
 
     - int reagent_game(char **bf, const int size)
 
@@ -36,7 +36,7 @@ import games.utils.utils as utils
 @dataclass
 class Reagent:
     """
-        Констатнты игры reagent.
+        Константы игры reagent.
     """
 
     ascii_a = 65
@@ -45,7 +45,24 @@ class Reagent:
 
     min_move = 0
 
-    max_count_games = 100
+    max_count_moves = 1000
+
+
+def add_empty_field_points(c_strings, field_size):
+    """
+        Добавление очков за разный уровень пустоты поля.
+    """
+
+    points = 0
+
+    for i in range(field_size):
+        for j in range(field_size):
+            if (c_strings[i].value)[j] == Reagent.ascii_o:
+                points += 10
+            elif (c_strings[i].value)[j] == Reagent.ascii_b:
+                points += 5
+
+    return points
 
 
 def check_end_game(c_strings, field_size):
@@ -208,7 +225,8 @@ def start_reagent_competition(players_info, field_size):
         Подсчет очков.
     """
 
-    utils.redirect_ctypes_stdout()
+    if field_size == 10:
+        utils.redirect_ctypes_stdout()
 
     results = []
 
@@ -221,24 +239,26 @@ def start_reagent_competition(players_info, field_size):
 
         c_strings, c_strings_copy, gamefield = create_c_objects(field_size)
         game = True
-        count_games = Reagent.max_count_games
+        count_moves = Reagent.max_count_moves
         points = 0
 
-        while game and count_games:
+        while game and count_moves:
 
-            count_games -= 1
+            count_moves -= 1
 
-            print_round_info(player, points, c_strings, field_size)
+            print_round_info(player[0], points, c_strings, field_size)
 
             move = utils.call_libary(
                 player_lib, ctypes_wrapper, 'i', utils.Error.segfault,
                 gamefield, field_size)
 
             if move == utils.Error.segfault:
+                count_moves = 0
                 print("▼ This player caused segmentation fault. ▼")
                 break
 
             move = player_lib.reagent_game(gamefield, field_size)
+            print(f"\033[37mPLAYER MOVE: {str(move)}\033[0m")
             count_explosions = 0
 
             if check_player_move(move, c_strings, c_strings_copy, field_size):
@@ -249,9 +269,11 @@ def start_reagent_competition(players_info, field_size):
 
                 if check_end_game(c_strings, field_size):
                     game = False
-
             else:
                 game = False
+
+        points += add_empty_field_points(c_strings, field_size)
+        points += count_moves
 
         results.append(points if points > player[1] else player[1])
 
@@ -262,4 +284,4 @@ def start_reagent_competition(players_info, field_size):
 
 if __name__ == "__main__":
     start_reagent_competition([("games/reagent/Oleg.so", 0), ("NULL", 50),
-                              ("games/reagent/Misha.so", 0)], 5)
+                              ("games/reagent/Misha.so", 0)], 20)
