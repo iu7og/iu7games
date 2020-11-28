@@ -38,17 +38,6 @@ class Agent:
     iu7games = git_inst.projects.get(iu7games_id)
 
 
-def update_achievemets(game_name: str, results: List[achievements.PlayerResult]):
-    """
-        Обновление достижений игроков
-    """
-    achievements.update_players_results(game_name, results)
-    achievements.update_players_trackers(
-        game_name,
-        [achievements.PlayerInfo(res.name, res.gitlab_id) for res in results]
-    )
-
-
 def choose_name(rec, mode):
     """
         Проверка режима игры для формирования имени файла.
@@ -460,7 +449,7 @@ def start_competition(instance, game, group_name, stage, is_practice):
     elif game.startswith("T3TR15game"):
         fresults = run_t3tr15game(results, is_practice)
         try:
-            update_achievemets(
+            achievements.update_players_results(
                 "T3TR15game",
                 [
                     achievements.PlayerResult(
