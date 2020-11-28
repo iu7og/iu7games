@@ -32,6 +32,8 @@ from random import choice
 from dataclasses import dataclass
 import games.utils.utils as utils
 
+SAMPLE_PATH = utils.Constants.sample_path + "/reagent.c"
+
 
 @dataclass
 class Reagent:
@@ -46,6 +48,7 @@ class Reagent:
     min_move = 0
 
     max_count_moves = 1000
+    leakage_fee = -1500
 
 
 def add_empty_field_points(c_strings, field_size):
@@ -255,6 +258,24 @@ def start_reagent_competition(players_info, field_size):
             if move == utils.Error.segfault:
                 count_moves = 0
                 print("▼ This player caused segmentation fault. ▼")
+                break
+
+            field = ""
+            for i in range(field_size):
+                field  += c_strings[i].value.decode(utils.Constants.utf_8)
+
+            memory_leak_check_res = utils.memory_leak_check(
+                SAMPLE_PATH, player[0],
+                [
+                    field,
+                    str(field_size)
+                ]
+            )
+
+            if memory_leak_check_res:
+                count_moves = 0
+                points = Reagent.leakage_fee
+                print("▼ This player caused memory leaks. ▼")
                 break
 
             move = player_lib.reagent_game(gamefield, field_size)
