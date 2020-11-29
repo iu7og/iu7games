@@ -136,6 +136,22 @@ build_t3tr15game:
   only:
     - merge_requests
 
+build_r3463ntgame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py R3463NTgame iu7-games-2020 build nonpractice | tee buildlog_r3463ntgame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_r3463ntgame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
+
 codestyle:
   stage: test
   image: hackfeed/iu7games
@@ -268,6 +284,23 @@ deploy_t3tr15game:
   artifacts:
     paths:
       - deploylog_t3tr15game.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
+
+deploy_r3463ntgame:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py R3463NTgame iu7-games-2020 release nonpractice | tee deploylog_r3463ntgame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_r4363ntgame.txt
       - ./*.obj
     when: always
     expire_in: 30 days
