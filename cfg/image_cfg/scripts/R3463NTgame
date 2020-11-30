@@ -1,0 +1,5 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check R3463NTgame/ r3463nt \
+"int reagent_game(char \*\*bf, const int size)" \
+reagent "light_reagent_runner.py"

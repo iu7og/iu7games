@@ -22,6 +22,7 @@ from games.strgame import split_runner, strtok_runner
 from games.teen48 import teen48_runner
 from games.travelgame import travel_runner
 from games.tetrisgame import tetris_runner
+from games.reagent import reagent_runner
 
 
 @dataclass
@@ -408,6 +409,62 @@ def run_t3tr15game(results, mode):
     return data
 
 
+def run_r3463ntgame(results, mode):
+    """
+        Старт R3463NTgame.
+    """
+
+    data_10x10 = deepcopy(results)
+    data_20x20 = deepcopy(results)
+
+    libs_10x10 = []
+    libs_20x20 = []
+
+    results_10x10_old = []
+    results_20x20_old = []
+
+    if os.path.exists("tbdump_r3463ntgame_10x10.obj"):
+        results_10x10_dump = open("tbdump_r3463ntgame_10x10.obj", "rb")
+        results_10x10_old = pickle.load(results_10x10_dump)
+    if os.path.exists("tbdump_r3463ntgame_20x20.obj"):
+        results_20x20_dump = open("tbdump_r3463ntgame_20x20.obj", "rb")
+        results_20x20_old = pickle.load(results_20x20_dump)
+
+    for rec_10x10, rec_20x20 in zip(data_10x10, data_20x20):
+        rating_10x10 = 0
+        rating_20x20 = 0
+
+        for rec_10x10_old, rec_20x20_old in zip(results_10x10_old, results_20x20_old):
+            if rec_10x10[1] == rec_10x10_old[1]:
+                rating_10x10 = rec_10x10_old[3]
+            if rec_20x20[1] == rec_20x20_old[1]:
+                rating_20x20 = rec_20x20_old[3]
+
+        lib_path = os.path.abspath(
+            f"{choose_name(rec_10x10, mode)}_r3463nt_lib.so")
+
+        if os.path.exists(lib_path):
+            libs_10x10.append((lib_path, rating_10x10))
+            libs_20x20.append((lib_path, rating_20x20))
+        else:
+            libs_10x10.append(("NULL", rating_10x10))
+            libs_20x20.append(("NULL", rating_20x20))
+
+    print("R3463NTGAME RESULTS\n")
+    print("\n10X10 DIV\n")
+    results_10x10 = reagent_runner.start_reagent_competition(libs_10x10, 10)
+    print("\n20X20 DIV\n")
+    results_20x20 = reagent_runner.start_reagent_competition(libs_20x20, 20)
+
+    i = 0
+    for rec_10x10, rec_20x20 in zip(data_10x10, data_20x20):
+        rec_10x10.insert(3, results_10x10[i])
+        rec_20x20.insert(3, results_20x20[i])
+        i += 1
+
+    return (data_10x10, data_20x20)
+
+
 def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
@@ -465,6 +522,8 @@ def start_competition(instance, game, group_name, stage, is_practice):
         except Exception as err:
             print("Во время обработки достижений что-то пошло не так")
             print(err)
+    elif game.startswith("R3463NTgame"):
+        fresults, sresults = run_r3463ntgame(results, is_practice)
 
     if stage == "release":
         worker.wiki.update_wiki(Agent.iu7games, game, fresults, sresults)
