@@ -465,6 +465,16 @@ def run_r3463ntgame(results, mode):
     return (data_10x10, data_20x20)
 
 
+def update_results(game_name: str, results: List[achievements.PlayerResult]) -> None:
+    """
+        Обновление достижение у игрока
+    """
+    try:
+        achievements.update_players_results(game_name, results)
+    except Exception as err:
+        print("Во время обработки достижений что-то пошло не так")
+        print(err)
+
 def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
@@ -505,25 +515,47 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults = run_tr4v31game(results, is_practice)
     elif game.startswith("T3TR15game"):
         fresults = run_t3tr15game(results, is_practice)
-        try:
-            achievements.update_players_results(
-                "T3TR15game",
-                [
-                    achievements.PlayerResult(
-                        i[0],
-                        i[2],
-                        i[1],
-                        utils.GameResult.no_result == i[3],
-                        i[3] == 0
-                    )
-                    for i in fresults
-                ]
-            )
-        except Exception as err:
-            print("Во время обработки достижений что-то пошло не так")
-            print(err)
+        update_results(
+            "T3TR15game",
+            [
+                achievements.PlayerResult(
+                    i[0],
+                    i[2],
+                    i[1],
+                    utils.GameResult.no_result == i[3],
+                    i[3] == 0
+                )
+                for i in fresults
+            ]
+        )
     elif game.startswith("R3463NTgame"):
         fresults, sresults = run_r3463ntgame(results, is_practice)
+        update_results(
+            "R3463NTgame10x10",
+            [
+                achievements.PlayerResult(
+                    i[0],
+                    i[2],
+                    i[1],
+                    False,
+                    False
+                )
+                for i in fresults
+            ]
+        )
+        update_results(
+            "R3463NTgame20x20",
+            [
+                achievements.PlayerResult(
+                    i[0],
+                    i[2],
+                    i[1],
+                    False,
+                    False
+                )
+                for i in sresults
+            ]
+        )
 
     if stage == "release":
         worker.wiki.update_wiki(Agent.iu7games, game, fresults, sresults)
