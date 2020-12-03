@@ -47,7 +47,7 @@ class Reagent:
 
     min_move = 0
 
-    max_count_moves = 1000
+    max_count_moves = 500
     leakage_fee = -1500
 
 
