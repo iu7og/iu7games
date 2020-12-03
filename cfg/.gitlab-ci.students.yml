@@ -1,7 +1,7 @@
 image: hackfeed/iu7games
 build:
   script:
-    - $CI_COMMIT_REF_NAME
+    - $CI_COMMIT_REF_NAME | tee userlog.txt
   after_script:
     - rm -f *.o
   coverage: '/lines[\.]+\: (\d+\.\d+)\%/'
@@ -9,3 +9,4 @@ build:
     paths:
       - ./*.so
       - ./*game/*_codecoverage
+      - userlog.txt
