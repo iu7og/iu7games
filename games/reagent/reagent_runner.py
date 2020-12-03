@@ -1,5 +1,5 @@
 """
-    ===== R3463NT RUNNER v.1.2.b =====
+    ===== R3463NT RUNNER v.1.3.c =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
@@ -102,7 +102,10 @@ def splash_bomb(move, c_strings, field_size):
     reagent = (c_strings[row].value)[column]
     replacement_string = list(c_strings[row].value)
 
-    if reagent == Reagent.ascii_a:
+    if reagent == Reagent.ascii_o:
+        replacement_string[column] = Reagent.ascii_a
+        c_strings[row].value = bytes(replacement_string)
+    elif reagent == Reagent.ascii_a:
         replacement_string[column] = Reagent.ascii_b
         c_strings[row].value = bytes(replacement_string)
     elif reagent == Reagent.ascii_b:
