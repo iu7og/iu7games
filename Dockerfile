@@ -37,6 +37,8 @@ RUN apk del .tmp-build-deps
 COPY cfg/image_cfg/scripts /scripts
 COPY cfg/image_cfg/libs/* /usr/lib/
 COPY cfg/image_cfg/c_samples /c_samples
+COPY cfg/image_cfg/pylintrc /pylintrc
+COPY database/ /database
 COPY games/ /games
 
 RUN mkdir /sandbox \
