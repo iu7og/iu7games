@@ -14,6 +14,7 @@
 *   `TEEN48game`
 *   `TR4V31game`
 *   `T3TR15game`
+*   `R3463NTgame`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
@@ -40,6 +41,7 @@ build:
 *   [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания)
 *   [Правила **TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
 *   [Правила **T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Greeting)
+*   [Правила **R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Greeting)
 
 Вы восхитительны! Можно начинать соревноваться!
 
@@ -57,6 +59,7 @@ build:
 *   [**TEEN48game Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TEEN48game_practice-Leaderboard)
 *   [**TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Leaderboard)
 *   [**T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Leaderboard)
+*   [**R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Leaderboard)
 
 ## Changelog
 
