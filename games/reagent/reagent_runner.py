@@ -1,5 +1,5 @@
 """
-    ===== R3463NT RUNNER v.1.2.b =====
+    ===== R3463NT RUNNER v.1.3.c =====
 
     Copyright (C) 2019 - 2020 IU7Games Team.
 
@@ -8,8 +8,8 @@
 
     - В каждой клетке поля размером NxN (N = 10 или N = 20) лежит
       либо реактив A, либо реактив B, либо O - отсутствие реактива.
-    - За ход можно положить в некоторую непустую клетку реактив A,
-      причем преобразование вещества идет так: A+A->B, B+A->0.
+    - За ход можно положить в некоторую клетку реактив A,
+      причем преобразование вещества идет так: O+A->A, A+A->B, B+A->0.
     - При этом в результате последней реакции происходит взрыв, а в
       соседние непустые клетки по сторонам света, попадает по порции
       реактива A.
@@ -47,7 +47,7 @@ class Reagent:
 
     min_move = 0
 
-    max_count_moves = 1000
+    max_count_moves = 500
     leakage_fee = -1500
 
 
@@ -92,7 +92,7 @@ def copy(c_strings_copy, c_strings, field_size):
 
 def splash_bomb(move, c_strings, field_size):
     """
-        Ход в указанную игроком позицию.
+        Ход в указанную непустую игроком позицию.
     """
 
     count_explosions = 0
@@ -123,6 +123,26 @@ def splash_bomb(move, c_strings, field_size):
             count_explosions += splash_bomb(move + field_size, c_strings, field_size)
 
     return count_explosions
+
+
+def position_is_empty(move, c_strings, field_size):
+    """
+        Проверка на пустоту указанной игроком позиции и ход в нее.
+    """
+
+    row = move // field_size
+    column = move % field_size
+
+    reagent = (c_strings[row].value)[column]
+    replacement_string = list(c_strings[row].value)
+
+    if reagent == Reagent.ascii_o:
+        replacement_string[column] = Reagent.ascii_a
+        c_strings[row].value = bytes(replacement_string)
+
+        return True
+
+    return False
 
 
 def check_player_move(move, c_strings, c_strings_copy, field_size):
@@ -284,9 +304,11 @@ def start_reagent_competition(players_info, field_size):
 
             if check_player_move(move, c_strings, c_strings_copy, field_size):
 
-                count_explosions += splash_bomb(move, c_strings, field_size)
-                copy(c_strings_copy, c_strings, field_size)
+                if not position_is_empty(move, c_strings, field_size):
+                    count_explosions += splash_bomb(move, c_strings, field_size)
+
                 points += count_explosions - 1
+                copy(c_strings_copy, c_strings, field_size)
 
                 if check_end_game(c_strings, field_size):
                     game = False
