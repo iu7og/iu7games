@@ -11,7 +11,7 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     """
-        Класс с названиями достижений игрока
+        Класс с конфигурацией доступа к БД
     """
     db_name = environ['DB_NAME']
     db_user = environ['DB_USER']

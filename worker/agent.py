@@ -467,9 +467,10 @@ def run_r3463ntgame(results, mode):
 
 def update_results(game_name: str, results: List[achievements.PlayerResult]) -> None:
     """
-        Обновление достижение у игрока
+        Обновление достижений у игроков
     """
     try:
+        achievements.add_achievements_to_db()
         achievements.update_players_results(game_name, results)
     except Exception as err:
         print("Во время обработки достижений что-то пошло не так")
