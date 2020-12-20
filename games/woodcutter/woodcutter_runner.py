@@ -171,10 +171,13 @@ def check_win(tree, size):
     """
 
     for k in range(size):
-        for i in range(size):
-            if k != i and tree[k][i] == Woodcutter.connected:
-                return False
-            if k != i and tree[i][k] == Woodcutter.connected:
+        if tree[k][k]:
+            root_edges = 0
+            for i in range(size):
+                if tree[k][i] and k != i:
+                    root_edges += 1
+                    break
+            if root_edges:
                 return False
 
     return True
@@ -222,7 +225,7 @@ def connected_with_root(node, tree, size):
     distances = bfs(node, tree, size)
 
     for i in range(size):
-        if tree[i][i] and distances[i]:
+        if tree[i][i] or distances[i]:
             return True
 
     return False
@@ -237,6 +240,7 @@ def make_move(tree, move, size):
     column_move = move % size
 
     tree[row_move][column_move] = Woodcutter.not_connected
+    tree[column_move][row_move] = Woodcutter.not_connected
 
     for i in range(size):
         if not connected_with_root(i, tree, size):
@@ -375,10 +379,10 @@ def fill_tree(tree, size):
         Заполнение матрицы смежности, описывающей дерево.
     """
 
-    count_edges = randint(size / 2, size)
-    count_roots = randint(1, size / 2)
+    max_border = (size - 1) * size - 1 - size * (size + 1) // 2
+    count_edges = randint(size // 2, max_border)
+    count_roots = randint(1, size // 2)
 
-    max_border = (size - 1) * size - 1 - size * (size + 1) / 2
     positions = list(range(max_border))
 
     for i in range(count_edges):
