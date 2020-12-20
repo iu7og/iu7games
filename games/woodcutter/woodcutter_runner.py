@@ -45,8 +45,6 @@ class Woodcutter:
     connected = 1
     not_connected = 0
 
-    root = 1
-
     player_one_win = 1
     player_two_win = 2
 
@@ -256,7 +254,7 @@ def check_move_correctness(tree, tree_copy, move, size, player):
     if move == utils.Error.segfault:
         print("▼ This player caused segmentation fault. ▼")
         return False
-    
+
     str_tree = ""
 
     for i in range(size):
@@ -282,7 +280,7 @@ def check_move_correctness(tree, tree_copy, move, size, player):
 
     if (row_move == column_move or move > max_border \
          or move < min_border):
-         return False
+        return False
 
     for i in range(size):
         for j in range(size):
@@ -364,7 +362,7 @@ def get_node(position, size):
     count = 0
     row = 0
 
-    while (position > count - 1):
+    while position > count - 1:
         count_prev = count
         count += size - 1 - row
         row += 1
@@ -381,7 +379,7 @@ def fill_tree(tree, size):
     count_roots = randint(1, size / 2)
 
     max_border = (size - 1) * size - 1 - size * (size + 1) / 2
-    positions = [i for i in range(max_border)]
+    positions = list(range(max_border))
 
     for i in range(count_edges):
         position = choice(positions)
@@ -391,12 +389,12 @@ def fill_tree(tree, size):
         tree[row][column] = Woodcutter.connected
         tree[column][row] = Woodcutter.connected
 
-    positions = [i for i in range(size)]
+    positions = list(range(size))
 
     for i in range(count_roots):
         rote = choice(positions)
         positions.remove(rote)
-        tree[rote][rote] = Woodcutter.root
+        tree[rote][rote] = Woodcutter.connected
 
 
 def create_tree(count_nodes):
