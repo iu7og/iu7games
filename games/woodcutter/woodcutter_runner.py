@@ -30,8 +30,6 @@ from random import randint, choice
 from dataclasses import dataclass
 import games.utils.utils as utils
 
-SAMPLE_PATH = utils.Constants.sample_path + "/woodcutter.c"
-
 
 @dataclass
 class Woodcutter:
@@ -50,39 +48,7 @@ class Woodcutter:
 
     spaces = 30
 
-
-def calculate_coefficient(pts):
-    """
-        Подсчёт коэффициента, который отвечает за балансировку набора очков.
-    """
-
-    if pts > 2400:
-        return 10
-
-    if pts > 1800:
-        return 20
-
-    return 40
-
-
-def calculate_expectation(pts1, pts2):
-    """
-        Подсчёт математического ожидания.
-    """
-
-    return 1 / (1 + 10 ** ((pts2 - pts1) / 400))
-
-
-def calculate_elo_rating(pts1, pts2, result):
-    """
-        Подсчёт рейтинга Эло.
-    """
-
-    expected_value = calculate_expectation(pts1, pts2)
-    coefficient = calculate_coefficient(pts1)
-    pts1 += coefficient * (result - expected_value)
-
-    return pts1
+    sample_path = utils.Constants.sample_path + "/woocutter.c"
 
 
 def scoring(points, player1_index, player2_index, round_info):
@@ -100,46 +66,13 @@ def scoring(points, player1_index, player2_index, round_info):
     pts1 = points[player1_index]
     pts2 = points[player2_index]
     points[player1_index] = int(
-        calculate_elo_rating(pts1, pts2, player1_result))
+        utils.calculate_elo_rating(pts1, pts2, player1_result))
     points[player2_index] = int(
-        calculate_elo_rating(pts2, pts1, player2_result))
+        utils.calculate_elo_rating(pts2, pts1, player2_result))
 
     return points
 
 
-def start_game_print(player1, player2):
-    """
-        Информация о начале раунда.
-    """
-
-    print(
-        "GAME",
-        utils.parsing_name(player1), "VS",
-        utils.parsing_name(player2)
-    )
-
-
-def end_game_print(player, info):
-    """
-        Печать результатов раунда.
-    """
-
-    print(
-        utils.parsing_name(player), info, "\n",
-        "=" * Woodcutter.spaces, sep=""
-    )
-
-
-def print_results(points, players_info, players_amount):
-    """
-        Печать результатов в виде:
-        ИГРОК : ОЧКИ
-    """
-
-    for i in range(players_amount):
-        if players_info[i][0] != "NULL":
-            print("PLAYER", utils.parsing_name(
-                players_info[i][0]), "POINTS:", points[i])
 
 
 def print_tree(tree, size, player_name):
@@ -266,7 +199,7 @@ def check_move_correctness(tree, tree_copy, move, size, player):
             str_tree += str(tree[i][j])
 
     memory_leak_check_res = utils.memory_leak_check(
-        SAMPLE_PATH, player,
+        Woodcutter.sample_path, player,
         [
             str_tree,
             str(size)
@@ -282,8 +215,8 @@ def check_move_correctness(tree, tree_copy, move, size, player):
     min_border = 0
     max_border = size * size + size
 
-    if (row_move == column_move or move > max_border \
-         or move < min_border):
+    if row_move == column_move or move > max_border \
+         or move < min_border:
         return False
 
     for i in range(size):
@@ -307,7 +240,7 @@ def woodcutter_round(player1_lib, player2_lib, tree, size, players_names):
         Запуск одного раунда для двух игроков.
     """
 
-    start_game_print(*players_names)
+    utils.start_game_print(*players_names)
 
     tree_copy = create_tree(size)
     copy_tree(tree, tree_copy, size)
@@ -319,7 +252,8 @@ def woodcutter_round(player1_lib, player2_lib, tree, size, players_names):
             tree, size)
 
         if not check_move_correctness(tree, tree_copy, move, size, players_names[0]):
-            end_game_print(players_names[0], " CHEATING")
+            utils.end_game_print(players_names[0], " CHEATING",
+            Woodcutter.spaces)
             return Woodcutter.player_two_win
 
         tree = make_move(tree, move, size)
@@ -327,7 +261,8 @@ def woodcutter_round(player1_lib, player2_lib, tree, size, players_names):
         print_tree(tree, size, players_names[0])
 
         if check_win(tree, size):
-            end_game_print(players_names[0], " WIN")
+            utils.end_game_print(players_names[0], " WIN",
+            Woodcutter.spaces)
             return Woodcutter.player_one_win
 
         move = utils.call_libary(
@@ -335,7 +270,8 @@ def woodcutter_round(player1_lib, player2_lib, tree, size, players_names):
             tree, size)
 
         if not check_move_correctness(tree, tree_copy, move, size, players_names[1]):
-            end_game_print(players_names[1], " CHEATING")
+            utils.end_game_print(players_names[1], " CHEATING",
+            Woodcutter.spaces)
             return Woodcutter.player_one_win
 
         tree = make_move(tree, move, size)
@@ -343,7 +279,8 @@ def woodcutter_round(player1_lib, player2_lib, tree, size, players_names):
         print_tree(tree, size, players_names[1])
 
         if check_win(tree, size):
-            end_game_print(players_names[1], " WIN")
+            utils.end_game_print(players_names[1], " WIN",
+            Woodcutter.spaces)
             return Woodcutter.player_two_win
 
 
@@ -468,7 +405,7 @@ def start_woodcutter_game(players_info):
         else:
             points[i] = utils.GameResult.no_result
 
-    print_results(points, players_info, len(players_info))
+    utils.print_score_results(points, players_info, len(players_info))
 
     return points
 

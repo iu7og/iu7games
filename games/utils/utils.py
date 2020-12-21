@@ -181,6 +181,43 @@ def parsing_name(lib_path):
     return lib_path[lib_path.rindex('/') + 1: len(lib_path) - 3]
 
 
+def start_game_print(player1, player2):
+    """
+        Информация о начале раунда.
+    """
+
+    print(
+        f"GAME",
+        f"{parsing_name(player1)} VS",
+        f"{parsing_name(player2)}"
+    )
+
+
+def end_game_print(player, info, space_amount):
+    """
+        Печать результатов раунда.
+    """
+
+    print(
+        f"{parsing_name(player)} {info} \n",
+        f"{'=' * space_amount}", sep=""
+    )
+
+
+def print_score_results(points, players_info, players_amount):
+    """
+        Печать результатов в виде:
+        ИГРОК : ОЧКИ
+    """
+
+    for i in range(players_amount):
+        if players_info[i][0] != "NULL":
+            print(
+                f"PLAYER: {parsing_name(players_info[i][0])} ",
+                f"POINTS: {points[i]}"
+            )
+
+
 def print_strgame_results(game, incorrect_test, total_time, dispersion):
     """
         Печать результатов для STRGAME.
@@ -193,7 +230,7 @@ def print_strgame_results(game, incorrect_test, total_time, dispersion):
     )
 
 
-def print_results(results, players_info):
+def print_time_results(results, players_info):
     """
         Печать финальных результатов для каждого игрока.
     """
@@ -228,3 +265,38 @@ def strgame_runner(tests_path, tests_runner):
     time, error_code, dispersion = tests_runner(test_data)
 
     return error_code, time, dispersion
+
+
+def calculate_coefficient(pts):
+    """
+        Подсчёт коэффициента, который отвечает за
+        балансировку набора очков.
+    """
+
+    if pts > 2400:
+        return 10
+
+    if pts > 1800:
+        return 20
+
+    return 40
+
+
+def calculate_expectation(pts1, pts2):
+    """
+        Подсчёт математического ожидания.
+    """
+
+    return 1 / (1 + 10 ** ((pts2 - pts1) / 400))
+
+
+def calculate_elo_rating(pts1, pts2, result):
+    """
+        Подсчёт рейтинга Эло.
+    """
+
+    expected_value = calculate_expectation(pts1, pts2)
+    coefficient = calculate_coefficient(pts1)
+    pts1 += coefficient * (result - expected_value)
+
+    return pts1
