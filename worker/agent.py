@@ -496,7 +496,7 @@ def run_w00dcutt3rgame(results, mode):
             libs.append(("NULL", rating))
 
     print("W00DCUTT3R RESULTS\n")
-    results = woodcutter_runner.start_woodcutter_competition(libs)
+    results = woodcutter_runner.start_woodcutter_game(libs)
 
     for i, rec in enumerate(data):
         rec.insert(3, results[i])
