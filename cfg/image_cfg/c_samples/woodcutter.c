@@ -31,7 +31,7 @@ int **allocate_matrix(const int size)
 
         if (!matrix[i])
         {
-            free_matrix(matrix, size);
+            free_matrix(matrix, i);
             return NULL;
         }
     }
