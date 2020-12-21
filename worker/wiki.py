@@ -127,7 +127,8 @@ def params_sort(results, sort_keys, output_params, game):
     """
 
     timedep_games = ("NUM63RSgame", "7EQUEENCEgame", "STRgame", "TR4V31game")
-    timedepless_games = ("XOgame", "TEEN48game", "T3TR15game", "R3463NTgame")
+    timedepless_games = ("XOgame", "TEEN48game", "T3TR15game", "R3463NTgame",
+                         "W00DCUTT3Rgame")
 
     if game in timedep_games:
         results = sorted(results, key=cmp_to_key(dispcmp), reverse=True)
@@ -144,7 +145,7 @@ def params_sort(results, sort_keys, output_params, game):
 
         for rec in results:
             if rec[sort_keys[0]] == output_params[0]:
-                if game == "XOgame":
+                if game in ("XOgame", "W00DCUTT3Rgame"):
                     rec[sort_keys[0]] = 1000
                 if game in ("TEEN48game", "T3TR15game", "R3463NTgame"):
                     rec[sort_keys[0]] = 0
@@ -328,6 +329,22 @@ def handle_r3463ntgame(fresults, sresults):
     return page
 
 
+def handle_w00dcutt3rgame(fresults):
+    """
+        Обновление таблицы для W00DCUTT3Rgame.
+    """
+
+    results = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
+                             "W00DCUTT3Rgame", "")
+
+    with open(os.path.abspath("templates/w00dcutt3rgame.template")) as template:
+        tmp = template.read()
+
+    page = Template(tmp).render(results=results, date=get_date())
+
+    return page
+
+
 def update_wiki(project, game, fresults, sresults):
     """
         Обновление Wiki-страницы с обновленными результатами.
@@ -342,6 +359,7 @@ def update_wiki(project, game, fresults, sresults):
         "TR4V31game Leaderboard": "TR4V31game-Leaderboard",
         "T3TR15game Leaderboard": "T3TR15game-Leaderboard",
         "R3463NTgame Leaderboard": "R3463NTgame-Leaderboard",
+        "W00DCUTT3Rgame Leaderboard": "W00DCUTT3Rgame-Leaderboard",
         "NUM63RSgame_practice Leaderboard": "NUM63RSgame_practice-Leaderboard",
         "7EQUEENCEgame_practice Leaderboard": "7EQUEENCEgame_practice-Leaderboard",
         "XOgame_practice Leaderboard": "XOgame_practice-Leaderboard",
@@ -349,7 +367,8 @@ def update_wiki(project, game, fresults, sresults):
         "TEEN48game_practice Leaderboard": "TEEN48game_practice-Leaderboard",
         "TR4V31game_practice Leaderboard": "TR4V31game_practice-Leaderboard",
         "T3TR15game_practice Leaderboard": "T3TR15game_practice-Leaderboard",
-        "R3463NTgame_practice Leaderboard": "R3463NTgame_practice-Leaderboard"
+        "R3463NTgame_practice Leaderboard": "R3463NTgame_practice-Leaderboard",
+        "W00DCUTT3Rgame_pratice Leaderboard": "W00DCUTT3Rgame_practice-Leaderboard"
     }
 
     page = ""
@@ -370,6 +389,8 @@ def update_wiki(project, game, fresults, sresults):
         page = handle_t3tr15game(fresults)
     elif game.startswith("R3463NTgame"):
         page = handle_r3463ntgame(fresults, sresults)
+    elif game.startswith("W00DCUTT3Rgame"):
+        page = handle_w00dcutt3rgame(fresults)
 
     for key in games:
         if game in key:
