@@ -1,0 +1,5 @@
+#! /bin/bash
+echo -e "\033[1;33mIU7GAMES PROJECT\033[0m"
+check W00DCUTT3Rgame/ w00dcutt3r \
+"int woodcutter(int \*\*tree, const int size)" \
+woodcutter "light_woodcutter_runner.py"
