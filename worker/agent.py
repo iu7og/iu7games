@@ -23,6 +23,7 @@ from games.teen48 import teen48_runner
 from games.travelgame import travel_runner
 from games.tetrisgame import tetris_runner
 from games.reagent import reagent_runner
+from games.woodcutter import woodcutter_runner
 
 
 @dataclass
@@ -465,6 +466,44 @@ def run_r3463ntgame(results, mode):
     return (data_10x10, data_20x20)
 
 
+def run_w00dcutt3rgame(results, mode):
+    """
+        Старт W00DCUTT3Rgame.
+    """
+
+    data = deepcopy(results)
+
+    libs = []
+
+    results_old = []
+
+    if os.path.exists("tbdump_w00dcutt3rgame.obj"):
+        with open("tbdump_w00dcutt3rgame.obj", "rb") as results_dump:
+            results_old = pickle.load(results_dump)
+
+    for rec in data:
+        rating = 1000
+
+        for rec_old in results_old:
+            if rec[1] == rec_old[1]:
+                rating = rec_old[3]
+
+        lib_path = os.path.abspath(f"{choose_name(rec, mode)}_w00dcutt3r_lib.so")
+
+        if os.path.exists(lib_path):
+            libs.append((lib_path, rating))
+        else:
+            libs.append(("NULL", rating))
+
+    print("W00DCUTT3R RESULTS\n")
+    results = woodcutter_runner.start_woodcutter_game(libs)
+
+    for i, rec in enumerate(data):
+        rec.insert(3, results[i])
+
+    return data
+
+
 def update_results(game_name: str, results: List[achievements.PlayerResult]) -> None:
     """
         Обновление достижений у игроков
@@ -555,6 +594,21 @@ def start_competition(instance, game, group_name, stage, is_practice):
                     False
                 )
                 for i in sresults
+            ]
+        )
+    elif game.startswith("W00DCUTT3Rgame"):
+        fresults = run_w00dcutt3rgame(results, is_practice)
+        update_results(
+            "W00DCUTT3Rgame",
+            [
+                achievements.PlayerResult(
+                    i[0],
+                    i[2],
+                    i[1],
+                    utils.GameResult.no_result == i[3],
+                    i[3] == 0
+                )
+                for i in fresults
             ]
         )
 
