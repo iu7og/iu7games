@@ -515,6 +515,39 @@ def update_results(game_name: str, results: List[achievements.PlayerResult]) -> 
         print("Во время обработки достижений что-то пошло не так")
         print(err)
 
+
+def convertCheckedResults(game_results: List[str]) -> List[achievements.PlayerResult]:
+    """
+        Конвертирование результатов игр,
+        возвращающих флаги корректности стратегии
+    """
+    return [
+        achievements.PlayerResult(
+            i[0],
+            i[2],
+            i[1],
+            utils.GameResult.no_result == i[3],
+            i[3] == 0
+        )
+        for i in game_results
+    ]
+
+def convertScoredResults(game_results: List[str]) -> List[achievements.PlayerResult]:
+    """
+        Конвертирование результатов игр,
+        возвращающих только счет
+    """
+    return [
+        achievements.PlayerResult(
+            i[0],
+            i[2],
+            i[1],
+            False,
+            False
+        )
+        for i in game_results
+    ]
+
 def start_competition(instance, game, group_name, stage, is_practice):
     """
         Старт соревнования с собранными стратегиями.
@@ -557,59 +590,23 @@ def start_competition(instance, game, group_name, stage, is_practice):
         fresults = run_t3tr15game(results, is_practice)
         update_results(
             "T3TR15game",
-            [
-                achievements.PlayerResult(
-                    i[0],
-                    i[2],
-                    i[1],
-                    utils.GameResult.no_result == i[3],
-                    i[3] == 0
-                )
-                for i in fresults
-            ]
+            convertCheckedResults(fresults)
         )
     elif game.startswith("R3463NTgame"):
         fresults, sresults = run_r3463ntgame(results, is_practice)
         update_results(
             "R3463NTgame10x10",
-            [
-                achievements.PlayerResult(
-                    i[0],
-                    i[2],
-                    i[1],
-                    False,
-                    False
-                )
-                for i in fresults
-            ]
+            convertScoredResults(fresults)
         )
         update_results(
             "R3463NTgame20x20",
-            [
-                achievements.PlayerResult(
-                    i[0],
-                    i[2],
-                    i[1],
-                    False,
-                    False
-                )
-                for i in sresults
-            ]
+            convertScoredResults(sresults)
         )
     elif game.startswith("W00DCUTT3Rgame"):
         fresults = run_w00dcutt3rgame(results, is_practice)
         update_results(
             "W00DCUTT3Rgame",
-            [
-                achievements.PlayerResult(
-                    i[0],
-                    i[2],
-                    i[1],
-                    utils.GameResult.no_result == i[3],
-                    i[3] == 0
-                )
-                for i in fresults
-            ]
+            convertScoredResults(fresults)
         )
 
     if stage == "release":
