@@ -44,7 +44,7 @@ void fill_matrix(int **matrix, char *string, int size)
 {
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
-            matrix[i][j] = atoi(string[i * size + j]);
+            matrix[i][j] = (int) (string[i * size + j] - '0');
 }
 
 
