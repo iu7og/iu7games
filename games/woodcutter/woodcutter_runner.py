@@ -48,7 +48,7 @@ class Woodcutter:
 
     spaces = 30
 
-    sample_path = utils.Constants.sample_path + "/woocutter.c"
+    sample_path = utils.Constants.sample_path + "/woodcutter.c"
 
 
 def scoring(points, player1_index, player2_index, round_info):
