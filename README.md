@@ -15,6 +15,7 @@
 *   `TR4V31game`
 *   `T3TR15game`
 *   `R3463NTgame`
+*   `W00DCUTT3Rgame`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
