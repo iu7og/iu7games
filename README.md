@@ -42,6 +42,7 @@ build:
 *   [Правила **TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
 *   [Правила **T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Greeting)
 *   [Правила **R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Greeting)
+*   [Правила **W00DCUTT3Rgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/W00DCUTT3Rgame-Greeting)
 
 Вы восхитительны! Можно начинать соревноваться!
 
@@ -60,8 +61,12 @@ build:
 *   [**TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Leaderboard)
 *   [**T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Leaderboard)
 *   [**R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Leaderboard)
+*   [**W00DCUTT3Rgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/W00DCUTT3Rgame-Leaderboard)
 
 ## Changelog
+
+## 2.4.0 (22.12.2020)
+* Открытая девятая игра **W00DCUTT3Rgame**.
 
 ## 2.3.0 (05.12.2020)
 * Открытая восьмая игра **R3463NTgame**.
