@@ -96,7 +96,7 @@ def start_sequence_game(players_libs):
         else:
             results.append((utils.GameResult.no_result, 0, 0))
 
-    utils.print_results(results, players_libs)
+    utils.print_time_results(results, players_libs)
     return results
 
 
