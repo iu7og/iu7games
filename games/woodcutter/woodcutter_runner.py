@@ -213,7 +213,7 @@ def check_move_correctness(tree, tree_copy, move, size, player):
     row_move = move // size
     column_move = move % size
     min_border = 0
-    max_border = size * size + size
+    max_border = size * size - 1
 
     if row_move == column_move or move > max_border \
          or move < min_border:
