@@ -101,7 +101,7 @@ def start_numbers_game(players_info):
         else:
             results.append((utils.GameResult.no_result, 0, 0))
 
-    utils.print_results(results, players_info)
+    utils.print_time_results(results, players_info)
     return results
 
 

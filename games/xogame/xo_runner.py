@@ -31,41 +31,6 @@ ASCII_SPACE = 32
 N = 30
 
 
-def start_game_print(player1, player2):
-    """
-        Информация о начале раунда.
-    """
-
-    print(
-        "GAME",
-        utils.parsing_name(player1), "(X) VS",
-        utils.parsing_name(player2), "(O)"
-    )
-
-
-def end_game_print(player, info):
-    """
-        Печать результатов раунда.
-    """
-
-    print(
-        utils.parsing_name(player), info, "\n",
-        "=" * N, sep=""
-    )
-
-
-def print_results(points, players_info, players_amount):
-    """
-        Печать результатов в виде:
-        ИГРОК : ОЧКИ
-    """
-
-    for i in range(players_amount):
-        if players_info[i][0] != "NULL":
-            print("PLAYER", utils.parsing_name(
-                players_info[i][0]), "POINTS:", points[i])
-
-
 def print_field(c_strings, field_size, player_name):
     """
         Печать игрового поля.
@@ -177,7 +142,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         Запуск одного раунда игры для двух игроков.
     """
 
-    start_game_print(*players_names)
+    utils.start_game_print(*players_names)
 
     c_strings, c_strings_copy, c_battlefield = create_c_objects(field_size)
     shot_count = 0
@@ -190,7 +155,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         )
 
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
-            end_game_print(players_names[0], " CHEATING")
+            utils.end_game_print(players_names[0], " CHEATING", N)
 
             return PLAYER_TWO_WIN
 
@@ -198,7 +163,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         c_strings_copy = make_move(c_strings_copy, move, ASCII_X, field_size)
         print_field(c_strings, field_size, players_names[0])
         if check_win(c_strings, ASCII_X, field_size):
-            end_game_print(players_names[0], " WIN")
+            utils.end_game_print(players_names[0], " WIN", N)
 
             return PLAYER_ONE_WIN
 
@@ -214,7 +179,7 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         )
 
         if not check_move_correctness(c_strings, c_strings_copy, move, field_size):
-            end_game_print(players_names[1], " CHEATING")
+            utils.end_game_print(players_names[1], " CHEATING", N)
 
             return PLAYER_ONE_WIN
 
@@ -222,43 +187,9 @@ def xogame_round(player1_lib, player2_lib, field_size, players_names):
         c_strings_copy = make_move(c_strings_copy, move, ASCII_O, field_size)
         print_field(c_strings, field_size, players_names[1])
         if check_win(c_strings, ASCII_O, field_size):
-            end_game_print(players_names[1], " WIN")
+            utils.end_game_print(players_names[1], " WIN", N)
 
             return PLAYER_TWO_WIN
-
-
-def calculate_coefficient(pts):
-    """
-        Подсчёт коэффициента, который отвечает за балансировку набора очков.
-    """
-
-    if pts > 2400:
-        return 10
-
-    if pts > 1800:
-        return 20
-
-    return 40
-
-
-def calculate_expectation(pts1, pts2):
-    """
-        Подсчёт математического ожидания.
-    """
-
-    return 1 / (1 + 10 ** ((pts2 - pts1) / 400))
-
-
-def calculate_elo_rating(pts1, pts2, result):
-    """
-        Подсчёт рейтинга Эло.
-    """
-
-    expected_value = calculate_expectation(pts1, pts2)
-    coefficient = calculate_coefficient(pts1)
-    pts1 += coefficient * (result - expected_value)
-
-    return pts1
 
 
 def scoring(points, player1_index, player2_index, round_info):
@@ -280,9 +211,9 @@ def scoring(points, player1_index, player2_index, round_info):
     pts1 = points[player1_index]
     pts2 = points[player2_index]
     points[player1_index] = int(
-        calculate_elo_rating(pts1, pts2, player1_round_result))
+        utils.calculate_elo_rating(pts1, pts2, player1_round_result))
     points[player2_index] = int(
-        calculate_elo_rating(pts2, pts1, player2_round_result))
+        utils.calculate_elo_rating(pts2, pts1, player2_round_result))
 
     return points
 
@@ -327,7 +258,7 @@ def start_xogame_competition(players_info, field_size):
         else:
             points[i] = utils.GameResult.no_result
 
-    print_results(points, players_info, len(players_info))
+    utils.print_score_results(points, players_info, len(players_info))
 
     return points
 

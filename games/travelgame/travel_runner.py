@@ -291,7 +291,7 @@ def start_travel_game(players_info, test_path):
 
     fclose(file_pointer)
 
-    utils.print_results(results, players_info)
+    utils.print_time_results(results, players_info)
 
     return results
 
