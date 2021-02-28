@@ -37,7 +37,19 @@ then
     then
         echo -e "\033[0;32mNO SPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
         gcc ${COMPILE_FLAGS} -fpic ${SAMPLE_PATH_FLAG} ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c
+        if [ $? -ne 0 ]
+        then
+            echo -e "\033[0;31mCOMPILE ERRORS FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
+            echo -e "\033[0;31mCHECK FAILED\033[0m\n"
+            exit 1
+        fi
         gcc -shared -o ${GITLAB_USER_LOGIN}_$2_lib.so ${GITLAB_USER_LOGIN}_$2.o
+        if [ $? -ne 0 ]
+        then
+            echo -e "\033[0;31mLINK ERRORS FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
+            echo -e "\033[0;31mCHECK FAILED\033[0m\n"
+            exit 1
+        fi
     else
         echo -e "\033[0;31mSPAM FOUND IN ${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c\033[0m"
         echo -e "\033[1;33mCHECK YOUR SOURCE FOR CALLS OF:"
@@ -68,10 +80,17 @@ then
     echo -e "\033[0;34mCHECK STRATEGY SAFETY\033[0m"
     PYTHONPATH='/' python /games/$4/$5 > temp.txt |:
     ERRMSG="$(cat temp.txt)y"
+    SOLUTION="$(grep 'OK' temp.txt)s"
     if [ "$ERRMSG" = 'y' ]
     then
         cat temp.txt
         echo -e "\033[0;31mCHECK FAILED. ERROR OCCURED\033[0m\n"
+        rm -f temp.txt
+        exit 1
+    elif [ "$SOLUTION" = 's' ]
+    then
+        cat temp.txt
+        echo -e "\033[0;31mCHECK FAILED. YOUR STRATEGY FAILED\033[0m\n"
         rm -f temp.txt
         exit 1
     else
@@ -81,4 +100,5 @@ then
     fi
 else
     echo -e "\033[0;31m${GAME_PATH}${GITLAB_USER_LOGIN}_$2.c NOT FOUND\033[0m\n"
+    exit 1
 fi
