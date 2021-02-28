@@ -9,3 +9,5 @@ build:
     paths:
       - ./*.so
       - ./*game/*_codecoverage
+  except:
+    - master
