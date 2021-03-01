@@ -90,10 +90,10 @@ def run_num63rsgame(results, mode):
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    int(results_def[i][1] - Agent.sigma_coef *
-                        results_def[i][2]) * 10 ** 10,
-                    int(results_def[i][1] + Agent.sigma_coef *
-                        results_def[i][2]) * 10 ** 10
+                    round(results_def[i][1] - Agent.sigma_coef *
+                          results_def[i][2], 2) * 10 ** 5,
+                    round(results_def[i][1] + Agent.sigma_coef *
+                          results_def[i][2], 2) * 10 ** 5
                 )
             ]
 
