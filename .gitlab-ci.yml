@@ -40,169 +40,169 @@ build_num63rsgame:
   only:
     - merge_requests
 
-build_7equeencegame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP build nonpractice | tee buildlog_7equeencegame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_7equeencegame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_xogame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP build nonpractice | tee buildlog_xogame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - bildlog_xogame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_strgame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py STRgame $GL_GROUP build nonpractice | tee buildlog_strgame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_strgame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_teen48game:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP build nonpractice | tee buildlog_teen48game.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_teen48game.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_tr4v31game:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py TR4V31game $GL_GROUP build nonpractice | tee buildlog_tr4v31game.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_tr4v31game.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_t3tr15game:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py T3TR15game $GL_GROUP build nonpractice | tee buildlog_t3tr15game.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_t3tr15game.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_r3463ntgame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py R3463NTgame $GL_GROUP build nonpractice | tee buildlog_r3463ntgame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_r3463ntgame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-build_w00dcutt3rgame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py W00DCUTT3Rgame $GL_GROUP build nonpractice | tee buildlog_w00dcutt3rgame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - buildlog_w00dcutt3rgame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
-
-codestyle:
-  stage: test
-  image: hackfeed/iu7games
-  script:
-    - mkdir ./pylint
-    - pylint --rcfile=/pylintrc $(find ./ -name \*.py) | tee pylint/pylintlog.txt || pylint-exit -efail $?
-    - SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' pylint/pylintlog.txt)
-    - anybadge --label=pylint --value=$SCORE --file=pylint/pylint.svg -o 2=red 4=orange 8=yellow 10=green
-    - echo -e "\n\e[1;33mYOUR \e[1;32mPYLINT\e[1;33m SCORE IS \e[1;32m$SCORE\e[0m\n"
-  artifacts:
-    paths:
-      - ./pylint/
-    when: always
-    expire_in: 30 days
-  only:
-    - pushes
-    - merge_requests
-    - schedules
-
-# deploy_num63rsgame:
-#   stage: deploy
+# build_7equeencegame:
+#   stage: build
 #   image: hackfeed/iu7games
 #   script:
 #     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py NUM63RSgame $GL_GROUP release | tee deploylog_num63rsgame.txt
+#     - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP build nonpractice | tee buildlog_7equeencegame.txt
 #   after_script:
-#     - rm -f *.so *.zip
+#     - rm -f *.so *.zip *.obj
 #   artifacts:
 #     paths:
-#       - deploylog_num63rsgame.txt
-#       - ./*.obj
+#       - buildlog_7equeencegame.txt
 #     when: always
 #     expire_in: 30 days
 #   only:
+#     - merge_requests
+
+# build_xogame:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP build nonpractice | tee buildlog_xogame.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - bildlog_xogame.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_strgame:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py STRgame $GL_GROUP build nonpractice | tee buildlog_strgame.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_strgame.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_teen48game:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP build nonpractice | tee buildlog_teen48game.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_teen48game.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_tr4v31game:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py TR4V31game $GL_GROUP build nonpractice | tee buildlog_tr4v31game.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_tr4v31game.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_t3tr15game:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py T3TR15game $GL_GROUP build nonpractice | tee buildlog_t3tr15game.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_t3tr15game.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_r3463ntgame:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py R3463NTgame $GL_GROUP build nonpractice | tee buildlog_r3463ntgame.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_r3463ntgame.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# build_w00dcutt3rgame:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py W00DCUTT3Rgame $GL_GROUP build nonpractice | tee buildlog_w00dcutt3rgame.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - buildlog_w00dcutt3rgame.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
+
+# codestyle:
+#   stage: test
+#   image: hackfeed/iu7games
+#   script:
+#     - mkdir ./pylint
+#     - pylint --rcfile=/pylintrc $(find ./ -name \*.py) | tee pylint/pylintlog.txt || pylint-exit -efail $?
+#     - SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' pylint/pylintlog.txt)
+#     - anybadge --label=pylint --value=$SCORE --file=pylint/pylint.svg -o 2=red 4=orange 8=yellow 10=green
+#     - echo -e "\n\e[1;33mYOUR \e[1;32mPYLINT\e[1;33m SCORE IS \e[1;32m$SCORE\e[0m\n"
+#   artifacts:
+#     paths:
+#       - ./pylint/
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - pushes
+#     - merge_requests
 #     - schedules
+
+deploy_num63rsgame:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py NUM63RSgame $GL_GROUP release | tee deploylog_num63rsgame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_num63rsgame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
 
 # deploy_7equeencegame:
 #   stage: deploy
