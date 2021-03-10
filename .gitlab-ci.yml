@@ -192,7 +192,7 @@ deploy_num63rsgame:
   image: hackfeed/iu7games
   script:
     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py NUM63RSgame $GL_GROUP release | tee deploylog_num63rsgame.txt
+    - PYTHONPATH='.' python worker/agent.py NUM63RSgame $GL_GROUP release nonpractice | tee deploylog_num63rsgame.txt
   after_script:
     - rm -f *.so *.zip
   artifacts:
