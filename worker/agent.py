@@ -91,9 +91,9 @@ def run_num63rsgame(results, mode):
                 sign,
                 intervals.closed(
                     round((results_def[i][1] - Agent.sigma_coef *
-                           results_def[i][2]) * 10 ** 10, 3),
+                           results_def[i][2]) * 10 ** 5, 3),
                     round((results_def[i][1] + Agent.sigma_coef *
-                           results_def[i][2]) * 10 ** 10, 3)
+                           results_def[i][2]) * 10 ** 5, 3)
                 )
             ]
 
@@ -136,10 +136,10 @@ def run_7equeencegame(results, mode):
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    int((results_def[i][1] - Agent.sigma_coef *
-                         results_def[i][2]) * 10 ** 10),
-                    int((results_def[i][1] + Agent.sigma_coef *
-                         results_def[i][2]) * 10 ** 10)
+                    round((results_def[i][1] - Agent.sigma_coef *
+                           results_def[i][2]) * 10 ** 5, 3),
+                    round((results_def[i][1] + Agent.sigma_coef *
+                           results_def[i][2]) * 10 ** 5, 3)
                 )
             ]
 
@@ -226,8 +226,8 @@ def run_strgame(results, mode):
             rec_split[3:3] = [
                 sign,
                 intervals.closed(
-                    int((split_res[1] - Agent.sigma_coef * split_res[2]) * 10 ** 10),
-                    int((split_res[1] + Agent.sigma_coef * split_res[2]) * 10 ** 10)
+                    round((split_res[1] - Agent.sigma_coef * split_res[2]) * 10 ** 5, 3),
+                    round((split_res[1] + Agent.sigma_coef * split_res[2]) * 10 ** 5, 3)
                 )
             ]
         else:
@@ -251,8 +251,8 @@ def run_strgame(results, mode):
             rec_strtok[3:3] = [
                 sign,
                 intervals.closed(
-                    int((strtok_res[1] - Agent.sigma_coef * strtok_res[2]) * 10 ** 10),
-                    int((strtok_res[1] + Agent.sigma_coef * strtok_res[2]) * 10 ** 10)
+                    round((strtok_res[1] - Agent.sigma_coef * strtok_res[2]) * 10 ** 5, 3),
+                    round((strtok_res[1] + Agent.sigma_coef * strtok_res[2]) * 10 ** 5, 3)
                 )
             ]
         else:
@@ -361,10 +361,10 @@ def run_tr4v31game(results, mode):
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    int((results_def[i][1] - Agent.sigma_coef *
-                         results_def[i][2]) * 10 ** 10),
-                    int((results_def[i][1] + Agent.sigma_coef *
-                         results_def[i][2]) * 10 ** 10)
+                    round((results_def[i][1] - Agent.sigma_coef *
+                           results_def[i][2]) * 10 ** 5, 3),
+                    round((results_def[i][1] + Agent.sigma_coef *
+                           results_def[i][2]) * 10 ** 5, 3)
                 )
             ]
 
