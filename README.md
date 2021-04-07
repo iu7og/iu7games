@@ -3,7 +3,7 @@
 ## О проекте
 Соревновательная система для оттачивания навыков программирования, созданная для студентов кафедры ИУ7 МГТУ им. Н.Э. Баумана, проходящих курс **"Программирование на Си"**.
 
-## Как начать играть 
+<!-- ## Как начать играть 
 
 В своём ученическом репозитории создать ветку `<gamename>`, 
 где `<gamename>` может быть:
@@ -15,6 +15,7 @@
 *   `TR4V31game`
 *   `T3TR15game`
 *   `R3463NTgame`
+*   `W00DCUTT3Rgame`
 
 В этой ветке изменить файл `.gitlab-ci.yml` в соответствии с приведенным ниже:
 ```yaml
@@ -42,6 +43,7 @@ build:
 *   [Правила **TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
 *   [Правила **T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Greeting)
 *   [Правила **R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Greeting)
+*   [Правила **W00DCUTT3Rgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/W00DCUTT3Rgame-Greeting)
 
 Вы восхитительны! Можно начинать соревноваться!
 
@@ -60,8 +62,12 @@ build:
 *   [**TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Leaderboard)
 *   [**T3TR15game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/T3TR15game-Leaderboard)
 *   [**R3463NTgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/R3463NTgame-Leaderboard)
+*   [**W00DCUTT3Rgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/W00DCUTT3Rgame-Leaderboard)
 
 ## Changelog
+
+## 2.4.0 (22.12.2020)
+* Открытая девятая игра **W00DCUTT3Rgame**.
 
 ## 2.3.0 (05.12.2020)
 * Открытая восьмая игра **R3463NTgame**.
@@ -91,4 +97,4 @@ build:
 *   Исправлено отображение изменения позиции в лидербордах
 
 ### 1.0.0 (22.02.2020)
-*   Открыта первая игра **NUM63RSgame**
+*   Открыта первая игра **NUM63RSgame** -->
