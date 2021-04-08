@@ -134,8 +134,8 @@ def run_7equeencegame(results, mode):
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    round(results_def[i][1] - Agent.sigma_coef * results_def[i][2], 7),
-                    round(results_def[i][1] + Agent.sigma_coef * results_def[i][2], 7)
+                    results_def[i][1] - Agent.sigma_coef * results_def[i][2],
+                    results_def[i][1] + Agent.sigma_coef * results_def[i][2]
                 )
             ]
 
