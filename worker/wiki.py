@@ -15,6 +15,7 @@ from jinja2 import Template
 import intervals
 import gitlab
 
+
 @dataclass
 class Wiki:
     """
@@ -186,6 +187,8 @@ def form_table(results, sort_keys, output_params, game, compet):
     with open(f"tbdump_{game.lower()}{compet}.obj", "wb") as results_dump:
         pickle.dump(results_new, results_dump)
 
+    results_new[4] = f"[{round(results_new[4].lower, 3)}, {round(results_new[4].upper, 3)}]"
+
     return results_new
 
 
@@ -316,9 +319,9 @@ def handle_r3463ntgame(fresults, sresults):
     """
 
     results_10x10 = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
-                             "R3463NTgame", "_10x10")
+                               "R3463NTgame", "_10x10")
     results_20x20 = form_table(sresults, Wiki.single_sort_keys, Wiki.output_params,
-                             "R3463NTgame", "_20x20")
+                               "R3463NTgame", "_20x20")
 
     with open(os.path.abspath("templates/r3463ntgame.template")) as template:
         tmp = template.read()
@@ -335,7 +338,7 @@ def handle_w00dcutt3rgame(fresults):
     """
 
     results = form_table(fresults, Wiki.single_sort_keys, Wiki.output_params,
-                             "W00DCUTT3Rgame", "")
+                         "W00DCUTT3Rgame", "")
 
     with open(os.path.abspath("templates/w00dcutt3rgame.template")) as template:
         tmp = template.read()
