@@ -90,8 +90,8 @@ def run_num63rsgame(results, mode):
             rec[3:3] = [
                 sign,
                 intervals.closed(
-                    results_def[i][1] - Agent.sigma_coef * results_def[i][2],
-                    results_def[i][1] + Agent.sigma_coef * results_def[i][2]
+                    (results_def[i][1] - Agent.sigma_coef * results_def[i][2]) * 10 ** 6,
+                    (results_def[i][1] + Agent.sigma_coef * results_def[i][2]) * 10 ** 6
                 )
             ]
 
