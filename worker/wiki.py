@@ -187,7 +187,8 @@ def form_table(results, sort_keys, output_params, game, compet):
     with open(f"tbdump_{game.lower()}{compet}.obj", "wb") as results_dump:
         pickle.dump(results_new, results_dump)
 
-    results_new[4] = f"[{round(results_new[4].lower, 3)}, {round(results_new[4].upper, 3)}]"
+    for user in results_new:
+        user[4] = f"[{round(user[4].lower, 3)}, {round(user[4].upper, 3)}]"
 
     return results_new
 
