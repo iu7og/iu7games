@@ -188,7 +188,8 @@ def form_table(results, sort_keys, output_params, game, compet):
         pickle.dump(results_new, results_dump)
 
     for user in results_new:
-        user[4] = f"[{str(user[4].lower)[:-6]}, {str(user[4].upper)[:-6]}]"
+        if user[4] != output_params[1]:
+            user[4] = "[{0:.7f}, {1:.7f}]".format(user[4].lower, user[4].upper)
 
     return results_new
 
