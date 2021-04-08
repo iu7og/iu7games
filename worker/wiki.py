@@ -188,7 +188,7 @@ def form_table(results, sort_keys, output_params, game, compet):
         pickle.dump(results_new, results_dump)
 
     for user in results_new:
-        user[4] = f"[{round(user[4].lower, 3)}, {round(user[4].upper, 3)}]"
+        user[4] = f"[{str(user[4].lower)[:-6]}, {str(user[4].upper)[:-6]}]"
 
     return results_new
 
