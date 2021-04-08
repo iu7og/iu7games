@@ -515,7 +515,7 @@ def update_results(game_name: str, results: List[achievements.PlayerResult]) -> 
         print(err)
 
 
-def convertCheckedResults(game_results: List[str]) -> List[achievements.PlayerResult]:
+def convertCheckedResults(game_results: List[List]) -> List[achievements.PlayerResult]:
     """
         Конвертирование результатов игр,
         возвращающих флаги корректности стратегии
@@ -531,7 +531,8 @@ def convertCheckedResults(game_results: List[str]) -> List[achievements.PlayerRe
         for i in game_results
     ]
 
-def convertScoredResults(game_results: List[str]) -> List[achievements.PlayerResult]:
+
+def convertScoredResults(game_results: List[List]) -> List[achievements.PlayerResult]:
     """
         Конвертирование результатов игр,
         возвращающих только счет
@@ -546,6 +547,7 @@ def convertScoredResults(game_results: List[str]) -> List[achievements.PlayerRes
         )
         for i in game_results
     ]
+
 
 def start_competition(instance, game, group_name, stage, is_practice):
     """
@@ -575,16 +577,44 @@ def start_competition(instance, game, group_name, stage, is_practice):
 
     if game.startswith("NUM63RSgame"):
         fresults = run_num63rsgame(results, is_practice)
+        update_results(
+            "NUM63RSgame",
+            convertCheckedResults(fresults)
+        )
     elif game.startswith("7EQUEENCEgame"):
         fresults = run_7equeencegame(results, is_practice)
+        update_results(
+            "7EQUEENCEgame",
+            convertCheckedResults(fresults)
+        )
     elif game.startswith("XOgame"):
         fresults, sresults = run_xogame(results, is_practice)
+        update_results(
+            "XOgame",
+            convertScoredResults(fresults)
+        )
+        update_results(
+            "XOgame",
+            convertScoredResults(sresults)
+        )
     elif game.startswith("STRgame"):
         fresults, sresults = run_strgame(results, is_practice)
     elif game.startswith("TEEN48game"):
         fresults, sresults = run_teen48game(results, is_practice)
+        update_results(
+            "TEEN48game",
+            convertScoredResults(fresults)
+        )
+        update_results(
+            "TEEN48game",
+            convertScoredResults(sresults)
+        )
     elif game.startswith("TR4V31game"):
         fresults = run_tr4v31game(results, is_practice)
+        update_results(
+            "TR4V31game",
+            convertCheckedResults(fresults)
+        )
     elif game.startswith("T3TR15game"):
         fresults = run_t3tr15game(results, is_practice)
         update_results(
