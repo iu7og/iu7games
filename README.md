@@ -8,8 +8,8 @@
 В своём ученическом репозитории создать ветку `<gamename>`, 
 где `<gamename>` может быть:
 *   `NUM63RSgame`  
-<!-- *   `7EQUEENCEgame`
-*   `XOgame`
+*   `7EQUEENCEgame`
+<!-- *   `XOgame`
 *   `STRgame`
 *   `TEEN48game`
 *   `TR4V31game`
@@ -36,8 +36,8 @@ build:
 
 <!-- *   [**Инструкция для практикантов, весна 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STAIU7HOME) -->
 *   [Правила **NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/NUM63RSgame-Greeting#показания-к-выполнению-задания)
-<!-- *   [Правила **7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/7EQUEENCEgame-Greeting#показания-к-выполнению-задания)
-*   [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
+*   [Правила **7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/7EQUEENCEgame-Greeting#показания-к-выполнению-задания)
+<!-- *   [Правила **XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/XOgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/STRgame-Greeting#показания-к-выполнению-задания)
 *   [Правила **TEEN48game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/wikis/TEEN48game-Greeting#показания-к-выполнению-задания)
 *   [Правила **TR4V31game**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/TR4V31game-Greeting#показания-к-выполнению-задания)
@@ -50,9 +50,9 @@ build:
 ## Результаты
 
 *   [**NUM63RSgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame-Leaderboard)
-<!-- *   [**NUM63RSgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame_practice-Leaderboard)
+<!-- *   [**NUM63RSgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/NUM63RSgame_practice-Leaderboard) -->
 *   [**7EQUEENCEgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame-Leaderboard)
-*   [**7EQUEENCEgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame_practice-Leaderboard)
+<!-- *   [**7EQUEENCEgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/7EQUEENCEgame_practice-Leaderboard)
 *   [**XOgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/XOgame-Leaderboard)
 *   [**XOgame Practice 2020**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/XOgame_practice-Leaderboard)
 *   [**STRgame**](https://git.iu7.bmstu.ru/IU7-Projects/iu7games/-/wikis/STRgame-Leaderboard)
