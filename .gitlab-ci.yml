@@ -40,21 +40,21 @@ badges:
 #   only:
 #     - merge_requests
 
-# build_7equeencegame:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP build nonpractice | tee buildlog_7equeencegame.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_7equeencegame.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_7equeencegame:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP build nonpractice | tee buildlog_7equeencegame.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_7equeencegame.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 # build_xogame:
 #   stage: build
@@ -204,22 +204,22 @@ badges:
 #   only:
 #     - schedules
 
-# deploy_7equeencegame:
-#   stage: deploy
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP release | tee deploylog_7equeencegame.txt
-#   after_script:
-#     - rm -f *.so *.zip
-#   artifacts:
-#     paths:
-#       - deploylog_7equeencegame.txt
-#       - ./*.obj
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - schedules
+deploy_7equeencegame:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py 7EQUEENCEgame $GL_GROUP release | tee deploylog_7equeencegame.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_7equeencegame.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
 
 # deploy_xogame:
 #   stage: deploy
