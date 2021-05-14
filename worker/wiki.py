@@ -187,9 +187,11 @@ def form_table(results, sort_keys, output_params, game, compet):
     with open(f"tbdump_{game.lower()}{compet}.obj", "wb") as results_dump:
         pickle.dump(results_new, results_dump)
 
-    for user in results_new:
-        if user[4] != output_params[1]:
-            user[4] = "[{0:.7f}, {1:.7f}]".format(user[4].lower() * 10 ** 7, user[4].upper() * 10 ** 7)
+    if sort_keys == Wiki.double_sort_keys:
+        for user in results_new:
+            if user[4] != output_params[1]:
+                user[4] = "[{0:.7f}, {1:.7f}]".format(user[4].lower() * 10 ** 7,
+                                                      user[4].upper() * 10 ** 7)
 
     return results_new
 
