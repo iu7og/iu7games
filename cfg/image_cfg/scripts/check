@@ -7,9 +7,9 @@ SAMPLE_PATH_FLAG="-I/c_samples"
 COVERAGE_FLAGS="-fprofile-arcs -ftest-coverage"
 GAME_PATH="$1"
 
-if [[ ${CI_PROJECT_NAME} == "${GL_GROUP_PRACTICE}"* ]]
+if [[ ${CI_PROJECT_NAME} == "iu7-games-${GL_GROUP_PRACTICE}"* ]]
 then
-    GITLAB_USER_LOGIN="$(echo "${CI_PROJECT_NAME}" | sed "s/"${GL_GROUP_PRACTICE}"-//")"
+    GITLAB_USER_LOGIN="$(echo "${CI_PROJECT_NAME}" | sed "s/iu7-games-"${GL_GROUP_PRACTICE}"-//")"
 fi
 
 echo -e "\033[0;34mCHECK SOURCE EXISTANCE\033[0m"
@@ -57,7 +57,7 @@ then
         echo -e "\033[0;31mCHECK FAILED\033[0m\n"
         exit 1
     fi
-    if [[ ${CI_PROJECT_NAME} == "${GL_GROUP_PRACTICE}"* ]]
+    if [[ ${CI_PROJECT_NAME} == "iu7-games-${GL_GROUP_PRACTICE}"* ]]
     then
         echo -e "\033[0;34mCHECK TEST SOURCE EXISTANCE\033[0m"
         if [ -e ${GAME_PATH}${GITLAB_USER_LOGIN}_$2_test.c ]
