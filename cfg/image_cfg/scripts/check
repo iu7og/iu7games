@@ -9,7 +9,7 @@ GAME_PATH="$1"
 
 if [[ ${CI_PROJECT_NAME} == "iu7-games-${GL_GROUP_PRACTICE}"* ]]
 then
-    GITLAB_USER_LOGIN="$(echo "${CI_PROJECT_NAME}" | sed "s/iu7-games-"${GL_GROUP_PRACTICE}"-//")"
+    GITLAB_USER_LOGIN="$(echo "${CI_PROJECT_NAME}" | sed "s/iu7-games-${GL_GROUP_PRACTICE}-//")"
 fi
 
 echo -e "\033[0;34mCHECK SOURCE EXISTANCE\033[0m"
