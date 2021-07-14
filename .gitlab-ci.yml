@@ -56,21 +56,21 @@ badges:
 #   only:
 #     - merge_requests
 
-build_xogame:
-  stage: build
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP build nonpractice | tee buildlog_xogame.txt
-  after_script:
-    - rm -f *.so *.zip *.obj
-  artifacts:
-    paths:
-      - bildlog_xogame.txt
-    when: always
-    expire_in: 30 days
-  only:
-    - merge_requests
+# build_xogame:
+#   stage: build
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP build nonpractice | tee buildlog_xogame.txt
+#   after_script:
+#     - rm -f *.so *.zip *.obj
+#   artifacts:
+#     paths:
+#       - bildlog_xogame.txt
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - merge_requests
 
 build_strgame:
   stage: build
@@ -88,21 +88,21 @@ build_strgame:
   only:
     - merge_requests
 
-# build_teen48game:
-#   stage: build
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP build nonpractice | tee buildlog_teen48game.txt
-#   after_script:
-#     - rm -f *.so *.zip *.obj
-#   artifacts:
-#     paths:
-#       - buildlog_teen48game.txt
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - merge_requests
+build_teen48game:
+  stage: build
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP build nonpractice | tee buildlog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip *.obj
+  artifacts:
+    paths:
+      - buildlog_teen48game.txt
+    when: always
+    expire_in: 30 days
+  only:
+    - merge_requests
 
 # build_tr4v31game:
 #   stage: build
@@ -221,22 +221,22 @@ codestyle:
 #   only:
 #     - schedules
 
-deploy_xogame:
-  stage: deploy
-  image: hackfeed/iu7games
-  script:
-    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-    - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP release nonpractice | tee deploylog_xogame.txt
-  after_script:
-    - rm -f *.so *.zip
-  artifacts:
-    paths:
-      - deploylog_xogame.txt
-      - ./*.obj
-    when: always
-    expire_in: 30 days
-  only:
-    - schedules
+# deploy_xogame:
+#   stage: deploy
+#   image: hackfeed/iu7games
+#   script:
+#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+#     - PYTHONPATH='.' python worker/agent.py XOgame $GL_GROUP release nonpractice | tee deploylog_xogame.txt
+#   after_script:
+#     - rm -f *.so *.zip
+#   artifacts:
+#     paths:
+#       - deploylog_xogame.txt
+#       - ./*.obj
+#     when: always
+#     expire_in: 30 days
+#   only:
+#     - schedules
 
 deploy_strgame:
   stage: deploy
@@ -255,22 +255,22 @@ deploy_strgame:
   only:
     - schedules
 
-# deploy_teen48game:
-#   stage: deploy
-#   image: hackfeed/iu7games
-#   script:
-#     - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
-#     - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP release nonpractice | tee deploylog_teen48game.txt
-#   after_script:
-#     - rm -f *.so *.zip
-#   artifacts:
-#     paths:
-#       - deploylog_teen48game.txt
-#       - ./*.obj
-#     when: always
-#     expire_in: 30 days
-#   only:
-#     - schedules
+deploy_teen48game:
+  stage: deploy
+  image: hackfeed/iu7games
+  script:
+    - sed -i 's/^private_token.*$/private_token = '${API_TOKEN}'/' cfg/api_config.cfg
+    - PYTHONPATH='.' python worker/agent.py TEEN48game $GL_GROUP release nonpractice | tee deploylog_teen48game.txt
+  after_script:
+    - rm -f *.so *.zip
+  artifacts:
+    paths:
+      - deploylog_teen48game.txt
+      - ./*.obj
+    when: always
+    expire_in: 30 days
+  only:
+    - schedules
 
 # deploy_tr4v31game:
 #   stage: deploy
